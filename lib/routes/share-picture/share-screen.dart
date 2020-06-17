@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:layout/components/custom_icons.dart';
 import 'package:layout/components/selection-list-item.dart';
@@ -143,6 +141,7 @@ class _ShareScreenState extends State<ShareScreen> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black87,
                           ),
                         ),
                       ),

@@ -26,6 +26,15 @@ class Journey extends NamedItem {
     );
   }
 
+  factory Journey.fromRequestJson(Map<String, dynamic> json) {
+    return Journey(
+      id: json['id'],
+      name: json['title'],
+      startDate: DateTime.parse(json['startDate']),
+      imageUrl: json['images'].isNotEmpty ? json['images'][0] : null,
+    );
+  }
+
   static Resource<List<Journey>> allForUser(String userId) {
     return Resource(
       url: URLS.userJourneys('user'),

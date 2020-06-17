@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:layout/models/location.dart';
 
@@ -29,16 +32,18 @@ const List<Location> MOCK_LOCATIONS = [
   ),
 ];
 
+final apiBase = DotEnv().env['API_BASE'];
+final searchForPlacesUrl = "$apiBase/api/geo/places/search";
+
 class LocationService {
   static Future<List<Location>> searchLocations(String query) async {
-    final List<Location> locations = MOCK_LOCATIONS
-        .where((element) =>
-            element.name.toLowerCase().startsWith(query.toLowerCase()))
+    final response = await http.get("$searchForPlacesUrl?q=$query");
+    final placesRaw = json.decode(response.body);
+
+    final List<Location> locations = placesRaw
+        .map<Location>((location) => Location.fromResponseJson(location))
         .toList();
 
-    return Future.delayed(
-      Duration(seconds: 2),
-      () => locations,
-    );
+    return locations;
   }
 }

@@ -16,6 +16,7 @@ dependencies:
   timeago: ^2.0.26
   receive_sharing_intent: ^1.4.0+2
   exif: ^1.0.3
+  flutter_dotenv: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +28,5 @@ flutter:
       - family:  CustomIcons
         fonts:
           - asset: fonts/CustomIcons.ttf
+  assets:
+    - .env

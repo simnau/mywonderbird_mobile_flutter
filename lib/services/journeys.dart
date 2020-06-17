@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import 'package:layout/models/journey.dart';
 
 final mockJourneys = [
@@ -38,12 +41,19 @@ final mockJourneys = [
   ),
 ];
 
+final apiBase = DotEnv().env['API_BASE'];
+final myJourneysUrl = "$apiBase/api/journeys/my";
+
 class JourneyService {
   static Future<List<Journey>> allForUser() async {
-    return Future.delayed(
-      const Duration(seconds: 2),
-      () => List.from(mockJourneys),
-    );
+    final response = await http.get(myJourneysUrl);
+    final journeysRaw = json.decode(response.body)['journeys'];
+
+    List<Journey> journeys = journeysRaw
+        .map<Journey>((journey) => Journey.fromRequestJson(journey))
+        .toList();
+
+    return journeys;
   }
 
   static Future<Journey> createJourney(Journey journey) async {

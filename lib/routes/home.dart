@@ -118,8 +118,6 @@ class _HomeState extends State<Home> {
           imageUrl: filePath),
     );
 
-    print(SelectDestination.PATH);
-
     Navigator.pushNamed(
       context,
       SelectDestination.PATH,

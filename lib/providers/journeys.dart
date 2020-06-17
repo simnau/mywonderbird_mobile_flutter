@@ -12,21 +12,23 @@ class JourneysProvider with ChangeNotifier {
   UnmodifiableListView<Journey> get journeys => UnmodifiableListView(_journeys);
   bool get loading => _loading;
 
-  JourneysProvider() {
-    loadUserJourneys();
-  }
-
   Future<List<Journey>> loadUserJourneys() async {
-    _loading = true;
-    notifyListeners();
+    try {
+      _loading = true;
+      notifyListeners();
 
-    final journeys = await JourneyService.allForUser();
+      final journeys = await JourneyService.allForUser();
 
-    _journeys = journeys;
-    _loading = false;
-    notifyListeners();
+      _journeys = journeys;
+      _loading = false;
+      notifyListeners();
 
-    return journeys;
+      return journeys;
+    } catch (e) {
+      _loading = false;
+      notifyListeners();
+      return [];
+    }
   }
 
   Future<Journey> addJourney(Journey journey) async {
@@ -35,5 +37,10 @@ class JourneysProvider with ChangeNotifier {
     notifyListeners();
 
     return journey;
+  }
+
+  void clearState() {
+    _loading = true;
+    _journeys = [];
   }
 }

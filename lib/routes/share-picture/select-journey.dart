@@ -30,11 +30,36 @@ class _SelectJourneyState extends State<SelectJourney> {
   final _titleController = TextEditingController();
 
   bool _creating = false;
+  JourneysProvider _journeysProvider;
 
   @override
   void initState() {
     super.initState();
     _creating = widget.createNew ?? false;
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadUserJourneys());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _journeysProvider = Provider.of<JourneysProvider>(
+      context,
+      listen: false,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _journeysProvider.clearState();
+  }
+
+  void loadUserJourneys() async {
+    final journeysProvider = Provider.of<JourneysProvider>(
+      context,
+      listen: false,
+    );
+    await journeysProvider.loadUserJourneys();
   }
 
   void _cancel() {
@@ -74,16 +99,20 @@ class _SelectJourneyState extends State<SelectJourney> {
           height: 64,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image(
-              fit: BoxFit.cover,
-              image: NetworkImage(
-                journey.imageUrl,
-              ),
-            ),
+            child: journey.imageUrl != null
+                ? Image(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      journey.imageUrl,
+                    ),
+                  )
+                : Container(
+                    color: Colors.black26,
+                  ),
           ),
         ),
         title: Text(
-          journey.name,
+          journey.name ?? 'Journey with no name',
           style: TextStyle(
             fontSize: 20,
             color: Colors.black87,
