@@ -7,13 +7,16 @@ import 'package:layout/services/location.dart';
 
 import 'package:layout/components/showcase-icon.dart';
 import 'package:layout/util/debouncer.dart';
+import 'package:layout/util/location.dart';
+import 'package:location/location.dart';
+import 'package:uuid/uuid.dart';
 
 class SelectLocation extends StatefulWidget {
   static const SUB_PATH = 'location';
   static const RELATIVE_PATH = "share-picture/$SUB_PATH";
   static const PATH = "/$RELATIVE_PATH";
 
-  final Location location;
+  final LocationModel location;
 
   SelectLocation({this.location});
 
@@ -35,13 +38,24 @@ class _SelectLocationState extends State<SelectLocation> {
   Completer<GoogleMapController> _controller = Completer();
   PersistentBottomSheetController _bottomSheetController;
   bool _searchModalOpen = false;
-  Location _selectedLocation;
+  LocationModel _selectedLocation;
+  LocationData _currentLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _setCurrentLocation();
+  }
+
+  void _setCurrentLocation() async {
+    _currentLocation = await getCurrentLocation();
+  }
 
   void _closeSearch() {
     _bottomSheetController.close();
   }
 
-  void _onSelect(Location location) async {
+  void _onSelect(LocationModel location) async {
     final mapController = await _controller.future;
 
     setState(() {
@@ -61,10 +75,12 @@ class _SelectLocationState extends State<SelectLocation> {
 
   void _onMapLongPress(LatLng pos) {
     setState(() {
-      _selectedLocation = Location(
+      _selectedLocation = LocationModel(
+        id: Uuid().v4(),
         name:
             "${pos.latitude.toStringAsFixed(_COORDINATE_PRECISION)}, ${pos.longitude.toStringAsFixed(_COORDINATE_PRECISION)}",
         country: null,
+        countryCode: null,
         imageUrl: null,
         latLng: pos,
       );
@@ -79,6 +95,7 @@ class _SelectLocationState extends State<SelectLocation> {
     _bottomSheetController = Scaffold.of(context).showBottomSheet(
       (_) => _BottomSheet(
         onSelect: _onSelect,
+        currentLocation: _currentLocation,
       ),
     );
 
@@ -190,10 +207,12 @@ class _SelectLocationState extends State<SelectLocation> {
 }
 
 class _BottomSheet extends StatefulWidget {
-  final ValueChanged<Location> onSelect;
+  final ValueChanged<LocationModel> onSelect;
+  final LocationData currentLocation;
 
   _BottomSheet({
     @required this.onSelect,
+    this.currentLocation,
   });
 
   @override
@@ -204,11 +223,11 @@ class _BottomSheetState extends State<_BottomSheet> {
   final _searchController = TextEditingController();
   final _searchDebouncer = Debouncer(milliseconds: 300);
 
-  List<Location> _places = [];
+  List<LocationModel> _places = [];
   bool _loading = false;
   String _previousSearchValue = '';
 
-  void _onPlaceSelect(Location location) {
+  void _onPlaceSelect(LocationModel location) {
     widget.onSelect(location);
   }
 
@@ -232,8 +251,10 @@ class _BottomSheetState extends State<_BottomSheet> {
       setState(() {
         _loading = true;
       });
-      final places =
-          await LocationService.searchLocations(_searchController.text);
+      final places = await LocationService.searchLocations(
+        _searchController.text,
+        widget.currentLocation,
+      );
 
       setState(() {
         _places = places;

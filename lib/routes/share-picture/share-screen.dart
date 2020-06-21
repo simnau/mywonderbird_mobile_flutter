@@ -7,6 +7,7 @@ import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/home.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
 import 'package:layout/routes/share-picture/select-location.dart';
+import 'package:layout/services/sharing.dart';
 import 'package:layout/types/select-journey-arguments.dart';
 import 'package:layout/types/select-location-arguments.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,14 @@ class ShareScreen extends StatefulWidget {
 }
 
 class _ShareScreenState extends State<ShareScreen> {
+  final _titleController = TextEditingController();
+
   Journey _selectedJourney;
-  Location _selectedLocation;
+  LocationModel _selectedLocation;
+  String _error;
 
   Journey get journey => _selectedJourney ?? widget.selectedJourney;
-  Location get location {
+  LocationModel get location {
     final sharePictureProvider = Provider.of<SharePictureProvider>(
       context,
       listen: false,
@@ -84,6 +88,30 @@ class _ShareScreenState extends State<ShareScreen> {
     }
   }
 
+  void _sharePicture() async {
+    final title = _titleController.text;
+    final sharePictureProvider = Provider.of<SharePictureProvider>(
+      context,
+      listen: false,
+    );
+
+    try {
+      await SharingService.sharePicture(
+        title,
+        sharePictureProvider.pictureData,
+        journey.id,
+      );
+
+      final navigator = Navigator.of(context, rootNavigator: true);
+      navigator.popUntil(
+        (route) => route.settings.name == Home.PATH,
+      );
+      navigator.pushReplacementNamed(Home.PATH);
+    } catch (e) {
+      _error = e.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -131,6 +159,7 @@ class _ShareScreenState extends State<ShareScreen> {
                           top: 8.0,
                         ),
                         child: TextField(
+                          controller: _titleController,
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Write a caption',
@@ -186,7 +215,7 @@ class _ShareScreenState extends State<ShareScreen> {
                 child: Text(
                   'Share',
                 ),
-                onPressed: () {},
+                onPressed: _sharePicture,
               ),
             ),
           ],

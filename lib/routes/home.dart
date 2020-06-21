@@ -10,6 +10,7 @@ import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/select-picture/home.dart';
 import 'package:layout/routes/share-picture/select-destination.dart';
+import 'package:layout/services/location.dart';
 import 'package:layout/types/picture-data.dart';
 import 'package:layout/util/geo.dart';
 import 'package:provider/provider.dart';
@@ -91,9 +92,11 @@ class _HomeState extends State<Home> {
   }
 
   void _printExif(String filePath) async {
-    Uint8List fileBytes = await new File(filePath).readAsBytes();
+    File file = File(filePath);
+    Uint8List fileBytes = await file.readAsBytes();
     Map<String, IfdTag> data = await readExifFromBytes(fileBytes);
 
+    final creationDate = await file.lastModified();
     final latitudeRef = data['GPS GPSLatitudeRef']?.toString();
     final latitudeRatios = data['GPS GPSLatitude'].values;
     final longitudeRef = data['GPS GPSLongitudeRef']?.toString();
@@ -108,14 +111,22 @@ class _HomeState extends State<Home> {
       context,
       listen: false,
     );
+    final latlng = LatLng(latitude, longitude);
+    final locationModel = await LocationService.reverseGeocode(latlng);
 
     sharePictureProvider.pictureData = PictureData(
       image: FileImage(File(filePath)),
-      location: Location(
-          latLng: LatLng(latitude, longitude),
-          country: '-',
-          name: '-',
-          imageUrl: filePath),
+      imagePath: filePath,
+      location: LocationModel(
+        id: locationModel.id,
+        latLng: LatLng(latitude, longitude),
+        country: locationModel.country,
+        countryCode: locationModel.countryCode,
+        name: locationModel.name,
+        imageUrl: filePath,
+        provider: locationModel.provider,
+      ),
+      creationDate: creationDate,
     );
 
     Navigator.pushNamed(

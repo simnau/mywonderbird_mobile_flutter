@@ -1,7 +1,7 @@
 import 'package:layout/models/location.dart';
 
 class SelectLocationArguments {
-  final Location location;
+  final LocationModel location;
 
   SelectLocationArguments({this.location});
 }

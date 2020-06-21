@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:layout/services/main.dart';
 import 'package:layout/types/named-item.dart';
 import 'package:layout/constants/urls.dart' as URLS;
+import 'package:layout/util/date.dart';
+import 'package:layout/util/json.dart';
 
 class Journey extends NamedItem {
   final String id;
@@ -31,7 +33,7 @@ class Journey extends NamedItem {
       id: json['id'],
       name: json['title'],
       startDate: DateTime.parse(json['startDate']),
-      imageUrl: json['images'].isNotEmpty ? json['images'][0] : null,
+      imageUrl: (json['images'] ?? []).isNotEmpty ? json['images'][0] : null,
     );
   }
 
@@ -44,5 +46,14 @@ class Journey extends NamedItem {
         return list.map((model) => Journey.fromJson(model)).toList();
       },
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return removeNulls({
+      'id': id,
+      'title': name,
+      'startDate': formatDateTime(startDate),
+      'imageUrl': imageUrl,
+    });
   }
 }

@@ -159,7 +159,6 @@ class _SelectJourneyState extends State<SelectJourney> {
     );
 
     final journey = Journey(
-      id: UniqueKey().toString(),
       imageUrl: MOCK_IMAGE,
       name: _titleController.text,
       startDate: DateTime.now(),

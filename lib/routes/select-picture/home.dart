@@ -26,7 +26,9 @@ class _SelectPictureHomeState extends State<SelectPictureHome> {
 
     sharePictureProvider.pictureData = PictureData(
       image: NetworkImage(MOCK_IMAGE),
+      imagePath: '',
       location: MOCK_LOCATION,
+      creationDate: DateTime.now(),
     );
   }
 

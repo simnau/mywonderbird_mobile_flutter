@@ -1,49 +1,46 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:layout/models/location.dart';
+import 'package:location/location.dart';
 
-const List<Location> MOCK_LOCATIONS = [
-  Location(
-    id: '1',
-    name: 'Kedainiai',
-    country: 'Lithuania',
-    imageUrl:
-        'https://welovelithuania.com/content/uploads/2018/12/Diana-Garba%C4%8Dauskien%C4%97-KEDAINIAI-WLL-e1545308046814.jpg',
-    latLng: const LatLng(55.227986, 23.937895),
-  ),
-  Location(
-    id: '2',
-    name: 'Kaunas',
-    country: 'Lithuania',
-    imageUrl: 'https://medusaconcert.lt/wp-content/uploads/Kaunas.jpg',
-    latLng: const LatLng(54.897260, 23.884347),
-  ),
-  Location(
-    id: '3',
-    name: 'Vilnius',
-    country: 'Lithuania',
-    imageUrl:
-        'https://www.govilnius.lt/api/images/5e513a5f66c3a8656713e6b6?w=1440&h=605',
-    latLng: const LatLng(54.686201, 25.278372),
-  ),
-];
+const DEFAULT_LOCATION_STRING = '0,0';
 
 final apiBase = DotEnv().env['API_BASE'];
 final searchForPlacesUrl = "$apiBase/api/geo/places/search";
+final reverseGeocodeUrl = "$apiBase/api/geo/places/reverse-geocode";
 
 class LocationService {
-  static Future<List<Location>> searchLocations(String query) async {
-    final response = await http.get("$searchForPlacesUrl?q=$query");
+  static Future<List<LocationModel>> searchLocations(
+    String query,
+    LocationData currentLocation,
+  ) async {
+    final location = currentLocation != null
+        ? "${currentLocation.latitude},${currentLocation.longitude}"
+        : DEFAULT_LOCATION_STRING;
+    final queryString = "q=$query&location=$location";
+    final response = await http.get("$searchForPlacesUrl?$queryString");
     final placesRaw = json.decode(response.body);
 
-    final List<Location> locations = placesRaw
-        .map<Location>((location) => Location.fromResponseJson(location))
+    final List<LocationModel> locations = placesRaw
+        .map<LocationModel>(
+            (location) => LocationModel.fromResponseJson(location))
         .toList();
 
     return locations;
+  }
+
+  static Future<LocationModel> reverseGeocode(LatLng coordinates) async {
+    final locationString = "${coordinates.latitude},${coordinates.longitude}";
+    final queryString = "location=$locationString";
+    final response = await http.get("$reverseGeocodeUrl?$queryString");
+    final placeRaw = json.decode(response.body)['place'];
+
+    final LocationModel location = LocationModel.fromResponseJson(placeRaw);
+
+    return location;
   }
 }
