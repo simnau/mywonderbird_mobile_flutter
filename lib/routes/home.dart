@@ -38,7 +38,7 @@ class _HomeState extends State<Home> {
       }
 
       for (var image in value) {
-        _printExif(image.path);
+        _handleShare(image.path);
       }
     }, onError: (err) {
       print("getIntentDataStream error: $err");
@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
       }
 
       for (var image in value) {
-        _printExif(image.path);
+        _handleShare(image.path);
       }
     });
   }
@@ -91,7 +91,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _printExif(String filePath) async {
+  void _handleShare(String filePath) async {
     File file = File(filePath);
     Uint8List fileBytes = await file.readAsBytes();
     Map<String, IfdTag> data = await readExifFromBytes(fileBytes);

@@ -1,30 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:layout/providers/journeys.dart';
-import 'package:layout/providers/share-picture.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/routes.dart';
-import 'package:layout/routes/home.dart';
+import 'package:layout/routes/splash/main.dart';
+import 'package:layout/services/navigation.dart';
+import 'package:layout/sharing-intent.dart';
 import 'package:layout/theme/style.dart';
-import 'package:provider/provider.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    locator<SharingIntent>().setupSharingIntentListeners();
+  }
+
+  @override
+  void dispose() {
+    locator<SharingIntent>().dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<JourneysProvider>(
-          create: (_) => JourneysProvider(),
-        ),
-        ChangeNotifierProvider<SharePictureProvider>(
-          create: (_) => SharePictureProvider(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'MyWonderbird',
-        initialRoute: Home.PATH,
-        routes: appRoutes,
-        theme: appTheme,
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'MyWonderbird',
+      initialRoute: SplashScreen.PATH,
+      navigatorKey: locator<NavigationService>().navigatorKey,
+      theme: appTheme,
+      onGenerateRoute: generateRoute,
     );
   }
 }

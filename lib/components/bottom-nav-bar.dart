@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:layout/routes/home.dart';
-import 'package:layout/routes/profile.dart';
+import 'package:layout/routes/home/main.dart';
+import 'package:layout/routes/profile/profile.dart';
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatefulWidget {
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
   bool routeSelected(String currentRoute, String routeName) {
     return currentRoute == routeName;
   }
@@ -28,12 +33,12 @@ class BottomNavBar extends StatelessWidget {
             IconButton(
               iconSize: 32,
               icon: Icon(Icons.explore),
-              color: routeSelected(currentRoute, Home.PATH)
+              color: routeSelected(currentRoute, HomePage.PATH)
                   ? theme.primaryColor
                   : Colors.grey[300],
               onPressed: () {
-                if (!routeSelected(currentRoute, Home.PATH)) {
-                  Navigator.pushReplacementNamed(context, Home.PATH);
+                if (!routeSelected(currentRoute, HomePage.PATH)) {
+                  Navigator.pushReplacementNamed(context, HomePage.PATH);
                 }
               },
             ),

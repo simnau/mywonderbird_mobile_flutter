@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
-  fontFamily: 'Roboto',
+  fontFamily: 'Montserrat',
   primaryColor: Colors.blue[500],
   primaryColorDark: Colors.blue[700],
   primaryColorLight: Colors.blue[100],
@@ -17,7 +17,7 @@ final ThemeData appTheme = ThemeData(
   buttonTheme: ButtonThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
-        Radius.circular(8.0),
+        Radius.circular(16.0),
       ),
     ),
   ),

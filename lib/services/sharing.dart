@@ -44,7 +44,7 @@ class SharingService {
 
   static Future<void> sharePicture(
       String title, PictureData pictureData, String journeyId) async {
-    // final imageUrl = await _uploadPicture(pictureData, journeyId);
+    // final imageUrl = await _uploadPicture(pictureData, journeyId); //TODO uncomment
     final imageUrl =
         'https://mywonderbird-images-dev.s3.eu-central-1.amazonaws.com/74c7d9f0-06a3-4c64-af6e-e639c2293c01/d4786513-f980-40a8-82c7-fd2a1d207045.png';
     final pictureDataJson = pictureData.toJson();
