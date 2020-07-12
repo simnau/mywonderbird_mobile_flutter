@@ -6,6 +6,7 @@ import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:layout/components/bottom-nav-bar.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/select-picture/home.dart';
@@ -92,6 +93,7 @@ class _HomeState extends State<Home> {
   }
 
   void _handleShare(String filePath) async {
+    final locationService = locator<LocationService>();
     File file = File(filePath);
     Uint8List fileBytes = await file.readAsBytes();
     Map<String, IfdTag> data = await readExifFromBytes(fileBytes);
@@ -112,7 +114,7 @@ class _HomeState extends State<Home> {
       listen: false,
     );
     final latlng = LatLng(latitude, longitude);
-    final locationModel = await LocationService.reverseGeocode(latlng);
+    final locationModel = await locationService.reverseGeocode(latlng);
 
     sharePictureProvider.pictureData = PictureData(
       image: FileImage(File(filePath)),

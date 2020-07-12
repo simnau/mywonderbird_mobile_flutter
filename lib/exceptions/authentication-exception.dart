@@ -1,4 +1,5 @@
 class AuthenticationException implements Exception {
   String cause;
-  AuthenticationException(cause);
+  String errorCode;
+  AuthenticationException(cause, {this.errorCode});
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/custom-list-item.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/home.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
@@ -30,7 +31,8 @@ class _SelectDestinationState extends State<SelectDestination> {
   }
 
   void _shareToLastJourney(BuildContext context) async {
-    final lastJourney = await JourneyService.getLastJourney();
+    final journeyService = locator<JourneyService>();
+    final lastJourney = await journeyService.getLastJourney();
     Navigator.pushNamed(
       context,
       ShareScreen.RELATIVE_PATH,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/custom_icons.dart';
 import 'package:layout/components/selection-list-item.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/home.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
 import 'package:layout/routes/share-picture/select-location.dart';
+import 'package:layout/services/navigation.dart';
 import 'package:layout/services/sharing.dart';
 import 'package:layout/types/select-journey-arguments.dart';
 import 'package:layout/types/select-location-arguments.dart';
@@ -89,6 +91,8 @@ class _ShareScreenState extends State<ShareScreen> {
   }
 
   void _sharePicture() async {
+    final sharingService = locator<SharingService>();
+    final navigationService = locator<NavigationService>();
     final title = _titleController.text;
     final sharePictureProvider = Provider.of<SharePictureProvider>(
       context,
@@ -96,17 +100,14 @@ class _ShareScreenState extends State<ShareScreen> {
     );
 
     try {
-      await SharingService.sharePicture(
+      await sharingService.sharePicture(
         title,
         sharePictureProvider.pictureData,
         journey.id,
       );
 
-      final navigator = Navigator.of(context, rootNavigator: true);
-      navigator.popUntil(
-        (route) => route.settings.name == Home.PATH,
-      );
-      navigator.pushReplacementNamed(Home.PATH);
+      navigationService.popUntil((route) => route.isFirst);
+      navigationService.pushReplacementNamed(Home.PATH);
     } catch (e) {
       _error = e.toString();
     }

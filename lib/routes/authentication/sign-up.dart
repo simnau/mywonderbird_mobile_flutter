@@ -1,9 +1,18 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:layout/components/auth-text-field.dart';
+import 'package:layout/constants/error-codes.dart';
+import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/user.dart';
+import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/routes/home/main.dart';
+import 'package:layout/services/authentication.dart';
 import 'package:layout/services/navigation.dart';
+import 'package:layout/types/confirm-account-arguments.dart';
 import 'package:provider/provider.dart';
+
+import 'confirm.dart';
 
 class SignUp extends StatefulWidget {
   static const RELATIVE_PATH = 'sign-up';
@@ -14,6 +23,11 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _error;
+
   @override
   void initState() {
     super.initState();
@@ -31,62 +45,15 @@ class _SignUpState extends State<SignUp> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: Stack(
-        children: <Widget>[
-          Positioned(
-            bottom: 0,
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('images/mywonderbird-travel.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white54,
-                ),
-              ),
-            ),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 64.0,
-                        bottom: 32.0,
-                        left: 32.0,
-                        right: 32.0,
-                      ),
-                      child: _form(),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
+      body: ScreenLayout(
+        child: _form(),
       ),
     );
   }
 
   Widget _form() {
-    final theme = Theme.of(context);
-    final textFieldTheme = theme.copyWith(
-      hintColor: Colors.black,
-      primaryColor: theme.primaryColorDark,
-    );
-
-    return ClipRect(
+    return Form(
+      key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,79 +71,140 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
           ),
-          Theme(
-            data: textFieldTheme,
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'EMAIL',
-                labelStyle: TextStyle(
-                  fontSize: 18,
+          if (_error != null)
+            Container(
+              padding: const EdgeInsets.all(8),
+              alignment: Alignment.center,
+              color: Colors.red,
+              child: Text(
+                _error,
+                style: TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-              keyboardType: TextInputType.emailAddress,
             ),
+          AuthTextField(
+            controller: _emailController,
+            validator: _validateEmail,
+            keyboardType: TextInputType.emailAddress,
+            labelText: 'EMAIL',
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
           ),
-          Theme(
-            data: textFieldTheme,
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'PASSWORD',
-                labelStyle: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-              keyboardType: TextInputType.text,
-              obscureText: true,
-            ),
+          AuthTextField(
+            controller: _passwordController,
+            validator: _validatePassword,
+            keyboardType: TextInputType.text,
+            labelText: 'PASSWORD',
+            obscureText: true,
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
           ),
-          RaisedButton(
-            onPressed: _onSignUp,
-            child: Text('SIGN UP'),
-            color: theme.accentColor,
-            textColor: Colors.white,
-          ),
-          RaisedButton(
-            onPressed: _onSignUp,
-            child: Text('SIGN UP WITH FACEBOOK'),
-            color: Color(0xFF3B5798),
-            textColor: Colors.white,
-          ),
-          RaisedButton(
-            onPressed: _onSignUp,
-            child: Text('SIGN UP WITH GOOGLE'),
-            color: Colors.white,
-            textColor: Color(0xFF757575),
-          ),
+          _actions(),
         ],
       ),
     );
   }
 
-  void _onSignUp() {
-    print('Sign Up');
+  Widget _actions() {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        RaisedButton(
+          onPressed: _onSignUp,
+          child: Text('SIGN UP'),
+          color: theme.accentColor,
+          textColor: Colors.white,
+        ),
+        RaisedButton(
+          onPressed: _onSignUp,
+          child: Text('SIGN UP WITH FACEBOOK'),
+          color: Color(0xFF3B5798),
+          textColor: Colors.white,
+        ),
+        RaisedButton(
+          onPressed: _onSignUp,
+          child: Text('SIGN UP WITH GOOGLE'),
+          color: Colors.white,
+          textColor: Color(0xFF757575),
+        ),
+      ],
+    );
+  }
+
+  String _validateEmail(value) {
+    if (value.isEmpty) {
+      return 'Email is required';
+    } else if (!EmailValidator.validate(value)) {
+      return 'Email address is invalid';
+    }
+
+    return null;
+  }
+
+  String _validatePassword(value) {
+    if (value.isEmpty) {
+      return 'Password is required';
+    }
+
+    return null;
+  }
+
+  _onSignUp() async {
+    final authenticationService = locator<AuthenticationService>();
+
+    try {
+      setState(() {
+        _error = null;
+      });
+
+      if (_formKey.currentState.validate()) {
+        final email = _emailController.text;
+        final password = _emailController.text;
+        await authenticationService.signUp(
+          _emailController.text,
+          _passwordController.text,
+        );
+        final user = await authenticationService.signIn(email, password);
+
+        if (user != null) {
+          _navigateToHome();
+        }
+      }
+    } on AuthenticationException catch (e) {
+      switch (e.errorCode) {
+        case USER_NOT_CONFIRMED:
+          _navigateToConfirmation();
+          break;
+        default:
+          setState(() {
+            _error = 'We were unable to sign you up';
+          });
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'We were unable to sign you up';
+      });
+    }
   }
 
   void _navigateToHome() async {
     await locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
+  }
+
+  _navigateToConfirmation() {
+    Navigator.of(context).pushNamed(
+      Confirm.RELATIVE_PATH,
+      arguments: ConfirmAccountArguments(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 }

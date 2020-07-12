@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';
 import 'package:layout/services/journeys.dart';
 
@@ -13,11 +14,12 @@ class JourneysProvider with ChangeNotifier {
   bool get loading => _loading;
 
   Future<List<Journey>> loadUserJourneys() async {
+    final journeyService = locator<JourneyService>();
     try {
       _loading = true;
       notifyListeners();
 
-      final journeys = await JourneyService.allForUser();
+      final journeys = await journeyService.allForUser();
 
       _journeys = journeys;
       _loading = false;
@@ -32,7 +34,8 @@ class JourneysProvider with ChangeNotifier {
   }
 
   Future<Journey> addJourney(Journey journey) async {
-    final createdJourney = await JourneyService.createJourney(journey);
+    final journeyService = locator<JourneyService>();
+    final createdJourney = await journeyService.createJourney(journey);
     _journeys.insert(0, createdJourney);
     notifyListeners();
 

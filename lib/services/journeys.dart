@@ -1,19 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:layout/models/journey.dart';
+import 'package:layout/services/api.dart';
 
-final apiBase = DotEnv().env['API_BASE'];
-final createJourneyUrl = "$apiBase/api/journeys";
-final myJourneysUrl = "$apiBase/api/journeys/my";
-final lastJourneyUrl = "$apiBase/api/journeys/last";
+const CREATE_JOURNEY_PATH = '/api/journeys';
+const MY_JOURNEYS_PATH = '/api/journeys/my';
+const LAST_JOURNEY_PATH = '/api/journeys/last';
 
 class JourneyService {
-  static Future<List<Journey>> allForUser() async {
-    final response = await http.get(myJourneysUrl);
-    final journeysRaw = json.decode(response.body)['journeys'];
+  final API api;
+
+  JourneyService({@required this.api});
+
+  Future<List<Journey>> allForUser() async {
+    final response = await api.get(MY_JOURNEYS_PATH);
+    final journeysRaw = response['body']['journeys'];
 
     final journeys = journeysRaw
         .map<Journey>((journey) => Journey.fromRequestJson(journey))
@@ -22,23 +24,17 @@ class JourneyService {
     return journeys;
   }
 
-  static Future<Journey> createJourney(Journey journey) async {
-    final response = await http.post(
-      createJourneyUrl,
-      body: json.encode(journey.toJson()),
-      headers: {
-        'content-type': 'application/json',
-      },
-    );
-    final journeyRaw = json.decode(response.body);
+  Future<Journey> createJourney(Journey journey) async {
+    final response = await api.post(CREATE_JOURNEY_PATH, journey.toJson());
+    final journeyRaw = response['body'];
     final savedJourney = Journey.fromRequestJson(journeyRaw);
 
     return savedJourney;
   }
 
-  static Future<Journey> getLastJourney() async {
-    final response = await http.get(lastJourneyUrl);
-    final journeyRaw = json.decode(response.body)['journey'];
+  Future<Journey> getLastJourney() async {
+    final response = await api.get(LAST_JOURNEY_PATH);
+    final journeyRaw = response['body']['journey'];
     final journey = Journey.fromRequestJson(journeyRaw);
 
     return journey;

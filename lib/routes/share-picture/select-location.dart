@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/services/location.dart';
 
@@ -251,7 +252,8 @@ class _BottomSheetState extends State<_BottomSheet> {
       setState(() {
         _loading = true;
       });
-      final places = await LocationService.searchLocations(
+      final locationService = locator<LocationService>();
+      final places = await locationService.searchLocations(
         _searchController.text,
         widget.currentLocation,
       );

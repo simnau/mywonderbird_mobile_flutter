@@ -1,27 +1,34 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:layout/constants/auth.dart';
-import 'package:layout/constants/storage.dart';
-import 'package:layout/services/storage.dart';
+import 'package:layout/exceptions/unauthorized-exception.dart';
+import 'package:layout/services/token.dart';
 
 final apiBase = DotEnv().env['API_BASE'];
 
 class API {
-  StorageService storageService;
+  TokenService tokenService;
 
-  API({@required this.storageService});
+  API({@required this.tokenService});
 
   Future<Map<String, dynamic>> get(
     String path, {
-    Map<String, dynamic> params,
+    Map<String, String> params,
     Map<String, String> headers,
   }) async {
     final uri = _createUri(apiBase, path, params);
     final fullHeaders = await _createHeaders(headers);
     final response = await http.get(uri, headers: fullHeaders);
+
+    if (response.statusCode == HttpStatus.unauthorized) {
+      await tokenService.clearTokens();
+      throw UnauthorizedException('The user is not authorized');
+    }
+
     final responseBody = json.decode(response.body);
 
     return {
@@ -44,6 +51,12 @@ class API {
       headers: fullHeaders,
       body: json.encode(body),
     );
+
+    if (response.statusCode == HttpStatus.unauthorized) {
+      await tokenService.clearTokens();
+      throw UnauthorizedException('The user is not authorized');
+    }
+
     final responseBody = json.decode(response.body);
 
     return {
@@ -75,9 +88,7 @@ class API {
   Future<Map<String, String>> _createHeaders(
     Map<String, String> baseHeaders,
   ) async {
-    final accessToken = await storageService.getString(
-      ACCESS_TOKEN_KEY,
-    );
+    final accessToken = await tokenService.getAccessToken();
 
     if (accessToken != null) {
       return {

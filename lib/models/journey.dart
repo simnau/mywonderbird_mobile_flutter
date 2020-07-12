@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
-import 'package:layout/services/main.dart';
 import 'package:layout/types/named-item.dart';
-import 'package:layout/constants/urls.dart' as URLS;
 import 'package:layout/util/date.dart';
 import 'package:layout/util/json.dart';
 
@@ -34,17 +30,6 @@ class Journey extends NamedItem {
       name: json['title'],
       startDate: DateTime.parse(json['startDate']),
       imageUrl: (json['images'] ?? []).isNotEmpty ? json['images'][0] : null,
-    );
-  }
-
-  static Resource<List<Journey>> allForUser(String userId) {
-    return Resource(
-      url: URLS.userJourneys('user'),
-      parse: (response) {
-        final result = json.decode(response.body);
-        Iterable list = result['journeys'];
-        return list.map((model) => Journey.fromJson(model)).toList();
-      },
     );
   }
 

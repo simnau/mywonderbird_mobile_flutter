@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +51,10 @@ class SharingIntent {
 
   void _handleShare(String filePath) async {
     try {
-      File file = File(filePath);
-      Uint8List fileBytes = await file.readAsBytes();
-      Map<String, IfdTag> data = await readExifFromBytes(fileBytes);
+      final locationService = locator<LocationService>();
+      final file = File(filePath);
+      final fileBytes = await file.readAsBytes();
+      final data = await readExifFromBytes(fileBytes);
 
       final creationDate = await file.lastModified();
       final latitudeRef = data['GPS GPSLatitudeRef']?.toString();
@@ -69,7 +69,7 @@ class SharingIntent {
 
       final sharePictureProvider = locator<SharePictureProvider>();
       final latlng = LatLng(latitude, longitude);
-      final locationModel = await LocationService.reverseGeocode(latlng);
+      final locationModel = await locationService.reverseGeocode(latlng);
 
       sharePictureProvider.pictureData = PictureData(
         image: FileImage(File(filePath)),
