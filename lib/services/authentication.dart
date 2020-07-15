@@ -17,10 +17,10 @@ const CONFIRM_ACCOUNT_PATH = '/api/auth/confirm';
 const CODE_PATH = '/api/auth/code';
 
 class AuthenticationService {
-  StreamController<User> _userController = StreamController<User>();
-  TokenService tokenService;
-  ProfileService profileService;
-  API api;
+  final StreamController<User> _userController = StreamController<User>();
+  final TokenService tokenService;
+  final ProfileService profileService;
+  final API api;
 
   AuthenticationService({
     @required this.tokenService,

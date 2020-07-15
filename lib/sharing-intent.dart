@@ -18,7 +18,7 @@ import 'locator.dart';
 class SharingIntent {
   StreamSubscription _intentDataStreamSubscription;
 
-  void setupSharingIntentListeners() {
+  setupSharingIntentListeners() {
     // For sharing images coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
         .listen((List<SharedMediaFile> value) {
@@ -45,11 +45,11 @@ class SharingIntent {
     });
   }
 
-  void dispose() {
+  dispose() {
     _intentDataStreamSubscription.cancel();
   }
 
-  void _handleShare(String filePath) async {
+  _handleShare(String filePath) async {
     try {
       final locationService = locator<LocationService>();
       final file = File(filePath);

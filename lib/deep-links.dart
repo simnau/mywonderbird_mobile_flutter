@@ -1,0 +1,88 @@
+import 'dart:async';
+
+import 'package:layout/constants/error-codes.dart';
+import 'package:layout/exceptions/authentication-exception.dart';
+import 'package:layout/locator.dart';
+import 'package:layout/routes/home/main.dart';
+import 'package:layout/services/navigation.dart';
+import 'package:layout/services/oauth.dart';
+import 'package:uni_links/uni_links.dart';
+
+class DeepLinks {
+  StreamSubscription _intentDataStreamSubscription;
+
+  setupDeepLinkListeners() async {
+    // For sharing images coming from outside the app while the app is in the memory
+    _intentDataStreamSubscription = getLinksStream().listen((String link) {
+      Uri uri = Uri.parse(link);
+
+      if (uri == null) {
+        return;
+      }
+
+      _handleDeepLink(uri.host, uri.queryParameters['code']);
+      // Parse the link and warn the user, if it is not correct
+    }, onError: (err) {
+      print(err);
+    });
+
+    try {
+      Uri initialUri = await getInitialUri();
+      if (initialUri == null) {
+        return;
+      }
+
+      _handleDeepLink(initialUri.host, initialUri.queryParameters['code']);
+      // Use the uri and warn the user, if it is not correct,
+      // but keep in mind it could be `null`.
+    } on FormatException catch (e) {
+      print(e);
+    }
+  }
+
+  dispose() {
+    _intentDataStreamSubscription.cancel();
+  }
+
+  _handleDeepLink(route, code) async {
+    try {
+      final oauthService = locator<OAuthService>();
+      var user;
+      switch (route) {
+        case 'fblogin':
+          user = await oauthService.fblogin(code);
+          break;
+        case 'fbregister':
+          user = await oauthService.fbregister(code);
+          break;
+        case 'glogin':
+          user = await oauthService.glogin(code);
+          break;
+        case 'gregister':
+          user = await oauthService.gregister(code);
+          break;
+        default:
+          break;
+      }
+
+      if (user != null) {
+        _navigateToHome();
+      }
+    } on AuthenticationException catch (e) {
+      switch (e.errorCode) {
+        case NOT_SIGNED_UP:
+          print('The user has not signed up yet');
+          break;
+        case ALREADY_SIGNED_UP:
+          print('The user has already signed up');
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  _navigateToHome() async {
+    await locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
+  }
+}

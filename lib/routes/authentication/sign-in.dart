@@ -2,9 +2,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/components/auth-text-field.dart';
 import 'package:layout/constants/error-codes.dart';
+import 'package:layout/constants/oauth.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/user.dart';
+import 'package:layout/providers/oauth.dart';
 import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/routes/authentication/confirm.dart';
 import 'package:layout/routes/home/main.dart';
@@ -12,6 +14,7 @@ import 'package:layout/services/authentication.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/types/confirm-account-arguments.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignIn extends StatefulWidget {
   static const RELATIVE_PATH = 'sign-in';
@@ -132,13 +135,13 @@ class _SignInState extends State<SignIn> {
           ),
         ),
         RaisedButton(
-          onPressed: _onSignIn,
+          onPressed: _onFacebookSignIn,
           child: Text('SIGN IN WITH FACEBOOK'),
           color: Color(0xFF3B5798),
           textColor: Colors.white,
         ),
         RaisedButton(
-          onPressed: _onSignIn,
+          onPressed: _onGoogleSignIn,
           child: Text('SIGN IN WITH GOOGLE'),
           color: Colors.white,
           textColor: Color(0xFF757575),
@@ -192,6 +195,30 @@ class _SignInState extends State<SignIn> {
           });
           break;
       }
+    }
+  }
+
+  _onFacebookSignIn() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$FB_SIGN_IN_REDIRECT_URL&identity_provider=Facebook";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
+    }
+  }
+
+  _onGoogleSignIn() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$GOOGLE_SIGN_IN_REDIRECT_URL&identity_provider=Google";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
     }
   }
 

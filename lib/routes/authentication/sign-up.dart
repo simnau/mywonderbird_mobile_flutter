@@ -2,15 +2,18 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/components/auth-text-field.dart';
 import 'package:layout/constants/error-codes.dart';
+import 'package:layout/constants/oauth.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/user.dart';
+import 'package:layout/providers/oauth.dart';
 import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/routes/home/main.dart';
 import 'package:layout/services/authentication.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/types/confirm-account-arguments.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'confirm.dart';
 
@@ -122,13 +125,13 @@ class _SignUpState extends State<SignUp> {
           textColor: Colors.white,
         ),
         RaisedButton(
-          onPressed: _onSignUp,
+          onPressed: _onFacebookSignUp,
           child: Text('SIGN UP WITH FACEBOOK'),
           color: Color(0xFF3B5798),
           textColor: Colors.white,
         ),
         RaisedButton(
-          onPressed: _onSignUp,
+          onPressed: _onGoogleSignUp,
           child: Text('SIGN UP WITH GOOGLE'),
           color: Colors.white,
           textColor: Color(0xFF757575),
@@ -191,6 +194,30 @@ class _SignUpState extends State<SignUp> {
       setState(() {
         _error = 'We were unable to sign you up';
       });
+    }
+  }
+
+  _onFacebookSignUp() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$FB_SIGN_UP_REDIRECT_URL&identity_provider=Facebook";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
+    }
+  }
+
+  _onGoogleSignUp() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$GOOGLE_SIGN_UP_REDIRECT_URL&identity_provider=Google";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
     }
   }
 

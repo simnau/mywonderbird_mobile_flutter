@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:layout/deep-links.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/routes.dart';
 import 'package:layout/routes/splash/main.dart';
@@ -15,11 +16,13 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    locator<DeepLinks>().setupDeepLinkListeners();
     locator<SharingIntent>().setupSharingIntentListeners();
   }
 
   @override
   void dispose() {
+    locator<DeepLinks>().dispose();
     locator<SharingIntent>().dispose();
     super.dispose();
   }
