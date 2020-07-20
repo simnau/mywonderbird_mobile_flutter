@@ -9,9 +9,7 @@ import 'package:layout/models/user.dart';
 import 'package:layout/providers/oauth.dart';
 import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/routes/authentication/confirm.dart';
-import 'package:layout/routes/home/main.dart';
 import 'package:layout/services/authentication.dart';
-import 'package:layout/services/navigation.dart';
 import 'package:layout/types/confirm-account-arguments.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,10 +32,9 @@ class _SignInState extends State<SignIn> {
   void initState() {
     super.initState();
     final user = Provider.of<User>(context, listen: false);
+    final authenticationService = locator<AuthenticationService>();
 
-    if (user != null) {
-      _navigateToHome();
-    }
+    authenticationService.afterSignIn(user);
   }
 
   @override
@@ -175,14 +172,14 @@ class _SignInState extends State<SignIn> {
       });
 
       if (_formKey.currentState.validate()) {
-        final user = await locator<AuthenticationService>().signIn(
+        final authenticationService = locator<AuthenticationService>();
+
+        final user = await authenticationService.signIn(
           _emailController.text,
           _passwordController.text,
         );
 
-        if (user != null) {
-          _navigateToHome();
-        }
+        authenticationService.afterSignIn(user);
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
@@ -220,10 +217,6 @@ class _SignInState extends State<SignIn> {
     } else {
       throw 'Could not launch $redirectUrl';
     }
-  }
-
-  _navigateToHome() async {
-    await locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
   }
 
   _navigateToConfirmation() {

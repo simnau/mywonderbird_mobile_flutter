@@ -35,10 +35,9 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     super.initState();
     final user = Provider.of<User>(context, listen: false);
+    final authenticationService = locator<AuthenticationService>();
 
-    if (user != null) {
-      _navigateToHome();
-    }
+    authenticationService.afterSignIn(user);
   }
 
   @override
@@ -159,14 +158,14 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onSignUp() async {
-    final authenticationService = locator<AuthenticationService>();
-
     try {
       setState(() {
         _error = null;
       });
 
       if (_formKey.currentState.validate()) {
+        final authenticationService = locator<AuthenticationService>();
+
         final email = _emailController.text;
         final password = _emailController.text;
         await authenticationService.signUp(
@@ -175,9 +174,7 @@ class _SignUpState extends State<SignUp> {
         );
         final user = await authenticationService.signIn(email, password);
 
-        if (user != null) {
-          _navigateToHome();
-        }
+        authenticationService.afterSignIn(user);
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
@@ -219,10 +216,6 @@ class _SignUpState extends State<SignUp> {
     } else {
       throw 'Could not launch $redirectUrl';
     }
-  }
-
-  void _navigateToHome() async {
-    await locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
   }
 
   _navigateToConfirmation() {

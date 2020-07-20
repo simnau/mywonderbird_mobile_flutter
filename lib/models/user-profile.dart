@@ -26,9 +26,8 @@ class UserProfile {
       bio: json['bio'],
       avatarUrl: json['avatarUrl'],
       acceptedNewsletter: json['acceptedNewsletter'] ?? false,
-      acceptedTermsAt: acceptedTermsAt != null
-          ? DateTime.parse(json['acceptedTermsAt'])
-          : null,
+      acceptedTermsAt:
+          acceptedTermsAt != null ? DateTime.parse(acceptedTermsAt) : null,
       providerId: json['providerId'],
     );
   }

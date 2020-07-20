@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:layout/constants/error-codes.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
-import 'package:layout/routes/home/main.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:layout/services/authentication.dart';
 import 'package:layout/services/oauth.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -47,6 +46,7 @@ class DeepLinks {
   _handleDeepLink(route, code) async {
     try {
       final oauthService = locator<OAuthService>();
+      final authenticationService = locator<AuthenticationService>();
       var user;
       switch (route) {
         case 'fblogin':
@@ -65,9 +65,7 @@ class DeepLinks {
           break;
       }
 
-      if (user != null) {
-        _navigateToHome();
-      }
+      authenticationService.afterSignIn(user);
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
         case NOT_SIGNED_UP:
@@ -80,9 +78,5 @@ class DeepLinks {
           break;
       }
     }
-  }
-
-  _navigateToHome() async {
-    await locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
   }
 }

@@ -4,11 +4,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/exceptions/unauthorized-exception.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/models/user-profile.dart';
 import 'package:layout/models/user.dart';
+import 'package:layout/providers/terms.dart';
+import 'package:layout/routes/authentication/select-auth-option.dart';
+import 'package:layout/routes/home/main.dart';
+import 'package:layout/routes/terms/main.dart';
 import 'package:layout/services/api.dart';
 import 'package:layout/services/profile.dart';
+import 'package:layout/services/terms.dart';
 import 'package:layout/services/token.dart';
+import 'package:layout/types/terms-arguments.dart';
+
+import 'navigation.dart';
 
 const SIGN_IN_PATH = '/api/auth/login';
 const SIGN_UP_PATH = '/api/auth/register';
@@ -20,11 +29,17 @@ class AuthenticationService {
   final StreamController<User> _userController = StreamController<User>();
   final TokenService tokenService;
   final ProfileService profileService;
+  final TermsService termsService;
+  final NavigationService navigationService;
+  final TermsProvider termsProvider;
   final API api;
 
   AuthenticationService({
     @required this.tokenService,
     @required this.profileService,
+    @required this.termsService,
+    @required this.navigationService,
+    @required this.termsProvider,
     @required this.api,
   });
 
@@ -133,5 +148,53 @@ class AuthenticationService {
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw new AuthenticationException('Invalid Code');
     }
+  }
+
+  afterSignIn(User user) {
+    if (user != null) {
+      _handleTerms(user.profile?.acceptedTermsAt);
+    }
+  }
+
+  onStartup(User user) async {
+    navigationService.popUntil((route) => route.isFirst);
+    if (user != null) {
+      _handleTerms(user.profile?.acceptedTermsAt);
+    } else {
+      await navigationService.pushReplacementNamed(SelectAuthOption.PATH);
+    }
+  }
+
+  _handleTerms(acceptedTermsAt) async {
+    final terms = await locator<TermsService>().fetchTermsByType();
+    final termsOfService = terms['termsOfService'];
+    final privacyPolicy = terms['privacyPolicy'];
+    termsProvider.termsOfService = termsOfService;
+    termsProvider.privacyPolicy = privacyPolicy;
+
+    if (acceptedTermsAt == null) {
+      _navigateToTerms(false);
+    } else if (!termsService.areTermsUpToDate(
+      acceptedTermsAt,
+      termsOfService,
+      privacyPolicy,
+    )) {
+      _navigateToTerms(true);
+    } else {
+      _navigateToHome();
+    }
+  }
+
+  _navigateToHome() async {
+    await navigationService.pushReplacementNamed(HomePage.PATH);
+  }
+
+  _navigateToTerms(bool isUpdate) async {
+    await navigationService.pushReplacementNamed(
+      TermsPage.PATH,
+      arguments: TermsArguments(
+        isUpdate: isUpdate,
+      ),
+    );
   }
 }
