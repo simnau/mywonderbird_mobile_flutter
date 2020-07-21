@@ -8,7 +8,15 @@ class TokenService {
   TokenService({@required this.storageService});
 
   clearTokens() async {
+    await clearAccessToken();
+    await clearRefreshToken();
+  }
+
+  clearAccessToken() async {
     await storageService.removeKey(ACCESS_TOKEN_KEY);
+  }
+
+  clearRefreshToken() async {
     await storageService.removeKey(REFRESH_TOKEN_KEY);
   }
 

@@ -4,16 +4,35 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:layout/constants/auth.dart';
+import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:layout/exceptions/unauthorized-exception.dart';
+import 'package:layout/http/authentication.dart';
+import 'package:layout/http/retry-policy.dart';
+import 'package:layout/routes/authentication/select-auth-option.dart';
+import 'package:layout/services/navigation.dart';
 import 'package:layout/services/token.dart';
 
 final apiBase = DotEnv().env['API_BASE'];
 
 class API {
   TokenService tokenService;
+  NavigationService navigationService;
+  http.Client client;
 
-  API({@required this.tokenService});
+  API({
+    @required TokenService tokenService,
+    @required NavigationService navigationService,
+    @required AuthenticationInterceptor authenticationInterceptor,
+  }) {
+    this.tokenService = tokenService;
+    this.navigationService = navigationService;
+    client = HttpClientWithInterceptor.build(
+      interceptors: [
+        authenticationInterceptor,
+      ],
+      retryPolicy: RefreshTokenRetryPolicy(),
+    );
+  }
 
   Future<Map<String, dynamic>> get(
     String path, {
@@ -21,20 +40,9 @@ class API {
     Map<String, String> headers,
   }) async {
     final uri = _createUri(apiBase, path, params);
-    final fullHeaders = await _createHeaders(headers);
-    final response = await http.get(uri, headers: fullHeaders);
+    final response = await client.get(uri, headers: headers);
 
-    if (response.statusCode == HttpStatus.unauthorized) {
-      await tokenService.clearTokens();
-      throw UnauthorizedException('The user is not authorized');
-    }
-
-    final responseBody = json.decode(response.body);
-
-    return {
-      'response': response,
-      'body': responseBody,
-    };
+    return _handleResponse(response);
   }
 
   Future<Map<String, dynamic>> post(
@@ -44,25 +52,15 @@ class API {
     Map<String, String> headers,
   }) async {
     final uri = _createUri(apiBase, path, params);
-    final fullHeaders = await _createHeaders(_jsonHeaders(headers));
+    final fullHeaders = _jsonHeaders(headers);
 
-    final response = await http.post(
+    final response = await client.post(
       uri,
       headers: fullHeaders,
       body: json.encode(body),
     );
 
-    if (response.statusCode == HttpStatus.unauthorized) {
-      await tokenService.clearTokens();
-      throw UnauthorizedException('The user is not authorized');
-    }
-
-    final responseBody = json.decode(response.body);
-
-    return {
-      'response': response,
-      'body': responseBody,
-    };
+    return _handleResponse(response);
   }
 
   Uri _createUri(String base, String path, Map<String, dynamic> params) {
@@ -85,18 +83,23 @@ class API {
     };
   }
 
-  Future<Map<String, String>> _createHeaders(
-    Map<String, String> baseHeaders,
-  ) async {
-    final accessToken = await tokenService.getAccessToken();
-
-    if (accessToken != null) {
-      return {
-        ...(baseHeaders ?? {}),
-        AUTHORIZATION_HEADER: accessToken,
-      };
+  Future<Map<String, dynamic>> _handleResponse(http.Response response) async {
+    if (response.statusCode == HttpStatus.unauthorized) {
+      await tokenService.clearTokens();
+      _navigateToAuth();
+      throw UnauthorizedException('The user is not authorized');
     }
 
-    return baseHeaders;
+    final responseBody = json.decode(response.body);
+
+    return {
+      'response': response,
+      'body': responseBody,
+    };
+  }
+
+  _navigateToAuth() async {
+    navigationService.popUntil((route) => route.isFirst);
+    navigationService.pushReplacementNamed(SelectAuthOption.PATH);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:layout/deep-links.dart';
+import 'package:layout/http/authentication.dart';
 import 'package:layout/providers/journeys.dart';
 import 'package:layout/providers/oauth.dart';
 import 'package:layout/providers/share-picture.dart';
@@ -23,8 +24,15 @@ void setupLocator() {
   final storageService = StorageService();
   final termsProvider = TermsProvider();
   final tokenService = TokenService(storageService: storageService);
-  final api = API(tokenService: tokenService);
   final navigationService = NavigationService();
+  final authenticationInterceptor = AuthenticationInterceptor(
+    tokenService: tokenService,
+  );
+  final api = API(
+    tokenService: tokenService,
+    navigationService: navigationService,
+    authenticationInterceptor: authenticationInterceptor,
+  );
   final termsService = TermsService(api: api);
 
   final profileService = ProfileService(
@@ -66,4 +74,5 @@ void setupLocator() {
 
   locator.registerLazySingleton(() => DeepLinks());
   locator.registerLazySingleton(() => SharingIntent());
+  locator.registerLazySingleton(() => authenticationInterceptor);
 }
