@@ -1,43 +1,38 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/components/auth-text-field.dart';
-import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
-import 'package:layout/routes/authentication/components/screen-layout.dart';
-import 'package:layout/routes/home/main.dart';
 import 'package:layout/services/authentication.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:layout/types/reset-password-arguments.dart';
 
-class Confirm extends StatefulWidget {
-  static const RELATIVE_PATH = 'confirm';
+import 'components/screen-layout.dart';
+import 'reset-password.dart';
+
+class ForgotDetails extends StatefulWidget {
+  static const RELATIVE_PATH = 'forgot-details';
   static const PATH = "/$RELATIVE_PATH";
 
   final String email;
-  final String password;
-  final String message;
 
-  const Confirm({
+  const ForgotDetails({
     Key key,
-    @required this.email,
-    @required this.password,
-    this.message,
+    this.email,
   }) : super(key: key);
 
   @override
-  _ConfirmState createState() => _ConfirmState();
+  _ForgotDetailsState createState() => _ForgotDetailsState();
 }
 
-class _ConfirmState extends State<Confirm> {
+class _ForgotDetailsState extends State<ForgotDetails> {
   final _formKey = GlobalKey<FormState>();
-  final _codeController = TextEditingController();
+  final _emailController = TextEditingController();
   String _error;
-  String _message;
 
   @override
   void initState() {
     super.initState();
-
-    if (widget.message != null) {
-      _message = widget.message;
+    if (widget.email != null) {
+      _emailController.text = widget.email;
     }
   }
 
@@ -87,26 +82,12 @@ class _ConfirmState extends State<Confirm> {
                   fontSize: 14,
                 ),
               ),
-            )
-          else if (_message != null)
-            Container(
-              padding: const EdgeInsets.all(8),
-              alignment: Alignment.center,
-              color: Colors.green,
-              child: Text(
-                _message,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
             ),
           AuthTextField(
-            controller: _codeController,
-            validator: _validateCode,
-            keyboardType: TextInputType.number,
-            labelText: 'CONFIRMATION CODE',
+            controller: _emailController,
+            validator: _validateEmail,
+            keyboardType: TextInputType.emailAddress,
+            labelText: 'EMAIL',
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -123,15 +104,15 @@ class _ConfirmState extends State<Confirm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         RaisedButton(
-          onPressed: _onConfirm,
-          child: Text('CONFIRM ACCOUNT'),
+          onPressed: _onResetPassword,
+          child: Text('RESET PASSWORD'),
           color: theme.accentColor,
           textColor: Colors.white,
         ),
         FlatButton(
-          onPressed: _sendCode,
+          onPressed: _onHasCode,
           child: Text(
-            'RESEND CODE',
+            'I HAVE A CODE',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -143,62 +124,48 @@ class _ConfirmState extends State<Confirm> {
     );
   }
 
-  String _validateCode(value) {
+  String _validateEmail(value) {
     if (value.isEmpty) {
-      return 'Code is required';
+      return 'Email is required';
+    } else if (!EmailValidator.validate(value)) {
+      return 'Email address is invalid';
     }
 
     return null;
   }
 
-  _onConfirm() async {
-    final authenticationService = locator<AuthenticationService>();
+  _onResetPassword() async {
     try {
       setState(() {
         _error = null;
-        _message = null;
       });
 
       if (_formKey.currentState.validate()) {
-        await authenticationService.confirmAccount(
-          widget.email,
-          _codeController.text,
+        final authenticationService = locator<AuthenticationService>();
+
+        await authenticationService.sendPasswordResetCode(
+          _emailController.text,
         );
 
-        final user =
-            await authenticationService.signIn(widget.email, widget.password);
-
-        authenticationService.afterSignIn(user);
+        _navigateToResetPassword();
       }
-    } on AuthenticationException {
-      setState(() {
-        _error = 'Invalid code';
-      });
     } catch (e) {
       setState(() {
-        _error = 'An unexpected error occurred. Try again later';
+        _error = 'An unexpected error has occurred. Please try again later.';
       });
     }
   }
 
-  _sendCode() async {
-    try {
-      setState(() {
-        _error = null;
-        _message = null;
-      });
+  _onHasCode() {
+    _navigateToResetPassword();
+  }
 
-      await locator<AuthenticationService>().sendConfirmationCode(
-        widget.email,
-      );
-
-      setState(() {
-        _message = 'A confirmation code has been sent to your email.';
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'There was an error sending the code';
-      });
-    }
+  _navigateToResetPassword() {
+    Navigator.of(context).pushNamed(
+      ResetPassword.RELATIVE_PATH,
+      arguments: ResetPasswordArguments(
+        email: _emailController.text,
+      ),
+    );
   }
 }

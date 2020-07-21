@@ -9,14 +9,25 @@ import 'package:layout/models/user.dart';
 import 'package:layout/providers/oauth.dart';
 import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/routes/authentication/confirm.dart';
+import 'package:layout/routes/authentication/forgot-details.dart';
 import 'package:layout/services/authentication.dart';
 import 'package:layout/types/confirm-account-arguments.dart';
+import 'package:layout/types/forgot-details-arguments.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignIn extends StatefulWidget {
   static const RELATIVE_PATH = 'sign-in';
   static const PATH = "/$RELATIVE_PATH";
+
+  final String email;
+  final String message;
+
+  const SignIn({
+    Key key,
+    this.email,
+    this.message,
+  }) : super(key: key);
 
   @override
   _SignInState createState() => _SignInState();
@@ -27,6 +38,7 @@ class _SignInState extends State<SignIn> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String _error;
+  String _message;
 
   @override
   void initState() {
@@ -35,6 +47,14 @@ class _SignInState extends State<SignIn> {
     final authenticationService = locator<AuthenticationService>();
 
     authenticationService.afterSignIn(user);
+
+    if (widget.email != null) {
+      _emailController.text = widget.email;
+    }
+
+    if (widget.message != null) {
+      _message = widget.message;
+    }
   }
 
   @override
@@ -83,6 +103,20 @@ class _SignInState extends State<SignIn> {
                   fontSize: 14,
                 ),
               ),
+            )
+          else if (_message != null)
+            Container(
+              padding: const EdgeInsets.all(8),
+              alignment: Alignment.center,
+              color: Colors.green,
+              child: Text(
+                _message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
             ),
           AuthTextField(
             controller: _emailController,
@@ -121,7 +155,7 @@ class _SignInState extends State<SignIn> {
           textColor: Colors.white,
         ),
         FlatButton(
-          onPressed: _onSignIn,
+          onPressed: _onForgotDetails,
           child: Text(
             'FORGOT DETAILS?',
             style: TextStyle(
@@ -169,6 +203,7 @@ class _SignInState extends State<SignIn> {
     try {
       setState(() {
         _error = null;
+        _message = null;
       });
 
       if (_formKey.currentState.validate()) {
@@ -193,6 +228,10 @@ class _SignInState extends State<SignIn> {
           break;
       }
     }
+  }
+
+  _onForgotDetails() {
+    _navigateToForgotDetails();
   }
 
   _onFacebookSignIn() async {
@@ -225,6 +264,15 @@ class _SignInState extends State<SignIn> {
       arguments: ConfirmAccountArguments(
         email: _emailController.text,
         password: _passwordController.text,
+      ),
+    );
+  }
+
+  _navigateToForgotDetails() {
+    Navigator.of(context).pushNamed(
+      ForgotDetails.RELATIVE_PATH,
+      arguments: ForgotDetailsArguments(
+        email: _emailController.text,
       ),
     );
   }

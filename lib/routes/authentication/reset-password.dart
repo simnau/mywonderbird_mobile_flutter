@@ -1,41 +1,42 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/components/auth-text-field.dart';
-import 'package:layout/constants/error-codes.dart';
-import 'package:layout/constants/oauth.dart';
-import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
-import 'package:layout/models/user.dart';
-import 'package:layout/providers/oauth.dart';
-import 'package:layout/routes/authentication/components/screen-layout.dart';
 import 'package:layout/services/authentication.dart';
-import 'package:layout/types/confirm-account-arguments.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:layout/types/sign-in-arguments.dart';
 
-import 'confirm.dart';
+import 'components/screen-layout.dart';
+import 'sign-in.dart';
 
-class SignUp extends StatefulWidget {
-  static const RELATIVE_PATH = 'sign-up';
+class ResetPassword extends StatefulWidget {
+  static const RELATIVE_PATH = 'reset-password';
   static const PATH = "/$RELATIVE_PATH";
 
+  final String email;
+
+  const ResetPassword({
+    Key key,
+    this.email,
+  }) : super(key: key);
+
   @override
-  _SignUpState createState() => _SignUpState();
+  _ResetPasswordState createState() => _ResetPasswordState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _ResetPasswordState extends State<ResetPassword> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   String _error;
+  String _message;
 
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<User>(context, listen: false);
-    final authenticationService = locator<AuthenticationService>();
-
-    authenticationService.afterSignIn(user);
+    if (widget.email != null) {
+      _emailController.text = widget.email;
+    }
   }
 
   @override
@@ -84,6 +85,20 @@ class _SignUpState extends State<SignUp> {
                   fontSize: 14,
                 ),
               ),
+            )
+          else if (_message != null)
+            Container(
+              padding: const EdgeInsets.all(8),
+              alignment: Alignment.center,
+              color: Colors.green,
+              child: Text(
+                _message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
             ),
           AuthTextField(
             controller: _emailController,
@@ -91,8 +106,11 @@ class _SignUpState extends State<SignUp> {
             keyboardType: TextInputType.emailAddress,
             labelText: 'EMAIL',
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+          AuthTextField(
+            controller: _codeController,
+            validator: _validateCode,
+            keyboardType: TextInputType.number,
+            labelText: 'CONFIRMATION CODE',
           ),
           AuthTextField(
             controller: _passwordController,
@@ -116,22 +134,21 @@ class _SignUpState extends State<SignUp> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         RaisedButton(
-          onPressed: _onSignUp,
-          child: Text('SIGN UP'),
+          onPressed: _onResetPassword,
+          child: Text('RESET PASSWORD'),
           color: theme.accentColor,
           textColor: Colors.white,
         ),
-        RaisedButton(
-          onPressed: _onFacebookSignUp,
-          child: Text('SIGN UP WITH FACEBOOK'),
-          color: Color(0xFF3B5798),
-          textColor: Colors.white,
-        ),
-        RaisedButton(
-          onPressed: _onGoogleSignUp,
-          child: Text('SIGN UP WITH GOOGLE'),
-          color: Colors.white,
-          textColor: Color(0xFF757575),
+        FlatButton(
+          onPressed: _onResendCode,
+          child: Text(
+            'RESEND CODE',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
         ),
       ],
     );
@@ -147,6 +164,14 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
+  String _validateCode(value) {
+    if (value.isEmpty) {
+      return 'Code is required';
+    }
+
+    return null;
+  }
+
   String _validatePassword(value) {
     if (value.isEmpty) {
       return 'Password is required';
@@ -155,75 +180,71 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
-  _onSignUp() async {
+  _onResetPassword() async {
     try {
       setState(() {
         _error = null;
+        _message = null;
       });
 
       if (_formKey.currentState.validate()) {
         final authenticationService = locator<AuthenticationService>();
 
-        final email = _emailController.text;
-        final password = _emailController.text;
-        await authenticationService.signUp(
+        await authenticationService.resetPassword(
           _emailController.text,
+          _codeController.text,
           _passwordController.text,
         );
-        final user = await authenticationService.signIn(email, password);
 
-        authenticationService.afterSignIn(user);
-      }
-    } on AuthenticationException catch (e) {
-      switch (e.errorCode) {
-        case USER_NOT_CONFIRMED:
-          _navigateToConfirmation();
-          break;
-        default:
-          setState(() {
-            _error = 'We were unable to sign you up';
-          });
-          break;
+        _navigateToSignIn();
       }
     } catch (e) {
       setState(() {
-        _error = 'We were unable to sign you up';
+        _error = 'An unexpected error has occurred. Please try again later.';
       });
     }
   }
 
-  _onFacebookSignUp() async {
-    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
-    final redirectUrl =
-        "$authorizeUrl&redirect_uri=$FB_SIGN_UP_REDIRECT_URL&identity_provider=Facebook";
+  _onResendCode() async {
+    try {
+      setState(() {
+        _error = null;
+        _message = null;
+      });
 
-    if (await canLaunch(redirectUrl)) {
-      await launch(redirectUrl);
-    } else {
-      throw 'Could not launch $redirectUrl';
+      String emailError = _validateEmail(_emailController.text);
+
+      if (emailError == null) {
+        final authenticationService = locator<AuthenticationService>();
+
+        await authenticationService.sendPasswordResetCode(
+          _emailController.text,
+        );
+
+        setState(() {
+          _message = 'A confirmation code has been sent to your email.';
+        });
+      } else {
+        setState(() {
+          _error = emailError;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'An unexpected error has occurred. Please try again later.';
+      });
     }
   }
 
-  _onGoogleSignUp() async {
-    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
-    final redirectUrl =
-        "$authorizeUrl&redirect_uri=$GOOGLE_SIGN_UP_REDIRECT_URL&identity_provider=Google";
+  _navigateToSignIn() {
+    final navigator = Navigator.of(context);
 
-    if (await canLaunch(redirectUrl)) {
-      await launch(redirectUrl);
-    } else {
-      throw 'Could not launch $redirectUrl';
-    }
-  }
-
-  _navigateToConfirmation() {
-    Navigator.of(context).pushNamed(
-      Confirm.RELATIVE_PATH,
-      arguments: ConfirmAccountArguments(
+    navigator.popUntil((route) => route.settings.name == SignIn.RELATIVE_PATH);
+    navigator.pushReplacementNamed(
+      SignIn.RELATIVE_PATH,
+      arguments: SignInArguments(
         email: _emailController.text,
-        password: _passwordController.text,
-        message:
-            'A confirmation code has been sent to your email. Use it to confirm your account.',
+        message: 'You can now sign in with your new password',
       ),
     );
   }

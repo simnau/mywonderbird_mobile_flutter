@@ -24,6 +24,8 @@ const SIGN_UP_PATH = '/api/auth/register';
 const ME_PATH = '/api/auth/me';
 const CONFIRM_ACCOUNT_PATH = '/api/auth/confirm';
 const CODE_PATH = '/api/auth/code';
+const FORGOT_PASSWORD_PATH = '/api/auth/forgot-password';
+const RESET_PASSWORD_PATH = '/api/auth/reset-password';
 
 class AuthenticationService {
   final StreamController<User> _userController = StreamController<User>();
@@ -136,6 +138,24 @@ class AuthenticationService {
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw new Exception('There was an error sending the code');
     }
+  }
+
+  sendPasswordResetCode(String email) async {
+    return api.post(
+      FORGOT_PASSWORD_PATH,
+      {'email': email},
+    );
+  }
+
+  resetPassword(String email, String code, String password) async {
+    return api.post(
+      RESET_PASSWORD_PATH,
+      {
+        'email': email,
+        'code': code,
+        'password': password,
+      },
+    );
   }
 
   confirmAccount(String email, String code) async {
