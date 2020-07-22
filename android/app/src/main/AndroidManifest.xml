@@ -61,4 +61,13 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAWIy7KI9KZxOP1z9Xa6BrEiLTzOOSvojo" />
     </application>
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera, Photos, input file -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- Geolocation API -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" />
 </manifest>
