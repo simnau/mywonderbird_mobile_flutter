@@ -26,6 +26,7 @@ dependencies:
   uni_links: '^0.4.0'
   flutter_full_pdf_viewer: ^1.0.6
   http_interceptor: ^0.3.2
+  sentry: ">=3.0.0 <4.0.0"
 
 dev_dependencies:
   flutter_test:

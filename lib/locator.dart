@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:layout/deep-links.dart';
 import 'package:layout/http/authentication.dart';
@@ -17,10 +18,14 @@ import 'package:layout/services/storage.dart';
 import 'package:layout/services/terms.dart';
 import 'package:layout/services/token.dart';
 import 'package:layout/sharing-intent.dart';
+import 'package:sentry/sentry.dart';
 
 GetIt locator = GetIt.instance;
 
+final sentryDSN = DotEnv().env['SENTRY_DSN'];
+
 void setupLocator() {
+  final sentryClient = SentryClient(dsn: sentryDSN);
   final storageService = StorageService();
   final termsProvider = TermsProvider();
   final tokenService = TokenService(storageService: storageService);
@@ -75,4 +80,5 @@ void setupLocator() {
   locator.registerLazySingleton(() => DeepLinks());
   locator.registerLazySingleton(() => SharingIntent());
   locator.registerLazySingleton(() => authenticationInterceptor);
+  locator.registerLazySingleton(() => sentryClient);
 }

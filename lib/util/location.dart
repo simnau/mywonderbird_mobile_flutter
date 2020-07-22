@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+
+const COORDINATE_PRECISION = 6;
 
 Future<LocationData> getCurrentLocation() async {
   Location location = new Location();
@@ -28,4 +31,8 @@ Future<LocationData> getCurrentLocation() async {
   _locationData = await location.getLocation();
 
   return _locationData;
+}
+
+String latLngToString(LatLng latLng) {
+  return "${latLng.latitude.toStringAsFixed(COORDINATE_PRECISION)}, ${latLng.longitude.toStringAsFixed(COORDINATE_PRECISION)}";
 }

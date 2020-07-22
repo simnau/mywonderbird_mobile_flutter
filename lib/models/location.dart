@@ -23,6 +23,10 @@ class LocationModel extends NamedItem {
   }) : super(name: name);
 
   factory LocationModel.fromResponseJson(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
+
     final location = json['location'];
     final lat = location['lat'];
     final lng = location['lng'];

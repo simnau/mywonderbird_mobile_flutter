@@ -11,6 +11,7 @@ import 'package:layout/services/location.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/types/picture-data.dart';
 import 'package:layout/util/geo.dart';
+import 'package:layout/util/location.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'locator.dart';
@@ -50,45 +51,50 @@ class SharingIntent {
   }
 
   _handleShare(String filePath) async {
-    try {
-      final locationService = locator<LocationService>();
-      final file = File(filePath);
-      final fileBytes = await file.readAsBytes();
-      final data = await readExifFromBytes(fileBytes);
+    final locationService = locator<LocationService>();
+    final file = File(filePath);
+    final fileBytes = await file.readAsBytes();
+    final data = await readExifFromBytes(fileBytes);
 
-      final creationDate = await file.lastModified();
-      final latitudeRef = data['GPS GPSLatitudeRef']?.toString();
-      final latitudeRatios = data['GPS GPSLatitude'].values;
-      final longitudeRef = data['GPS GPSLongitudeRef']?.toString();
-      final longitudeRatios = data['GPS GPSLongitude'].values;
+    final creationDate = await file.lastModified();
+    final latitudeRef = data['GPS GPSLatitudeRef']?.toString();
+    final latitudeRatios = data['GPS GPSLatitude']?.values;
+    final longitudeRef = data['GPS GPSLongitudeRef']?.toString();
+    final longitudeRatios = data['GPS GPSLongitude']?.values;
 
-      var latitude = dmsRatioToDouble(latitudeRatios);
+    var latitude;
+    var longitude;
+
+    if (latitudeRatios == null || longitudeRatios == null) {
+      final currentLocation = await getCurrentLocation();
+      latitude = currentLocation.latitude;
+      longitude = currentLocation.longitude;
+    } else {
+      latitude = dmsRatioToDouble(latitudeRatios);
       latitude = isNegativeRef(latitudeRef) ? -latitude : latitude;
-      var longitude = dmsRatioToDouble(longitudeRatios);
+      longitude = dmsRatioToDouble(longitudeRatios);
       longitude = isNegativeRef(longitudeRef) ? -longitude : longitude;
-
-      final sharePictureProvider = locator<SharePictureProvider>();
-      final latlng = LatLng(latitude, longitude);
-      final locationModel = await locationService.reverseGeocode(latlng);
-
-      sharePictureProvider.pictureData = PictureData(
-        image: FileImage(File(filePath)),
-        imagePath: filePath,
-        location: LocationModel(
-          id: locationModel.id,
-          latLng: LatLng(latitude, longitude),
-          country: locationModel.country,
-          countryCode: locationModel.countryCode,
-          name: locationModel.name,
-          imageUrl: filePath,
-          provider: locationModel.provider,
-        ),
-        creationDate: creationDate,
-      );
-
-      locator<NavigationService>().pushReplacementNamed(SelectDestination.PATH);
-    } catch (e) {
-      print(e);
     }
+
+    final sharePictureProvider = locator<SharePictureProvider>();
+    final latLng = LatLng(latitude, longitude);
+    final locationModel = await locationService.reverseGeocode(latLng);
+
+    sharePictureProvider.pictureData = PictureData(
+      image: FileImage(File(filePath)),
+      imagePath: filePath,
+      location: LocationModel(
+        id: locationModel?.id,
+        latLng: LatLng(latitude, longitude),
+        country: locationModel?.country,
+        countryCode: locationModel?.countryCode,
+        name: locationModel?.name ?? latLngToString(latLng),
+        imageUrl: filePath,
+        provider: locationModel?.provider,
+      ),
+      creationDate: creationDate,
+    );
+
+    locator<NavigationService>().pushReplacementNamed(SelectDestination.PATH);
   }
 }

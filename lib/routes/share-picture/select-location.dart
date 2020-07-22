@@ -27,7 +27,6 @@ class SelectLocation extends StatefulWidget {
 
 class _SelectLocationState extends State<SelectLocation> {
   static const _INITIAL_ZOOM = 14.4746;
-  static const _COORDINATE_PRECISION = 6;
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
       37.42796133580664,
@@ -78,8 +77,7 @@ class _SelectLocationState extends State<SelectLocation> {
     setState(() {
       _selectedLocation = LocationModel(
         id: Uuid().v4(),
-        name:
-            "${pos.latitude.toStringAsFixed(_COORDINATE_PRECISION)}, ${pos.longitude.toStringAsFixed(_COORDINATE_PRECISION)}",
+        name: latLngToString(pos),
         country: null,
         countryCode: null,
         imageUrl: null,

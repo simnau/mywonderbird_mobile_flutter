@@ -8,37 +8,45 @@ import 'package:layout/providers/oauth.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/services/authentication.dart';
 import 'package:layout/services/oauth.dart';
+import 'package:layout/util/sentry.dart';
 import 'package:provider/provider.dart';
 
 import 'locator.dart';
 import 'app.dart';
 
 Future main() async {
-  setupLocator();
   await DotEnv().load('.env');
+  setupLocator();
 
   final oauthProvider = locator<OAuthProvider>();
   final authorizeUrl = await locator<OAuthService>().getAuthorizationUrl();
   oauthProvider.authorizeUrl = authorizeUrl;
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<JourneysProvider>(
-          create: (_) => locator<JourneysProvider>(),
-        ),
-        ChangeNotifierProvider<SharePictureProvider>(
-          create: (_) => locator<SharePictureProvider>(),
-        ),
-        StreamProvider<User>(
-          initialData: null,
-          create: (context) => locator<AuthenticationService>().userStream,
-        ),
-        ChangeNotifierProvider<OAuthProvider>(
-          create: (_) => oauthProvider,
-        )
-      ],
-      child: App(),
-    ),
+  runZonedGuarded<Future<void>>(() async {
+    runApp(_app());
+  }, (Object error, StackTrace stackTrace) {
+    reportError(error, stackTrace);
+  });
+}
+
+Widget _app() {
+  final oauthProvider = locator<OAuthProvider>();
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider<JourneysProvider>(
+        create: (_) => locator<JourneysProvider>(),
+      ),
+      ChangeNotifierProvider<SharePictureProvider>(
+        create: (_) => locator<SharePictureProvider>(),
+      ),
+      StreamProvider<User>(
+        initialData: null,
+        create: (context) => locator<AuthenticationService>().userStream,
+      ),
+      ChangeNotifierProvider<OAuthProvider>(
+        create: (_) => oauthProvider,
+      )
+    ],
+    child: App(),
   );
 }
