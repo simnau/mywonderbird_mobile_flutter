@@ -103,6 +103,7 @@ class _ShareScreenState extends State<ShareScreen> {
       await sharingService.sharePicture(
         title,
         sharePictureProvider.pictureData,
+        _selectedLocation ?? sharePictureProvider.pictureData.location,
         journey.id,
       );
 
@@ -175,6 +176,20 @@ class _ShareScreenState extends State<ShareScreen> {
                           ),
                         ),
                       ),
+                      if (_error != null)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          alignment: Alignment.center,
+                          color: Colors.red,
+                          child: Text(
+                            _error,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
                       SelectionListItem(
                         icon: Icon(
                           CustomIcons.route,

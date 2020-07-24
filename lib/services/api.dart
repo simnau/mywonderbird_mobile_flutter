@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:layout/constants/auth.dart';
 import 'package:layout/exceptions/unauthorized-exception.dart';
 import 'package:layout/http/authentication.dart';
 import 'package:layout/http/retry-policy.dart';
@@ -18,19 +21,22 @@ class API {
   TokenService tokenService;
   NavigationService navigationService;
   http.Client client;
+  RefreshTokenRetryPolicy retryPolicy;
 
   API({
     @required TokenService tokenService,
     @required NavigationService navigationService,
     @required AuthenticationInterceptor authenticationInterceptor,
+    @required RefreshTokenRetryPolicy retryPolicy,
   }) {
     this.tokenService = tokenService;
     this.navigationService = navigationService;
+    this.retryPolicy = retryPolicy;
     client = HttpClientWithInterceptor.build(
       interceptors: [
         authenticationInterceptor,
       ],
-      retryPolicy: RefreshTokenRetryPolicy(),
+      retryPolicy: retryPolicy,
     );
   }
 
@@ -59,6 +65,46 @@ class API {
       headers: fullHeaders,
       body: json.encode(body),
     );
+
+    return _handleResponse(response);
+  }
+
+  // TODO: Handle token expiration!!!
+  Future<Map<String, dynamic>> postMultipartFiles(
+    String path,
+    List<MultipartFile> files, {
+    Map<String, dynamic> params,
+    Map<String, String> headers,
+    int retryCount = 0,
+  }) async {
+    final uri = _createUri(apiBase, path, params);
+    final request = http.MultipartRequest(
+      'POST',
+      uri,
+    );
+    request.files.addAll(files);
+
+    final accessToken = await tokenService.getAccessToken();
+
+    if (accessToken != null) {
+      request.headers[AUTHORIZATION_HEADER] = accessToken;
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    final shouldRetry = await retryPolicy.shouldAttemptRetryOnResponse(
+      ResponseData.fromHttpResponse(response),
+    );
+
+    if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+      return postMultipartFiles(
+        path,
+        files,
+        params: params,
+        headers: headers,
+        retryCount: retryCount + 1,
+      );
+    }
 
     return _handleResponse(response);
   }

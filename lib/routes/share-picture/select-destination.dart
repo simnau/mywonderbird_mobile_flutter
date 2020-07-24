@@ -90,7 +90,7 @@ class _SelectDestinationState extends State<SelectDestination> {
               Icons.close,
             ),
             onPressed: () => _cancel(context),
-          )
+          ),
         ],
       ),
       body: Container(

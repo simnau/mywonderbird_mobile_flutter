@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:layout/locator.dart';
 import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/profile/profile.dart';
+import 'package:layout/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
   @override
@@ -15,7 +17,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    var currentRoute = ModalRoute.of(context).settings.name;
+    final currentRoute = ModalRoute.of(context).settings.name;
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -36,23 +38,29 @@ class _BottomNavBarState extends State<BottomNavBar> {
               color: routeSelected(currentRoute, HomePage.PATH)
                   ? theme.primaryColor
                   : Colors.grey[300],
-              onPressed: () {
-                if (!routeSelected(currentRoute, HomePage.PATH)) {
-                  Navigator.pushReplacementNamed(context, HomePage.PATH);
-                }
-              },
+              onPressed: _onNavigateToFeed,
             ),
             IconButton(
               iconSize: 32,
               icon: Icon(Icons.person),
               color: theme.disabledColor,
-              onPressed: () {
-                Navigator.pushNamed(context, Profile.PATH);
-              },
+              onPressed: _onNavigateToProfile,
             ),
           ],
         ),
       ),
     );
+  }
+
+  _onNavigateToFeed() {
+    final currentRoute = ModalRoute.of(context).settings.name;
+
+    if (!routeSelected(currentRoute, HomePage.PATH)) {
+      locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
+    }
+  }
+
+  _onNavigateToProfile() {
+    locator<NavigationService>().pushNamed(Profile.PATH);
   }
 }
