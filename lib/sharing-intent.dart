@@ -62,18 +62,21 @@ class SharingIntent {
     final longitudeRef = data['GPS GPSLongitudeRef']?.toString();
     final longitudeRatios = data['GPS GPSLongitude']?.values;
 
-    var latitude;
-    var longitude;
+    double latitude;
+    double longitude;
 
-    if (latitudeRatios == null || longitudeRatios == null) {
-      final currentLocation = await getCurrentLocation();
-      latitude = currentLocation.latitude;
-      longitude = currentLocation.longitude;
-    } else {
+    if (latitudeRatios != null || longitudeRatios != null) {
       latitude = dmsRatioToDouble(latitudeRatios);
       latitude = isNegativeRef(latitudeRef) ? -latitude : latitude;
       longitude = dmsRatioToDouble(longitudeRatios);
       longitude = isNegativeRef(longitudeRef) ? -longitude : longitude;
+    }
+
+    if ((latitude == null || latitude.isNaN) &&
+        (longitude == null || longitude.isNaN)) {
+      final currentLocation = await getCurrentLocation();
+      latitude = currentLocation.latitude;
+      longitude = currentLocation.longitude;
     }
 
     final sharePictureProvider = locator<SharePictureProvider>();

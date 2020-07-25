@@ -23,7 +23,7 @@ class SharingService {
     final requestPath = uploadPicturePath(journeyId);
     final fileExtension = path.extension(pictureData.imagePath);
     final filename = "${Uuid().v4()}$fileExtension";
-    final fileBytes = resizeImageAsBytes(pictureData.imagePath);
+    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
     final files = [
       http.MultipartFile.fromBytes(
         filename,
@@ -49,6 +49,7 @@ class SharingService {
     final pictureDataJson = pictureData.toJson();
     final locationJson = locationModel?.toJson();
 
+    // TODO: handle in case of errors!
     await api.post(
       sharePicturePath(journeyId),
       {

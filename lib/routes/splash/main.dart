@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/services/authentication.dart';
 
 class SplashScreen extends StatefulWidget {
   static const RELATIVE_PATH = 'splash';
@@ -11,18 +9,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuth();
-  }
-
-  void _checkAuth() async {
-    final authenticationService = locator<AuthenticationService>();
-    final user = await authenticationService.checkAuth();
-    authenticationService.onStartup(user);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(

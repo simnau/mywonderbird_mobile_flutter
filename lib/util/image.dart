@@ -12,8 +12,8 @@ int _getMaxHeight(double maxSize, double aspectRatio) {
   return (aspectRatio > 1 ? maxSize / aspectRatio : maxSize).floor();
 }
 
-List<int> resizeImageAsBytes(filename) {
-  final image = decodeJpg(File(filename).readAsBytesSync());
+Future<List<int>> resizeImageAsBytes(filename) async {
+  final image = decodeJpg(await File(filename).readAsBytes());
   double aspectRatio = image.width / image.height;
   final maxWidth = _getMaxWidth(MAX_IMAGE_SIZE, aspectRatio);
   final maxHeight = _getMaxHeight(MAX_IMAGE_SIZE, aspectRatio);
