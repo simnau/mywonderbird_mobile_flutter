@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/services/api.dart';
 import 'package:layout/util/image.dart';
-import 'package:path/path.dart' as path;
 
 import 'package:http/http.dart' as http;
 import 'package:layout/types/picture-data.dart';
@@ -21,9 +21,11 @@ class SharingService {
     String journeyId,
   ) async {
     final requestPath = uploadPicturePath(journeyId);
-    final fileExtension = path.extension(pictureData.imagePath);
-    final filename = "${Uuid().v4()}$fileExtension";
-    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
+    final filename = "${Uuid().v4()}.jpg";
+    final fileBytes = await compute<String, List<int>>(
+      resizeImageAsBytes,
+      pictureData.imagePath,
+    );
     final files = [
       http.MultipartFile.fromBytes(
         filename,

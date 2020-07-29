@@ -27,5 +27,5 @@ Future<List<int>> resizeImageAsBytes(filename) async {
     height: resizedHeight,
   );
 
-  return encodePng(resizedImage);
+  return encodeJpg(resizedImage, quality: 80);
 }
