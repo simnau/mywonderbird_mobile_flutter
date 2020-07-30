@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/bottom-nav-bar.dart';
 import 'package:layout/components/feed-item.dart';
+import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
 import 'package:layout/routes/select-picture/home.dart';
@@ -13,8 +14,6 @@ Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
   return feedService.fetchFeedItems(lastDatetime);
 }
 
-const LIMIT = 10;
-
 class HomePage extends StatefulWidget {
   static const PATH = '/';
 
@@ -23,23 +22,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<InfiniteListState> _infiniteListKey = GlobalKey();
+
   List<FeedLocation> _items = [];
-  ScrollController _scrollController = new ScrollController();
   bool _isPerformingRequest = false;
   bool _isLoading = true;
-  int _currentPage = 1;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _fetchInitial(LIMIT);
-      _scrollController.addListener(() {
-        if (_scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent) {
-          _fetchPage(LIMIT);
-        }
-      });
+      await _fetchInitial();
     });
   }
 
@@ -119,23 +112,19 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return ListView.separated(
+    return InfiniteList(
+      key: _infiniteListKey,
+      fetchMore: _fetchMore,
+      itemBuilder: (BuildContext context, int index) {
+        return _feedItem(_items[index]);
+      },
+      itemCount: _items.length,
       padding: const EdgeInsets.only(
         top: 16.0,
         bottom: 64.0,
       ),
-      itemCount: _items.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == _items.length) {
-          return _progressIndicator();
-        } else {
-          return _feedItem(_items[index]);
-        }
-      },
-      separatorBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 24.0),
-      ),
-      controller: _scrollController,
+      rowPadding: const EdgeInsets.only(bottom: 24.0),
+      isPerformingRequest: _isPerformingRequest,
     );
   }
 
@@ -154,20 +143,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _progressIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: _isPerformingRequest ? 1.0 : 0.0,
-          child: new CircularProgressIndicator(),
-        ),
-      ),
-    );
-  }
-
-  // Extract the logic into a component
-  _fetchInitial(int limit) async {
+  _fetchInitial() async {
     setState(() {
       _isLoading = true;
     });
@@ -178,29 +154,22 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  _fetchPage(int limit) async {
+  _fetchMore() async {
     if (!_isPerformingRequest) {
       setState(() => _isPerformingRequest = true);
       List<FeedLocation> newEntries = await fetchFeedItems(
         lastDatetime: _items.last != null ? _items.last.updatedAt : null,
       );
+
       if (newEntries.isEmpty) {
-        double edge = 50.0;
-        double offsetFromBottom = _scrollController.position.maxScrollExtent -
-            _scrollController.position.pixels;
-        if (offsetFromBottom < edge) {
-          _scrollController.animateTo(
-              _scrollController.offset - (edge - offsetFromBottom),
-              duration: new Duration(milliseconds: 500),
-              curve: Curves.easeOut);
-        }
+        _infiniteListKey.currentState.onNoNewResults();
       }
+
       setState(() {
         _isPerformingRequest = false;
 
         if (newEntries.isNotEmpty) {
           _items = List.from(_items)..addAll(newEntries);
-          _currentPage = _currentPage + 1;
         }
       });
     }
