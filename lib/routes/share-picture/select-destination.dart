@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:layout/components/custom-list-item.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home.dart';
+import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
 import 'package:layout/routes/share-picture/share-screen.dart';
 import 'package:layout/services/journeys.dart';
@@ -61,7 +61,7 @@ class _SelectDestinationState extends State<SelectDestination> {
 
   void _cancel(BuildContext context) {
     Navigator.of(context, rootNavigator: true).popUntil(
-      (route) => route.settings.name == Home.PATH,
+      (route) => route.settings.name == HomePage.PATH,
     );
   }
 

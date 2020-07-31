@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';
-import 'package:layout/routes/home.dart';
+import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/components/sharing-widget.dart';
 import 'package:layout/services/navigation.dart';
 
@@ -36,6 +36,6 @@ class ShareScreen extends StatelessWidget {
 
   void _cancel() {
     locator<NavigationService>().popUntil((route) => route.isFirst);
-    locator<NavigationService>().pushReplacementNamed(Home.PATH);
+    locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
   }
 }

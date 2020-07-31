@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home.dart';
+import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/mock.dart';
 import 'package:layout/routes/share-picture/select-destination.dart';
 import 'package:layout/types/picture-data.dart';
@@ -41,7 +41,7 @@ class _SelectPictureHomeState extends State<SelectPictureHome> {
 
   void _cancel() {
     Navigator.of(context, rootNavigator: true).popUntil(
-      (route) => route.settings.name == Home.PATH,
+      (route) => route.settings.name == HomePage.PATH,
     );
   }
 

@@ -51,6 +51,17 @@ class API {
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> delete(
+    String path, {
+    Map<String, String> params,
+    Map<String, String> headers,
+  }) async {
+    final uri = _createUri(apiBase, path, params);
+    final response = await client.delete(uri, headers: headers);
+
+    return _handleResponse(response);
+  }
+
   Future<Map<String, dynamic>> post(
     String path,
     Map<String, dynamic> body, {

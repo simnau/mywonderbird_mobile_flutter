@@ -1,11 +1,11 @@
 import 'package:layout/models/journey.dart';
 import 'package:layout/providers/share-picture.dart';
+import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/share-screen.dart';
 import 'package:layout/types/share-screen-arguments.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
 import 'package:layout/providers/journeys.dart';
-import 'package:layout/routes/home.dart';
 import 'package:provider/provider.dart';
 
 import 'mock.dart';
@@ -64,7 +64,7 @@ class _SelectJourneyState extends State<SelectJourney> {
 
   void _cancel() {
     Navigator.of(context, rootNavigator: true).popUntil(
-      (route) => route.settings.name == Home.PATH,
+      (route) => route.settings.name == HomePage.PATH,
     );
   }
 

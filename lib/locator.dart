@@ -11,6 +11,7 @@ import 'package:layout/services/api.dart';
 import 'package:layout/services/authentication.dart';
 import 'package:layout/services/feed.dart';
 import 'package:layout/services/journeys.dart';
+import 'package:layout/services/like.dart';
 import 'package:layout/services/location.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/services/oauth.dart';
@@ -26,7 +27,7 @@ GetIt locator = GetIt.instance;
 
 final sentryDSN = DotEnv().env['SENTRY_DSN'];
 
-void setupLocator() {
+setupLocator() {
   final sentryClient = SentryClient(dsn: sentryDSN);
   final storageService = StorageService();
   final termsProvider = TermsProvider();
@@ -56,6 +57,8 @@ void setupLocator() {
     termsService: termsService,
     navigationService: navigationService,
   );
+
+  // Services
   locator.registerLazySingleton(() => navigationService);
   locator.registerLazySingleton(() => storageService);
   locator.registerLazySingleton(() => api);
@@ -67,6 +70,7 @@ void setupLocator() {
   locator.registerLazySingleton(() => JourneyService(api: api));
   locator.registerLazySingleton(() => SharingService(api: api));
   locator.registerLazySingleton(() => FeedService(api: api));
+  locator.registerLazySingleton(() => LikeService(api: api));
   locator.registerLazySingleton(
     () => OAuthService(
       api: api,
@@ -82,6 +86,7 @@ void setupLocator() {
   locator.registerLazySingleton(() => OAuthProvider());
   locator.registerLazySingleton(() => termsProvider);
 
+  // Other
   locator.registerLazySingleton(() => DeepLinks());
   locator.registerLazySingleton(() => SharingIntent());
   locator.registerLazySingleton(() => authenticationInterceptor);

@@ -6,6 +6,7 @@ import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
 import 'package:layout/routes/select-picture/home.dart';
 import 'package:layout/services/feed.dart';
+import 'package:layout/services/like.dart';
 import 'package:layout/services/navigation.dart';
 
 Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
@@ -175,18 +176,40 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _onLike(FeedLocation item) {
-    setState(() {
-      item.isLiked = true;
-      item.likeCount += 1;
-    });
+  _onLike(FeedLocation item) async {
+    final likeService = locator<LikeService>();
+
+    try {
+      setState(() {
+        item.isLiked = true;
+        item.likeCount += 1;
+      });
+
+      await likeService.likeGemCapture(item.id);
+    } catch (e) {
+      setState(() {
+        item.isLiked = false;
+        item.likeCount -= 1;
+      });
+    }
   }
 
-  _onUnlike(FeedLocation item) {
-    setState(() {
-      item.isLiked = false;
-      item.likeCount -= 1;
-    });
+  _onUnlike(FeedLocation item) async {
+    final likeService = locator<LikeService>();
+
+    try {
+      setState(() {
+        item.isLiked = false;
+        item.likeCount -= 1;
+      });
+
+      await likeService.unlikeGemCapture(item.id);
+    } catch (e) {
+      setState(() {
+        item.isLiked = true;
+        item.likeCount += 1;
+      });
+    }
   }
 
   _onBookmark(FeedLocation item) {

@@ -5,7 +5,7 @@ import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home.dart';
+import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
 import 'package:layout/routes/share-picture/select-location.dart';
 import 'package:layout/services/navigation.dart';
@@ -179,7 +179,7 @@ class _SharingWidgetState extends State<SharingWidget> {
       );
 
       navigationService.popUntil((route) => route.isFirst);
-      navigationService.pushReplacementNamed(Home.PATH);
+      navigationService.pushReplacementNamed(HomePage.PATH);
     } catch (e) {
       final snackBar = SnackBar(
         content: Text(

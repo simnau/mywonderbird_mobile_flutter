@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/small-icon-button.dart';
 
-class FeedItem extends StatelessWidget {
+class FeedItem extends StatefulWidget {
   final String title;
   final String country;
   final int likeCount;
@@ -24,20 +24,47 @@ class FeedItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _FeedItemState createState() => _FeedItemState();
+}
+
+class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
+  AnimationController _controller;
+
+  _FeedItemState() {
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: Stack(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(bottom: 45),
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: image,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: GestureDetector(
+                    onDoubleTap: widget.isLiked ? null : _onLike,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: widget.image,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              height: 280,
+                _LikeAnimation(
+                  controller: _controller,
+                ),
+              ],
             ),
           ),
           Positioned(
@@ -72,8 +99,6 @@ class FeedItem extends StatelessWidget {
   }
 
   Widget _details(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,15 +107,16 @@ class FeedItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              title ?? '',
+              widget.title ?? '',
               style: TextStyle(
                 fontSize: 16.0,
                 color: Colors.black45,
                 fontWeight: FontWeight.w600,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
-              country ?? '',
+              widget.country ?? '',
               style: TextStyle(
                 fontSize: 12.0,
                 color: Colors.black45,
@@ -105,11 +131,11 @@ class FeedItem extends StatelessWidget {
               children: <Widget>[
                 SmallIconButton(
                   icon: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: isLiked ? theme.primaryColor : Colors.black87,
+                    widget.isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.black54,
                     size: 24.0,
                   ),
-                  onTap: onLike,
+                  onTap: _onLike,
                   padding: const EdgeInsets.all(6.0),
                   borderRadius: BorderRadius.circular(24.0),
                 ),
@@ -117,11 +143,11 @@ class FeedItem extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 4),
                 ),
                 Text(
-                  likeCount.toString(),
+                  widget.likeCount.toString(),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: Colors.black54,
                   ),
                 ),
               ],
@@ -131,17 +157,89 @@ class FeedItem extends StatelessWidget {
             ),
             SmallIconButton(
               icon: Icon(
-                isBookmarked ? Icons.turned_in : Icons.turned_in_not,
-                color: isBookmarked ? theme.primaryColor : Colors.black87,
+                widget.isBookmarked ? Icons.turned_in : Icons.turned_in_not,
+                color: Colors.black54,
                 size: 24.0,
               ),
-              onTap: onBookmark,
+              onTap: widget.onBookmark,
               padding: const EdgeInsets.all(6.0),
               borderRadius: BorderRadius.circular(24.0),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  _onLike() {
+    widget.onLike();
+
+    if (!widget.isLiked) {
+      _playLikeAnimation();
+    }
+  }
+
+  _playLikeAnimation() async {
+    try {
+      await _controller.forward().orCancel;
+      await _controller.reverse().orCancel;
+    } on TickerCanceled {
+      print('Cancelled');
+      // the animation got canceled, probably because it was disposed of
+    }
+  }
+}
+
+class _LikeAnimation extends StatelessWidget {
+  final Animation<double> controller;
+  final Animation<double> opacity;
+  final Animation<double> size;
+
+  _LikeAnimation({Key key, this.controller})
+      : opacity = Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: controller,
+            curve: Interval(
+              0.0,
+              0.300,
+              curve: Curves.ease,
+            ),
+          ),
+        ),
+        size = Tween<double>(
+          begin: 96,
+          end: 128,
+        ).animate(
+          CurvedAnimation(
+            parent: controller,
+            curve: Interval(
+              0.0,
+              0.3,
+              curve: Curves.fastOutSlowIn,
+            ),
+          ),
+        ),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      builder: _buildAnimation,
+      animation: controller,
+    );
+  }
+
+  Widget _buildAnimation(BuildContext context, Widget child) {
+    return Opacity(
+      opacity: opacity.value,
+      child: Icon(
+        Icons.favorite,
+        color: Colors.black54,
+        size: size.value,
+      ),
     );
   }
 }
