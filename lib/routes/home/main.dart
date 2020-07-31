@@ -85,7 +85,10 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: _feed(),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: _feed(),
+      ),
       floatingActionButton: Container(
         width: 72,
         height: 72,
@@ -147,6 +150,18 @@ class _HomePageState extends State<HomePage> {
   _fetchInitial() async {
     setState(() {
       _isLoading = true;
+    });
+    List<FeedLocation> newEntries = await fetchFeedItems();
+    setState(() {
+      _items = newEntries;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _isLoading = true;
+      _items = [];
     });
     List<FeedLocation> newEntries = await fetchFeedItems();
     setState(() {

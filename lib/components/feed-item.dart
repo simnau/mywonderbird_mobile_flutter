@@ -132,7 +132,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                 SmallIconButton(
                   icon: Icon(
                     widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.black54,
+                    color: Colors.black87,
                     size: 24.0,
                   ),
                   onTap: _onLike,
@@ -147,7 +147,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black54,
+                    color: Colors.black87,
                   ),
                 ),
               ],
@@ -158,7 +158,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
             SmallIconButton(
               icon: Icon(
                 widget.isBookmarked ? Icons.turned_in : Icons.turned_in_not,
-                color: Colors.black54,
+                color: Colors.black87,
                 size: 24.0,
               ),
               onTap: widget.onBookmark,
@@ -210,8 +210,8 @@ class _LikeAnimation extends StatelessWidget {
           ),
         ),
         size = Tween<double>(
-          begin: 96,
-          end: 128,
+          begin: 64,
+          end: 96,
         ).animate(
           CurvedAnimation(
             parent: controller,
@@ -237,7 +237,7 @@ class _LikeAnimation extends StatelessWidget {
       opacity: opacity.value,
       child: Icon(
         Icons.favorite,
-        color: Colors.black54,
+        color: Colors.black87,
         size: size.value,
       ),
     );
