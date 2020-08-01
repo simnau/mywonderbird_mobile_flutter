@@ -5,6 +5,7 @@ import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
 import 'package:layout/routes/select-picture/home.dart';
+import 'package:layout/services/bookmark.dart';
 import 'package:layout/services/feed.dart';
 import 'package:layout/services/like.dart';
 import 'package:layout/services/navigation.dart';
@@ -227,16 +228,36 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _onBookmark(FeedLocation item) {
-    setState(() {
-      item.isBookmarked = true;
-    });
+  _onBookmark(FeedLocation item) async {
+    final bookmarkService = locator<BookmarkService>();
+
+    try {
+      setState(() {
+        item.isBookmarked = true;
+      });
+
+      await bookmarkService.bookmarkGemCapture(item.id);
+    } catch (e) {
+      setState(() {
+        item.isBookmarked = false;
+      });
+    }
   }
 
-  _onUnbookmark(FeedLocation item) {
-    setState(() {
-      item.isBookmarked = false;
-    });
+  _onUnbookmark(FeedLocation item) async {
+    final bookmarkService = locator<BookmarkService>();
+
+    try {
+      setState(() {
+        item.isBookmarked = false;
+      });
+
+      await bookmarkService.unbookmarkGemCapture(item.id);
+    } catch (e) {
+      setState(() {
+        item.isBookmarked = true;
+      });
+    }
   }
 
   _onAddPicture() {
