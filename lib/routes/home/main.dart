@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
   Widget _feedItem(FeedLocation item) {
     return FeedItem(
       key: Key(item.id),
-      image: NetworkImage(item.imageUrl),
+      imageUrl: item.imageUrl,
       title: item.title,
       country: item.country,
       likeCount: item.likeCount,

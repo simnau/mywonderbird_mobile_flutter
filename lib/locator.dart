@@ -15,6 +15,7 @@ import 'package:layout/services/like.dart';
 import 'package:layout/services/location.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/services/oauth.dart';
+import 'package:layout/services/picture-data.dart';
 import 'package:layout/services/profile.dart';
 import 'package:layout/services/sharing.dart';
 import 'package:layout/services/storage.dart';
@@ -44,6 +45,7 @@ setupLocator() {
     retryPolicy: retryPolicy,
   );
   final termsService = TermsService(api: api);
+  final locationService = LocationService(api: api);
 
   final profileService = ProfileService(
     api: api,
@@ -66,11 +68,13 @@ setupLocator() {
   locator.registerLazySingleton(() => tokenService);
   locator.registerLazySingleton(() => authenticationService);
   locator.registerLazySingleton(() => termsService);
-  locator.registerLazySingleton(() => LocationService(api: api));
+  locator.registerLazySingleton(() => locationService);
   locator.registerLazySingleton(() => JourneyService(api: api));
   locator.registerLazySingleton(() => SharingService(api: api));
   locator.registerLazySingleton(() => FeedService(api: api));
   locator.registerLazySingleton(() => LikeService(api: api));
+  locator.registerLazySingleton(
+      () => PictureDataService(locationService: locationService));
   locator.registerLazySingleton(
     () => OAuthService(
       api: api,

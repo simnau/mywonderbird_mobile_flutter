@@ -43,121 +43,123 @@ class _SharingWidgetState extends State<SharingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
+          ),
+          child: IntrinsicHeight(
+            child: _content(),
+          ),
+        ),
+      );
+    });
+  }
 
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          Column(
+  Widget _content() {
+    final theme = Theme.of(context);
+    return Column(
+      children: <Widget>[
+        AspectRatio(
+          aspectRatio: 4 / 3,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: _image,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Expanded(
-                flex: 4,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: _image,
+              Container(
+                padding: const EdgeInsets.only(
+                  left: 24.0,
+                  right: 24.0,
+                  bottom: 8.0,
+                  top: 8.0,
+                ),
+                child: TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Write a caption',
+                    hintStyle: TextStyle(
+                      color: Colors.black26,
                     ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
                   ),
                 ),
               ),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(
-                        left: 24.0,
-                        right: 24.0,
-                        bottom: 8.0,
-                        top: 8.0,
-                      ),
-                      child: TextField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Write a caption',
-                          hintStyle: TextStyle(
-                            color: Colors.black26,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                      ),
+              if (_error != null)
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  color: Colors.red,
+                  child: Text(
+                    _error,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
                     ),
-                    if (_error != null)
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        alignment: Alignment.center,
-                        color: Colors.red,
-                        child: Text(
-                          _error,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    SelectionListItem(
-                      icon: Icon(
-                        CustomIcons.route,
-                        color: journey != null
-                            ? theme.primaryColor
-                            : Colors.black87,
-                        size: 40.0,
-                      ),
-                      changeTitle: 'Change the journey',
-                      chooseTitle: 'Choose a journey',
-                      item: journey,
-                      onTap: _selectJourney,
-                    ),
-                    SelectionListItem(
-                      icon: Icon(
-                        Icons.location_on,
-                        color: location != null
-                            ? theme.primaryColor
-                            : Colors.black87,
-                        size: 40.0,
-                      ),
-                      changeTitle: 'Change the photo location',
-                      chooseTitle: 'Choose the photo location',
-                      item: location,
-                      onTap: _selectLocation,
-                    ),
-                  ],
+                  ),
                 ),
+              SelectionListItem(
+                icon: Icon(
+                  CustomIcons.route,
+                  color: journey != null ? theme.primaryColor : Colors.black87,
+                  size: 40.0,
+                ),
+                changeTitle: 'Change the journey',
+                chooseTitle: 'Choose a journey',
+                item: journey,
+                onTap: _selectJourney,
               ),
+              SelectionListItem(
+                icon: Icon(
+                  Icons.location_on,
+                  color: location != null ? theme.primaryColor : Colors.black87,
+                  size: 40.0,
+                ),
+                changeTitle: 'Change the photo location',
+                chooseTitle: 'Choose the photo location',
+                item: location,
+                onTap: _selectLocation,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                ),
+                child: RaisedButton(
+                  color: theme.primaryColor,
+                  textColor: Colors.white,
+                  child: _isSharing
+                      ? SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(),
+                        )
+                      : Text('Share'),
+                  onPressed: _isSharing ? null : _sharePicture,
+                ),
+              )
             ],
           ),
-          Positioned(
-            bottom: 32,
-            left: 32,
-            right: 32,
-            child: RaisedButton(
-              color: theme.primaryColor,
-              textColor: Colors.white,
-              child: _isSharing
-                  ? SizedBox(
-                      height: 16,
-                      width: 16,
-                      child: CircularProgressIndicator(),
-                    )
-                  : Text('Share'),
-              onPressed: _isSharing ? null : _sharePicture,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  void _sharePicture() async {
+  _sharePicture() async {
     final sharingService = locator<SharingService>();
     final navigationService = locator<NavigationService>();
     final title = _titleController.text;
@@ -198,7 +200,7 @@ class _SharingWidgetState extends State<SharingWidget> {
     }
   }
 
-  void _selectJourney() async {
+  _selectJourney() async {
     final selectedJourney = await Navigator.pushNamed(
       context,
       SelectJourney.RELATIVE_PATH,
@@ -214,7 +216,7 @@ class _SharingWidgetState extends State<SharingWidget> {
     }
   }
 
-  void _selectLocation() async {
+  _selectLocation() async {
     final selectedLocation = await Navigator.pushNamed(
       context,
       SelectLocation.RELATIVE_PATH,

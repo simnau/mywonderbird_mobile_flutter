@@ -36,6 +36,12 @@ class InfiniteListState extends State<InfiniteList> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
   onNoNewResults() {
     double edge = 50.0;
     double offsetFromBottom = _scrollController.position.maxScrollExtent -

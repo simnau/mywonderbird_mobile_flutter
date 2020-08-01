@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:layout/components/custom-list-item.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/select-journey.dart';
 import 'package:layout/routes/share-picture/share-screen.dart';
 import 'package:layout/services/journeys.dart';
+import 'package:layout/services/navigation.dart';
 import 'package:layout/types/select-journey-arguments.dart';
 import 'package:layout/types/share-screen-arguments.dart';
 
@@ -53,16 +53,8 @@ class _SelectDestinationState extends State<SelectDestination> {
   }
 
   void _onBack(BuildContext context) {
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).pop();
-  }
-
-  void _cancel(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).popUntil(
-      (route) => route.settings.name == HomePage.PATH,
-    );
+    final navigationService = locator<NavigationService>();
+    navigationService.pop();
   }
 
   @override
@@ -84,14 +76,6 @@ class _SelectDestinationState extends State<SelectDestination> {
             color: Colors.black87,
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.close,
-            ),
-            onPressed: () => _cancel(context),
-          ),
-        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(32.0),

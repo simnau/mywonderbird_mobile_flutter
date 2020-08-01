@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/small-icon-button.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FeedItem extends StatefulWidget {
   final String title;
@@ -9,7 +10,7 @@ class FeedItem extends StatefulWidget {
   final bool isBookmarked;
   final void Function() onLike;
   final void Function() onBookmark;
-  final NetworkImage image;
+  final String imageUrl;
 
   const FeedItem({
     Key key,
@@ -20,7 +21,7 @@ class FeedItem extends StatefulWidget {
     this.isBookmarked = false,
     @required this.onLike,
     @required this.onBookmark,
-    @required this.image,
+    @required this.imageUrl,
   }) : super(key: key);
 
   @override
@@ -51,13 +52,10 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                   aspectRatio: 4 / 3,
                   child: GestureDetector(
                     onDoubleTap: widget.isLiked ? null : _onLike,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: widget.image,
-                        ),
-                      ),
+                    child: FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: widget.imageUrl,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -233,7 +231,8 @@ class _LikeAnimation extends StatelessWidget {
   }
 
   Widget _buildAnimation(BuildContext context, Widget child) {
-    return Opacity(
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 25),
       opacity: opacity.value,
       child: Icon(
         Icons.favorite,

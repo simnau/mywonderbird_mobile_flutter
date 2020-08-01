@@ -195,7 +195,7 @@ class _SelectLocationState extends State<SelectLocation> {
                   'Select location',
                 ),
                 onPressed: _selectedLocation != null ? _selectPlace : null,
-                disabledColor: Colors.grey[500],
+                disabledColor: Colors.grey,
               ),
             )
           ],

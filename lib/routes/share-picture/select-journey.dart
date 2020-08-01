@@ -1,6 +1,5 @@
 import 'package:layout/models/journey.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home/main.dart';
 import 'package:layout/routes/share-picture/share-screen.dart';
 import 'package:layout/types/share-screen-arguments.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -60,12 +59,6 @@ class _SelectJourneyState extends State<SelectJourney> {
       listen: false,
     );
     await journeysProvider.loadUserJourneys();
-  }
-
-  void _cancel() {
-    Navigator.of(context, rootNavigator: true).popUntil(
-      (route) => route.settings.name == HomePage.PATH,
-    );
   }
 
   void _onSelectJourney(Journey journey) {
@@ -290,14 +283,6 @@ class _SelectJourneyState extends State<SelectJourney> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.close,
-            ),
-            onPressed: _cancel,
-          ),
-        ],
       ),
       body: Container(
         child: Column(
