@@ -95,7 +95,10 @@ class AuthenticationService {
     final rawResponse = response['response'];
 
     if (rawResponse.statusCode != HttpStatus.ok) {
-      throw new Exception('We were unable to sign you up');
+      throw new AuthenticationException(
+        'We were unable to sign you up',
+        errorCode: response['body']['code'],
+      );
     }
   }
 

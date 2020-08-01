@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:layout/constants/oauth.dart';
+import 'package:layout/locator.dart';
+import 'package:layout/providers/oauth.dart';
 import 'package:layout/routes/authentication/sign-in.dart';
 import 'package:layout/routes/authentication/sign-up.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SelectAuthOption extends StatefulWidget {
   static const RELATIVE_PATH = 'select-auth-option';
@@ -77,16 +81,52 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
             ),
             color: theme.accentColor,
           ),
+          RaisedButton(
+            onPressed: _onFacebookFlow,
+            child: Text('CONTINUE WITH FACEBOOK'),
+            color: Color(0xFF3B5798),
+            textColor: Colors.white,
+          ),
+          RaisedButton(
+            onPressed: _onGoogleFlow,
+            child: Text('CONTINUE WITH GOOGLE'),
+            color: Colors.white,
+            textColor: Color(0xFF757575),
+          ),
         ],
       ),
     );
   }
 
-  void _signIn() {
+  _signIn() {
     Navigator.of(context).pushNamed(SignIn.RELATIVE_PATH);
   }
 
-  void _signUp() {
+  _signUp() {
     Navigator.of(context).pushNamed(SignUp.RELATIVE_PATH);
+  }
+
+  _onFacebookFlow() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$FB_SIGN_IN_REDIRECT_URL&identity_provider=Facebook";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
+    }
+  }
+
+  _onGoogleFlow() async {
+    final authorizeUrl = locator<OAuthProvider>().authorizeUrl;
+    final redirectUrl =
+        "$authorizeUrl&redirect_uri=$GOOGLE_SIGN_IN_REDIRECT_URL&identity_provider=Google";
+
+    if (await canLaunch(redirectUrl)) {
+      await launch(redirectUrl);
+    } else {
+      throw 'Could not launch $redirectUrl';
+    }
   }
 }

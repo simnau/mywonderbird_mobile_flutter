@@ -11,7 +11,6 @@ import 'package:layout/services/token.dart';
 
 const AUTHORIZATION_URL_PATH = '/api/oauth/authorize-url';
 const OAUTH_SIGN_IN_PATH = '/api/oauth/login';
-const OAUTH_SIGN_UP_PATH = '/api/oauth/register';
 
 class OAuthService {
   final API api;
@@ -46,19 +45,6 @@ class OAuthService {
     return _handleAuthResponse(response);
   }
 
-  Future<User> fbregister(String code) async {
-    final params = Map<String, String>.from({
-      'code': code,
-      'redirectUri': FB_SIGN_UP_REDIRECT_URL,
-    });
-    final response = await api.get(
-      OAUTH_SIGN_UP_PATH,
-      params: params,
-    );
-
-    return _handleAuthResponse(response);
-  }
-
   Future<User> glogin(String code) async {
     final params = Map<String, String>.from({
       'code': code,
@@ -66,19 +52,6 @@ class OAuthService {
     });
     final response = await api.get(
       OAUTH_SIGN_IN_PATH,
-      params: params,
-    );
-
-    return _handleAuthResponse(response);
-  }
-
-  Future<User> gregister(String code) async {
-    final params = Map<String, String>.from({
-      'code': code,
-      'redirectUri': GOOGLE_SIGN_UP_REDIRECT_URL,
-    });
-    final response = await api.get(
-      OAUTH_SIGN_UP_PATH,
       params: params,
     );
 

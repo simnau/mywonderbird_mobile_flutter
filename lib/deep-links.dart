@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:layout/constants/error-codes.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/services/authentication.dart';
@@ -52,14 +51,8 @@ class DeepLinks {
         case 'fblogin':
           user = await oauthService.fblogin(code);
           break;
-        case 'fbregister':
-          user = await oauthService.fbregister(code);
-          break;
         case 'glogin':
           user = await oauthService.glogin(code);
-          break;
-        case 'gregister':
-          user = await oauthService.gregister(code);
           break;
         default:
           break;
@@ -67,13 +60,8 @@ class DeepLinks {
 
       authenticationService.afterSignIn(user);
     } on AuthenticationException catch (e) {
+      // TODO show exceptions
       switch (e.errorCode) {
-        case NOT_SIGNED_UP:
-          print('The user has not signed up yet');
-          break;
-        case ALREADY_SIGNED_UP:
-          print('The user has already signed up');
-          break;
         default:
           break;
       }

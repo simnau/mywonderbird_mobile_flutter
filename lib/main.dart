@@ -14,9 +14,9 @@ import 'package:provider/provider.dart';
 import 'locator.dart';
 import 'app.dart';
 
-Future main() async {
-  await DotEnv().load('.env');
-  setupLocator();
+Future main({String env = 'dev'}) async {
+  await DotEnv().load("env/.env-$env");
+  setupLocator(env: env);
 
   final oauthProvider = locator<OAuthProvider>();
   final authorizeUrl = await locator<OAuthService>().getAuthorizationUrl();

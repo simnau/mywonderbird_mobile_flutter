@@ -28,8 +28,7 @@ GetIt locator = GetIt.instance;
 
 final sentryDSN = DotEnv().env['SENTRY_DSN'];
 
-setupLocator() {
-  final sentryClient = SentryClient(dsn: sentryDSN);
+setupLocator({String env}) {
   final storageService = StorageService();
   final termsProvider = TermsProvider();
   final tokenService = TokenService(storageService: storageService);
@@ -94,6 +93,9 @@ setupLocator() {
   locator.registerLazySingleton(() => DeepLinks());
   locator.registerLazySingleton(() => SharingIntent());
   locator.registerLazySingleton(() => authenticationInterceptor);
-  locator.registerLazySingleton(() => sentryClient);
   locator.registerLazySingleton(() => retryPolicy);
+
+  SentryClient sentryClient =
+      env == 'prod' ? SentryClient(dsn: sentryDSN) : null;
+  locator.registerLazySingleton(() => sentryClient);
 }

@@ -14,17 +14,19 @@ bool get isInDebugMode {
 }
 
 Future<void> reportError(dynamic error, dynamic stackTrace) async {
-  final sentryClient = locator<SentryClient>();
   // Print the exception to the console.
   print('Caught error: $error');
   if (isInDebugMode) {
     // Print the full stacktrace in debug mode.
     print(stackTrace);
   } else {
+    final sentryClient = locator<SentryClient>();
     // Send the Exception and Stacktrace to Sentry in Production mode.
-    sentryClient.captureException(
-      exception: error,
-      stackTrace: stackTrace,
-    );
+    if (sentryClient != null) {
+      sentryClient.captureException(
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 }

@@ -89,4 +89,4 @@ flutter:
     - images/mywonderbird-travel.jpg
     - images/logo.png
     - images/logo@025x.png
-    - .env
+    - env/
