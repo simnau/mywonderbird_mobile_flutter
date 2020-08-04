@@ -29,6 +29,7 @@ dependencies:
   sentry: ">=3.0.0 <4.0.0"
   photo_manager: ^0.5.7
   transparent_image: ^1.0.0
+  photo_view: ^0.9.2
 
 dev_dependencies:
   flutter_test:

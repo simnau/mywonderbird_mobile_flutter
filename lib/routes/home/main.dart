@@ -4,6 +4,7 @@ import 'package:layout/components/feed-item.dart';
 import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
+import 'package:layout/routes/image-view/main.dart';
 import 'package:layout/routes/select-picture/home.dart';
 import 'package:layout/services/bookmark.dart';
 import 'package:layout/services/feed.dart';
@@ -145,6 +146,7 @@ class _HomePageState extends State<HomePage> {
       onLike: () => item.isLiked ? _onUnlike(item) : _onLike(item),
       onBookmark: () =>
           item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
+      onTap: () => _onFeedItemTap(item),
     );
   }
 
@@ -190,6 +192,18 @@ class _HomePageState extends State<HomePage> {
         }
       });
     }
+  }
+
+  _onFeedItemTap(FeedLocation item) async {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => ImageView(
+          image: NetworkImage(item.imageUrl),
+        ),
+      ),
+    );
   }
 
   _onLike(FeedLocation item) async {

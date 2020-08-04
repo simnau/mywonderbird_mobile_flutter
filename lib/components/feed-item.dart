@@ -10,6 +10,7 @@ class FeedItem extends StatefulWidget {
   final bool isBookmarked;
   final void Function() onLike;
   final void Function() onBookmark;
+  final void Function() onTap;
   final String imageUrl;
 
   const FeedItem({
@@ -21,6 +22,7 @@ class FeedItem extends StatefulWidget {
     this.isBookmarked = false,
     @required this.onLike,
     @required this.onBookmark,
+    @required this.onTap,
     @required this.imageUrl,
   }) : super(key: key);
 
@@ -51,6 +53,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                 AspectRatio(
                   aspectRatio: 4 / 3,
                   child: GestureDetector(
+                    onTap: widget.onTap,
                     onDoubleTap: widget.isLiked ? null : _onLike,
                     child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
