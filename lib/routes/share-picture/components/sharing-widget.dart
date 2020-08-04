@@ -6,13 +6,10 @@ import 'package:layout/models/journey.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/share-picture/select-journey.dart';
-import 'package:layout/routes/share-picture/select-location.dart';
+import 'package:layout/routes/select-journey.dart/main.dart';
+import 'package:layout/routes/select-location/main.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/services/sharing.dart';
-import 'package:layout/types/select-journey-arguments.dart';
-import 'package:layout/types/select-location-arguments.dart';
-import 'package:provider/provider.dart';
 
 class SharingWidget extends StatefulWidget {
   final Journey selectedJourney;
@@ -33,10 +30,7 @@ class _SharingWidgetState extends State<SharingWidget> {
 
   Journey get journey => _selectedJourney ?? widget.selectedJourney;
   LocationModel get location {
-    final sharePictureProvider = Provider.of<SharePictureProvider>(
-      context,
-      listen: false,
-    );
+    final sharePictureProvider = locator<SharePictureProvider>();
 
     return _selectedLocation ?? sharePictureProvider.pictureData.location;
   }
@@ -163,10 +157,7 @@ class _SharingWidgetState extends State<SharingWidget> {
     final sharingService = locator<SharingService>();
     final navigationService = locator<NavigationService>();
     final title = _titleController.text;
-    final sharePictureProvider = Provider.of<SharePictureProvider>(
-      context,
-      listen: false,
-    );
+    final sharePictureProvider = locator<SharePictureProvider>();
 
     try {
       setState(() {
@@ -201,11 +192,12 @@ class _SharingWidgetState extends State<SharingWidget> {
   }
 
   _selectJourney() async {
-    final selectedJourney = await Navigator.pushNamed(
-      context,
-      SelectJourney.RELATIVE_PATH,
-      arguments: SelectJourneyArguments(
-        journey: journey,
+    final navigationService = locator<NavigationService>();
+    final selectedJourney = await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SelectJourney(
+          journey: journey,
+        ),
       ),
     );
 
@@ -217,11 +209,12 @@ class _SharingWidgetState extends State<SharingWidget> {
   }
 
   _selectLocation() async {
-    final selectedLocation = await Navigator.pushNamed(
-      context,
-      SelectLocation.RELATIVE_PATH,
-      arguments: SelectLocationArguments(
-        location: location,
+    final navigationService = locator<NavigationService>();
+    final selectedLocation = await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SelectLocation(
+          location: location,
+        ),
       ),
     );
 
@@ -233,10 +226,7 @@ class _SharingWidgetState extends State<SharingWidget> {
   }
 
   ImageProvider get _image {
-    final sharePictureProvider = Provider.of<SharePictureProvider>(
-      context,
-      listen: false,
-    );
+    final sharePictureProvider = locator<SharePictureProvider>();
 
     return sharePictureProvider.pictureData.image;
   }

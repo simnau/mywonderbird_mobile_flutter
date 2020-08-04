@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:layout/routes/pdf/main.dart';
 import 'package:layout/routes/terms/main.dart';
 import 'package:layout/types/pdf-arguments.dart';
+import 'package:layout/types/share-screen-arguments.dart';
 import 'package:layout/types/terms-arguments.dart';
 
 import 'routes/authentication/main.dart';
@@ -9,10 +10,9 @@ import 'routes/authentication/select-auth-option.dart';
 import 'routes/home/main.dart';
 import 'routes/profile/main.dart';
 import 'routes/profile/profile.dart';
-import 'routes/select-picture/home.dart';
+import 'routes/select-destination/main.dart';
 import 'routes/select-picture/main.dart';
 import 'routes/share-picture/main.dart';
-import 'routes/share-picture/select-destination.dart';
 import 'routes/splash/main.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -41,14 +41,22 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: (_) => SplashScreen(),
         settings: settings,
       );
-    case SelectPictureHome.PATH:
+    case SelectPicture.PATH:
       return MaterialPageRoute(
-        builder: (_) => SelectPictureRoot(),
+        builder: (_) => SelectPicture(),
         settings: settings,
       );
     case SelectDestination.PATH:
       return MaterialPageRoute(
-        builder: (_) => SharePictureRoot(),
+        builder: (_) => SelectDestination(),
+        settings: settings,
+      );
+    case ShareScreen.PATH:
+      final ShareScreenArguments arguments = settings.arguments;
+      return MaterialPageRoute(
+        builder: (_) => ShareScreen(
+          selectedJourney: arguments?.selectedJourney,
+        ),
         settings: settings,
       );
     case Profile.PATH:

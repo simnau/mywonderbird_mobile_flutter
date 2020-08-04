@@ -5,7 +5,7 @@ import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
 import 'package:layout/routes/image-view/main.dart';
-import 'package:layout/routes/select-picture/home.dart';
+import 'package:layout/routes/select-picture/main.dart';
 import 'package:layout/services/bookmark.dart';
 import 'package:layout/services/feed.dart';
 import 'package:layout/services/like.dart';
@@ -275,6 +275,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onAddPicture() {
-    locator<NavigationService>().pushNamed(SelectPictureHome.PATH);
+    locator<NavigationService>().pushNamed(SelectPicture.PATH);
   }
 }

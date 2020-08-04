@@ -1,18 +1,16 @@
+import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/share-picture/share-screen.dart';
+import 'package:layout/routes/share-picture/main.dart';
+import 'package:layout/routes/share-picture/mock.dart';
+import 'package:layout/services/navigation.dart';
 import 'package:layout/types/share-screen-arguments.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
 import 'package:layout/providers/journeys.dart';
 import 'package:provider/provider.dart';
 
-import 'mock.dart';
-
 class SelectJourney extends StatefulWidget {
-  static const RELATIVE_PATH = 'share-picture/journey';
-  static const PATH = "/$RELATIVE_PATH";
-
   final Journey journey;
   final bool createNew;
 
@@ -29,49 +27,65 @@ class _SelectJourneyState extends State<SelectJourney> {
   final _titleController = TextEditingController();
 
   bool _creating = false;
-  JourneysProvider _journeysProvider;
 
   @override
   void initState() {
     super.initState();
     _creating = widget.createNew ?? false;
-    WidgetsBinding.instance.addPostFrameCallback((_) => loadUserJourneys());
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _journeysProvider = Provider.of<JourneysProvider>(
-      context,
-      listen: false,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadUserJourneys());
   }
 
   @override
   void dispose() {
     super.dispose();
-    _journeysProvider.clearState();
+    locator<JourneysProvider>().clearState();
   }
 
-  void loadUserJourneys() async {
+  @override
+  Widget build(BuildContext buildContext) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
+      body: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              flex: 0,
+              child: _buildListHeader(),
+            ),
+            Expanded(
+              flex: 1,
+              child: _buildList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
     final journeysProvider = Provider.of<JourneysProvider>(
       context,
-      listen: false,
     );
-    await journeysProvider.loadUserJourneys();
-  }
 
-  void _onSelectJourney(Journey journey) {
-    if (widget.createNew ?? false) {
-      Navigator.of(context).pushReplacementNamed(
-        ShareScreen.RELATIVE_PATH,
-        arguments: ShareScreenArguments(
-          selectedJourney: journey,
+    if (journeysProvider.loading) {
+      return Center(
+        child: SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(),
         ),
       );
-    } else {
-      Navigator.of(context).pop(journey);
     }
+
+    return ListView.builder(
+      itemBuilder: (_, index) => _buildJourneyListItem(
+        journeysProvider.journeys[index],
+      ),
+      itemCount: journeysProvider.journeys.length,
+    );
   }
 
   Widget _buildJourneyListItem(Journey journey) {
@@ -122,64 +136,16 @@ class _SelectJourneyState extends State<SelectJourney> {
     );
   }
 
-  Widget _buildList() {
-    final journeysProvider = Provider.of<JourneysProvider>(
-      context,
-    );
-
-    if (journeysProvider.loading) {
-      return Center(
-        child: SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(),
-        ),
-      );
+  Widget _buildListHeader() {
+    if (_creating) {
+      return _buildCreateTripHeader();
     }
 
-    return ListView.builder(
-      itemBuilder: (_, index) => _buildJourneyListItem(
-        journeysProvider.journeys[index],
-      ),
-      itemCount: journeysProvider.journeys.length,
-    );
-  }
-
-  void _createTrip() async {
-    final journeysProvider = Provider.of<JourneysProvider>(
-      context,
-      listen: false,
-    );
-
-    final journey = Journey(
-      imageUrl: MOCK_IMAGE,
-      name: _titleController.text,
-      startDate: DateTime.now(),
-    );
-
-    await journeysProvider.addJourney(journey);
-
-    _closeCreateTrip();
-  }
-
-  void _openCreateTrip() {
-    setState(() {
-      _creating = true;
-    });
-  }
-
-  void _closeCreateTrip() {
-    _titleController.clear();
-    setState(() {
-      _creating = false;
-    });
+    return _buildCreateTripButton();
   }
 
   Widget _buildCreateTripHeader() {
-    final sharePictureProvider = Provider.of<SharePictureProvider>(
-      context,
-      listen: false,
-    );
+    final sharePictureProvider = locator<SharePictureProvider>();
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
@@ -270,35 +236,49 @@ class _SelectJourneyState extends State<SelectJourney> {
     );
   }
 
-  Widget _buildListHeader() {
-    if (_creating) {
-      return _buildCreateTripHeader();
-    }
-
-    return _buildCreateTripButton();
+  void _closeCreateTrip() {
+    _titleController.clear();
+    setState(() {
+      _creating = false;
+    });
   }
 
-  @override
-  Widget build(BuildContext buildContext) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-      ),
-      body: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Expanded(
-              flex: 0,
-              child: _buildListHeader(),
-            ),
-            Expanded(
-              flex: 1,
-              child: _buildList(),
-            ),
-          ],
-        ),
-      ),
+  void _openCreateTrip() {
+    setState(() {
+      _creating = true;
+    });
+  }
+
+  void _createTrip() async {
+    final journeysProvider = locator<JourneysProvider>();
+
+    final journey = Journey(
+      imageUrl: MOCK_IMAGE, // TODO: use appropriate image
+      name: _titleController.text,
+      startDate: DateTime.now(),
     );
+
+    await journeysProvider.addJourney(journey);
+
+    _closeCreateTrip();
+  }
+
+  _loadUserJourneys() async {
+    final journeysProvider = locator<JourneysProvider>();
+    await journeysProvider.loadUserJourneys();
+  }
+
+  _onSelectJourney(Journey journey) {
+    final navigationService = locator<NavigationService>();
+    if (widget.createNew ?? false) {
+      navigationService.pushReplacementNamed(
+        ShareScreen.PATH,
+        arguments: ShareScreenArguments(
+          selectedJourney: journey,
+        ),
+      );
+    } else {
+      navigationService.pop(journey);
+    }
   }
 }

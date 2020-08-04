@@ -17,11 +17,11 @@ class NavigationService {
         .pushReplacementNamed(routeName, arguments: arguments);
   }
 
-  void popUntil(bool Function(Route<dynamic>) predicate) {
+  void popUntil(RoutePredicate predicate) {
     navigatorKey.currentState.popUntil(predicate);
   }
 
-  void pop({dynamic value}) {
-    return navigatorKey.currentState.pop(value);
+  void pop<T extends Object>([T result]) {
+    return navigatorKey.currentState.pop(result);
   }
 }

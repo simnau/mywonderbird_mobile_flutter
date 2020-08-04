@@ -13,10 +13,6 @@ import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
 
 class SelectLocation extends StatefulWidget {
-  static const SUB_PATH = 'location';
-  static const RELATIVE_PATH = "share-picture/$SUB_PATH";
-  static const PATH = "/$RELATIVE_PATH";
-
   final LocationModel location;
 
   SelectLocation({this.location});
