@@ -30,6 +30,7 @@ class ImageView extends StatelessWidget {
       ),
       body: Container(
         child: PhotoView(
+          minScale: PhotoViewComputedScale.contained,
           imageProvider: image,
         ),
       ),
