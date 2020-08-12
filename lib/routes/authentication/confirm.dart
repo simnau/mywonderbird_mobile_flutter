@@ -3,9 +3,7 @@ import 'package:layout/components/auth-text-field.dart';
 import 'package:layout/exceptions/authentication-exception.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/routes/authentication/components/screen-layout.dart';
-import 'package:layout/routes/home/main.dart';
 import 'package:layout/services/authentication.dart';
-import 'package:layout/services/navigation.dart';
 
 class Confirm extends StatefulWidget {
   static const RELATIVE_PATH = 'confirm';

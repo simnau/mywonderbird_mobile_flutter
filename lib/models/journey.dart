@@ -7,10 +7,12 @@ class Journey extends NamedItem {
   final String id;
   final DateTime startDate;
   final String imageUrl;
+  final String country;
 
   const Journey({
     @required name,
     this.id,
+    this.country,
     @required this.startDate,
     @required this.imageUrl,
   }) : super(name: name);
@@ -21,6 +23,7 @@ class Journey extends NamedItem {
       name: json['name'],
       startDate: json['startDate'],
       imageUrl: json['imageUrl'],
+      country: json['country'],
     );
   }
 
@@ -30,6 +33,7 @@ class Journey extends NamedItem {
       name: json['title'],
       startDate: DateTime.parse(json['startDate']),
       imageUrl: (json['images'] ?? []).isNotEmpty ? json['images'][0] : null,
+      country: json['country'],
     );
   }
 
@@ -39,6 +43,7 @@ class Journey extends NamedItem {
       'title': name,
       'startDate': formatDateTime(startDate),
       'imageUrl': imageUrl,
+      'country': country,
     });
   }
 }

@@ -4,27 +4,16 @@ import 'package:layout/routes/authentication/select-auth-option.dart';
 import 'package:layout/services/authentication.dart';
 import 'package:layout/services/navigation.dart';
 
-class Profile extends StatefulWidget {
-  static const RELATIVE_PATH = 'profile';
+class Settings extends StatelessWidget {
+  static const RELATIVE_PATH = 'settings';
   static const PATH = "/$RELATIVE_PATH";
 
   @override
-  _ProfileState createState() => _ProfileState();
-}
-
-class _ProfileState extends State<Profile> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF2F3F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: _onBack,
-        ),
       ),
       body: Center(
         child: RaisedButton(
@@ -47,12 +36,5 @@ class _ProfileState extends State<Profile> {
     final navigationService = locator<NavigationService>();
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushReplacementNamed(SelectAuthOption.PATH);
-  }
-
-  void _onBack() {
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).pop();
   }
 }

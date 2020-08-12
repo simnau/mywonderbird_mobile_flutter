@@ -9,9 +9,9 @@ import 'routes/authentication/main.dart';
 import 'routes/authentication/select-auth-option.dart';
 import 'routes/home/main.dart';
 import 'routes/profile/main.dart';
-import 'routes/profile/profile.dart';
 import 'routes/select-destination/main.dart';
 import 'routes/select-picture/main.dart';
+import 'routes/settings/main.dart';
 import 'routes/share-picture/main.dart';
 import 'routes/splash/main.dart';
 
@@ -61,7 +61,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case Profile.PATH:
       return MaterialPageRoute(
-        builder: (_) => ProfileHome(),
+        builder: (_) => Profile(),
+        settings: settings,
+      );
+    case Settings.PATH:
+      return MaterialPageRoute(
+        builder: (_) => Settings(),
         settings: settings,
       );
     case PdfPage.PATH:

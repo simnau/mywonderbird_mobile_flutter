@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/profile/profile.dart';
+import 'package:layout/routes/profile/main.dart';
 import 'package:layout/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {

@@ -30,6 +30,9 @@ dependencies:
   photo_manager: ^0.5.7
   transparent_image: ^1.0.0
   photo_view: ^0.9.2
+  characters: ^1.0.0
+  image: ^2.1.14
+  percent_indicator: ^2.1.5
 
 dev_dependencies:
   flutter_test:

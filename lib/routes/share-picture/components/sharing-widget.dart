@@ -6,7 +6,7 @@ import 'package:layout/models/journey.dart';
 import 'package:layout/models/location.dart';
 import 'package:layout/providers/share-picture.dart';
 import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/select-journey.dart/main.dart';
+import 'package:layout/routes/select-journey/main.dart';
 import 'package:layout/routes/select-location/main.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:layout/services/sharing.dart';

@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: Color(0xFFF2F3F7),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(64),

@@ -5,7 +5,7 @@ import 'package:layout/models/journey.dart';
 import 'package:layout/services/api.dart';
 
 const CREATE_JOURNEY_PATH = '/api/journeys';
-const MY_JOURNEYS_PATH = '/api/journeys/my';
+const MY_JOURNEYS_PATH = '/api/journeys/v2/my';
 const LAST_JOURNEY_PATH = '/api/journeys/last';
 
 class JourneyService {

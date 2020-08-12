@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:layout/components/custom-list-item.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/select-journey.dart/main.dart';
+import 'package:layout/routes/select-journey/main.dart';
 import 'package:layout/routes/share-picture/main.dart';
 import 'package:layout/services/journeys.dart';
 import 'package:layout/services/navigation.dart';
