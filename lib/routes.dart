@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:layout/routes/pdf/main.dart';
+import 'package:layout/routes/profile/main.dart';
 import 'package:layout/routes/terms/main.dart';
 import 'package:layout/types/pdf-arguments.dart';
 import 'package:layout/types/share-screen-arguments.dart';

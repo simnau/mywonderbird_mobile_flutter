@@ -1,87 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:layout/models/user.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 const double AVATAR_RADIUS = 50;
 const double PROGRESS_WIDTH = 8;
 
-class ProfileAppBar extends StatelessWidget {
+class ProfileAppBar extends SliverPersistentHeaderDelegate {
+  final double expandedHeight;
+  final double collapsedHeight;
   final Function() onSettings;
   final Widget tabBar;
 
   const ProfileAppBar({
-    Key key,
+    @required this.expandedHeight,
+    @required this.collapsedHeight,
     this.onSettings,
     this.tabBar,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final user = Provider.of<User>(context);
 
-    return Material(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(16),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      color: Colors.white,
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: SafeArea(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: BackButton(),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          _avatar(user),
-                          Text(
-                            _getUsername(user),
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black45,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            _getLevel(),
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.black45,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Material(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SafeArea(
+                  child: NavigationToolbar(
+                    leading: Align(
+                      alignment: Alignment.topLeft,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints.tightFor(
+                          width: kToolbarHeight,
+                          height: kToolbarHeight,
+                        ),
+                        child: BackButton(),
+                      ),
+                    ),
+                    trailing: Align(
+                      alignment: Alignment.topRight,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints.tightFor(
+                          width: kToolbarHeight,
+                          height: kToolbarHeight,
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.settings),
+                          onPressed: onSettings,
+                        ),
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: onSettings,
+                ),
+              ),
+              tabBar,
+            ],
+          ),
+        ),
+        Positioned(
+          top: 8 - shrinkOffset / 4,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Opacity(
+              opacity: 1 - shrinkOffset / maxExtent,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  _avatar(user),
+                  Text(
+                    _getUsername(user),
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black45,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    _getLevel(),
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.black45,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          tabBar,
-        ],
-      ),
+        )
+      ],
     );
+  }
+
+  @override
+  double get maxExtent => expandedHeight;
+
+  @override
+  double get minExtent => collapsedHeight;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 
   Widget _avatar(user) {
