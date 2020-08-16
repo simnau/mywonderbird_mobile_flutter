@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/routes/home/main.dart';
+import 'package:layout/routes/bookmarked-locations/main.dart';
+import 'package:layout/routes/notifications/main.dart';
 import 'package:layout/routes/profile/main.dart';
 import 'package:layout/services/navigation.dart';
 
@@ -16,15 +19,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final currentRoute = ModalRoute.of(context).settings.name;
-
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       child: Padding(
         padding: const EdgeInsets.only(
-          left: 32.0,
-          right: 32.0,
+          left: 16.0,
+          right: 16.0,
           bottom: 4.0,
           top: 4.0,
         ),
@@ -34,16 +34,29 @@ class _BottomNavBarState extends State<BottomNavBar> {
           children: <Widget>[
             IconButton(
               iconSize: 32,
-              icon: Icon(Icons.explore),
-              color: routeSelected(currentRoute, HomePage.PATH)
-                  ? theme.primaryColor
-                  : Colors.grey[300],
+              icon: Icon(Ionicons.md_globe),
+              color: Colors.black87,
               onPressed: _onNavigateToFeed,
             ),
             IconButton(
               iconSize: 32,
+              icon: Icon(Icons.collections_bookmark),
+              color: Colors.black54,
+              onPressed: _onNavigateToBookmarks,
+            ),
+            SizedBox(
+              width: 60,
+            ),
+            IconButton(
+              iconSize: 32,
+              icon: Icon(Icons.notifications_none),
+              color: Colors.black54,
+              onPressed: _onNavigateToNotifications,
+            ),
+            IconButton(
+              iconSize: 32,
               icon: Icon(Icons.person),
-              color: theme.disabledColor,
+              color: Colors.black54,
               onPressed: _onNavigateToProfile,
             ),
           ],
@@ -62,5 +75,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   _onNavigateToProfile() {
     locator<NavigationService>().pushNamed(Profile.PATH);
+  }
+
+  _onNavigateToBookmarks() {
+    locator<NavigationService>().pushNamed(BookmarkedLocations.PATH);
+  }
+
+  _onNavigateToNotifications() {
+    locator<NavigationService>().pushNamed(Notifications.PATH);
   }
 }

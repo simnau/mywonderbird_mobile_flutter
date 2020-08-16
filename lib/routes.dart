@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:layout/routes/bookmarked-locations/main.dart';
+import 'package:layout/routes/notifications/main.dart';
 import 'package:layout/routes/pdf/main.dart';
 import 'package:layout/routes/profile/main.dart';
 import 'package:layout/routes/terms/main.dart';
@@ -68,6 +70,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Settings.PATH:
       return MaterialPageRoute(
         builder: (_) => Settings(),
+        settings: settings,
+      );
+    case BookmarkedLocations.PATH:
+      return MaterialPageRoute(
+        builder: (_) => BookmarkedLocations(),
+        settings: settings,
+      );
+    case Notifications.PATH:
+      return MaterialPageRoute(
+        builder: (_) => Notifications(),
         settings: settings,
       );
     case PdfPage.PATH:

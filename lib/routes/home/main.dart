@@ -44,57 +44,54 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       extendBody: true,
       backgroundColor: Color(0xFFF2F3F7),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(64),
-        child: AppBar(
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(16),
-            ),
+      appBar: AppBar(
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(16),
           ),
-          leading: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                  'images/logo@025x.png',
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(
-            'MyWonderbird',
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-              fontSize: 21.0,
-            ),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.tune,
-              ),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.search,
-              ),
-              onPressed: () {},
-            ),
-          ],
         ),
+        leading: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                'images/logo@025x.png',
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        title: Text(
+          'MyWonderbird',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+            fontSize: 21.0,
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.tune,
+            ),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.search,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _feed(),
       ),
       floatingActionButton: Container(
-        width: 72,
-        height: 72,
+        width: 60,
+        height: 60,
         margin: const EdgeInsets.all(2.0),
         child: FloatingActionButton(
           child: Icon(

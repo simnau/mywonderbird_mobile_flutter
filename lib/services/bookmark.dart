@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:layout/models/bookmarked-location.dart';
 import 'package:layout/services/api.dart';
 
 const BOOKMARK_GEM_CAPTURE_PATH = '/api/bookmarks/gem-captures';
+const GET_BOOKMARKED_GEM_CAPTURES_PATH = BOOKMARK_GEM_CAPTURE_PATH;
 final unbookmarkGemCapturePath =
     (gemCaptureId) => "$BOOKMARK_GEM_CAPTURE_PATH/$gemCaptureId";
 
@@ -29,5 +31,25 @@ class BookmarkService {
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw Exception('There was an error unbookmarking the Gem Capture');
     }
+  }
+
+  Future<List<BookmarkedLocationModel>> fetchBookmarkedGemCaptures(
+    page,
+    pageSize,
+  ) async {
+    final response = await api.get(GET_BOOKMARKED_GEM_CAPTURES_PATH, params: {
+      'page': page?.toString(),
+      'pageSize': pageSize?.toString(),
+    });
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error fetching bookmarked Gem Captures');
+    }
+    final bookmarks = response['body']['bookmarks'];
+
+    return bookmarks.map<BookmarkedLocationModel>((bookmark) {
+      return BookmarkedLocationModel.fromResponseJson(bookmark);
+    }).toList();
   }
 }
