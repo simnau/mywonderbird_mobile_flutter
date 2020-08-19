@@ -5,6 +5,7 @@ import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/feed-location.dart';
 import 'package:layout/routes/image-view/main.dart';
+import 'package:layout/routes/select-bookmark-group/main.dart';
 import 'package:layout/routes/select-picture/main.dart';
 import 'package:layout/services/bookmark.dart';
 import 'package:layout/services/feed.dart';
@@ -241,6 +242,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onBookmark(FeedLocation item) async {
+    final navigationService = locator<NavigationService>();
+    final bookmarkGroup = await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SelectBookmarkGroup(),
+      ),
+    );
+
+    if (bookmarkGroup == null) {
+      return;
+    }
+
     final bookmarkService = locator<BookmarkService>();
 
     try {
@@ -248,7 +260,7 @@ class _HomePageState extends State<HomePage> {
         item.isBookmarked = true;
       });
 
-      await bookmarkService.bookmarkGemCapture(item.id);
+      await bookmarkService.bookmarkGemCapture(item.id, bookmarkGroup.id);
     } catch (e) {
       setState(() {
         item.isBookmarked = false;

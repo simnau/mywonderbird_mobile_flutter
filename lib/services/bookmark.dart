@@ -13,9 +13,10 @@ class BookmarkService {
 
   BookmarkService({this.api});
 
-  bookmarkGemCapture(String gemCaptureId) async {
+  bookmarkGemCapture(String gemCaptureId, String bookmarkGroupId) async {
     final response = await api.post(BOOKMARK_GEM_CAPTURE_PATH, {
       'gemCaptureId': gemCaptureId,
+      'bookmarkGroupId': bookmarkGroupId,
     });
     final rawResponse = response['response'];
 

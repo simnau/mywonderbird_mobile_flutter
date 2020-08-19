@@ -9,6 +9,7 @@ import 'package:layout/providers/share-picture.dart';
 import 'package:layout/providers/terms.dart';
 import 'package:layout/services/api.dart';
 import 'package:layout/services/authentication.dart';
+import 'package:layout/services/bookmark-group.dart';
 import 'package:layout/services/bookmark.dart';
 import 'package:layout/services/feed.dart';
 import 'package:layout/services/journeys.dart';
@@ -74,6 +75,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => FeedService(api: api));
   locator.registerLazySingleton(() => LikeService(api: api));
   locator.registerLazySingleton(() => BookmarkService(api: api));
+  locator.registerLazySingleton(() => BookmarkGroupService(api: api));
   locator.registerLazySingleton(
       () => PictureDataService(locationService: locationService));
   locator.registerLazySingleton(
