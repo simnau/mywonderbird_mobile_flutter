@@ -22,8 +22,16 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Create bookmark group'),
+          Text(
+            'Create a bookmark group',
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           TextField(
             decoration: new InputDecoration(hintText: 'Bookmark group title'),
             controller: _titleController,
@@ -43,7 +51,10 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
               ),
               RaisedButton(
                 onPressed: _onCreate,
-                child: Text('Create'),
+                child: Text(
+                  'Create',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

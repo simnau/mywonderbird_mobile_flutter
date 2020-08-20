@@ -1,21 +1,22 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:layout/components/custom-grid-tile.dart';
 import 'package:layout/components/small-icon-button.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/bookmark-group.dart';
-import 'package:layout/routes/select-bookmark-group/components/create-bookmark-group-dialog.dart';
+import 'package:layout/routes/bookmarked-locations/main.dart';
 import 'package:layout/services/bookmark-group.dart';
 import 'package:layout/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class SelectBookmarkGroup extends StatefulWidget {
+class Bookmarks extends StatefulWidget {
+  static const RELATIVE_PATH = 'bookmarks';
+  static const PATH = "/$RELATIVE_PATH";
+
   @override
-  _SelectBookmarkGroupState createState() => _SelectBookmarkGroupState();
+  _BookmarksState createState() => _BookmarksState();
 }
 
-class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
+class _BookmarksState extends State<Bookmarks> {
   bool _isLoading = false;
   List<BookmarkGroupModel> _items = [];
 
@@ -31,7 +32,7 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
-          'Select a bookmark group',
+          'Your bookmark groups',
           style: TextStyle(color: Colors.black54),
         ),
       ),
@@ -51,31 +52,13 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
 
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
-      itemCount: _items.length + 1,
+      itemCount: _items.length,
       gridDelegate:
           SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return _createBookmarkGroupButton();
-        }
-
-        final item = _items[index - 1];
+        final item = _items[index];
         return _bookmarkGroup(item);
       },
-    );
-  }
-
-  Widget _createBookmarkGroupButton() {
-    return CustomGridTile(
-      child: Container(
-        color: Colors.grey[100],
-        child: Icon(
-          Icons.add_circle,
-          size: 48,
-          color: Colors.black26,
-        ),
-      ),
-      onTap: _onOpenCreateBookmarkGroup,
     );
   }
 
@@ -156,37 +139,15 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
     }
   }
 
-  _onOpenCreateBookmarkGroup() {
-    showDialog(
-      context: context,
-      child: Dialog(
-        child: CreateBookmarkGroupDialog(
-          onCreate: _onCreateBookmarkGroup,
-        ),
-      ),
-      barrierDismissible: true,
-    );
-  }
-
-  _onCreateBookmarkGroup(String title) async {
-    if (title.isEmpty) {
-      return;
-    }
-
-    try {
-      final bookmarkGroupService = locator<BookmarkGroupService>();
-      final bookmarkGroup =
-          await bookmarkGroupService.createBookmarkGroup(title);
-
-      setState(() {
-        _items.insert(1, bookmarkGroup);
-      });
-    } catch (e) {}
-  }
-
   _onSelect(BookmarkGroupModel bookmarkGroup) {
     final navigationService = locator<NavigationService>();
-    navigationService.pop(bookmarkGroup);
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => BookmarkedLocations(
+          bookmarkGroup: bookmarkGroup,
+        ),
+      ),
+    );
   }
 
   _onDelete(BookmarkGroupModel bookmarkGroup) async {

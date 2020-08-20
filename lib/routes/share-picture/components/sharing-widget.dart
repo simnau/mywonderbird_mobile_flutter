@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/custom_icons.dart';
+import 'package:layout/components/custom-icons.dart';
 import 'package:layout/components/selection-list-item.dart';
 import 'package:layout/locator.dart';
 import 'package:layout/models/journey.dart';

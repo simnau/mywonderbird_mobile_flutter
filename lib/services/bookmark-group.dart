@@ -4,8 +4,11 @@ import 'package:layout/models/bookmark-group.dart';
 
 import 'api.dart';
 
-const GET_BOOKMARK_GROUPS_PATH = '/api/bookmark-groups/gem-captures';
-const CREATE_BOOKMARK_GROUP_PATH = '/api/bookmark-groups/gem-captures';
+const ROOT_BOOKMARK_GROUPS_PATH = '/api/bookmark-groups';
+const GET_BOOKMARK_GROUPS_PATH = "$ROOT_BOOKMARK_GROUPS_PATH/gem-captures";
+const CREATE_BOOKMARK_GROUP_PATH = "$ROOT_BOOKMARK_GROUPS_PATH/gem-captures";
+final deleteBookmarkGroupPath =
+    (bookmarkGroupId) => "$ROOT_BOOKMARK_GROUPS_PATH/$bookmarkGroupId";
 
 class BookmarkGroupService {
   final API api;
@@ -38,5 +41,14 @@ class BookmarkGroupService {
     final bookmarkGroup = response['body'];
 
     return BookmarkGroupModel.fromResponseJson(bookmarkGroup);
+  }
+
+  delete(String bookmarkGroupId) async {
+    final response = await api.delete(deleteBookmarkGroupPath(bookmarkGroupId));
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error deleting the bookmark group');
+    }
   }
 }

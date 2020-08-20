@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:layout/locator.dart';
+import 'package:layout/routes/bookmarks/main.dart';
 import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/bookmarked-locations/main.dart';
 import 'package:layout/routes/notifications/main.dart';
 import 'package:layout/routes/profile/main.dart';
 import 'package:layout/services/navigation.dart';
@@ -78,7 +78,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   _onNavigateToBookmarks() {
-    locator<NavigationService>().pushNamed(BookmarkedLocations.PATH);
+    locator<NavigationService>().pushNamed(Bookmarks.PATH);
   }
 
   _onNavigateToNotifications() {

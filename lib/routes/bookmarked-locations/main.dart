@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/components/infinite-list.dart';
 import 'package:layout/locator.dart';
+import 'package:layout/models/bookmark-group.dart';
 import 'package:layout/models/bookmarked-location.dart';
 import 'package:layout/routes/image-view/main.dart';
 import 'package:layout/services/bookmark.dart';
@@ -11,16 +12,25 @@ const DEFAULT_PAGE_SIZE = 20;
 
 Future<List<BookmarkedLocationModel>> fetchBookmarkedLocations({
   int page,
+  String bookmarkGroupId,
   int offset = DEFAULT_PAGE_SIZE,
 }) async {
   final bookmarkedLocationService = locator<BookmarkService>();
 
-  return bookmarkedLocationService.fetchBookmarkedGemCaptures(page, offset);
+  return bookmarkedLocationService.fetchBookmarkedGemCaptures(
+    bookmarkGroupId,
+    page,
+    offset,
+  );
 }
 
 class BookmarkedLocations extends StatefulWidget {
-  static const RELATIVE_PATH = 'bookmarked-locations';
-  static const PATH = "/$RELATIVE_PATH";
+  final BookmarkGroupModel bookmarkGroup;
+
+  const BookmarkedLocations({
+    Key key,
+    this.bookmarkGroup,
+  }) : super(key: key);
 
   @override
   _BookmarkedLocationsState createState() => _BookmarkedLocationsState();
@@ -47,12 +57,10 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
     return Scaffold(
       backgroundColor: Color(0xFFF2F3F7),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(16),
-          ),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          widget.bookmarkGroup?.title ?? '',
+          style: TextStyle(color: Colors.black54),
         ),
       ),
       body: RefreshIndicator(
@@ -160,7 +168,9 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
     setState(() {
       _isLoading = true;
     });
-    List<BookmarkedLocationModel> newEntries = await fetchBookmarkedLocations();
+    List<BookmarkedLocationModel> newEntries = await fetchBookmarkedLocations(
+      bookmarkGroupId: widget.bookmarkGroup.id,
+    );
     _currentPage += 1;
     setState(() {
       _items = newEntries;
@@ -174,7 +184,9 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
       _isLoading = true;
       _items = [];
     });
-    List<BookmarkedLocationModel> newEntries = await fetchBookmarkedLocations();
+    List<BookmarkedLocationModel> newEntries = await fetchBookmarkedLocations(
+      bookmarkGroupId: widget.bookmarkGroup.id,
+    );
     _currentPage += 1;
     setState(() {
       _items = newEntries;
@@ -187,6 +199,7 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
       setState(() => _isPerformingRequest = true);
       List<BookmarkedLocationModel> newEntries = await fetchBookmarkedLocations(
         page: _currentPage,
+        bookmarkGroupId: widget.bookmarkGroup.id,
       );
 
       if (newEntries.isEmpty) {

@@ -35,10 +35,12 @@ class BookmarkService {
   }
 
   Future<List<BookmarkedLocationModel>> fetchBookmarkedGemCaptures(
-    page,
-    pageSize,
+    String bookmarkGroupId,
+    int page,
+    int pageSize,
   ) async {
     final response = await api.get(GET_BOOKMARKED_GEM_CAPTURES_PATH, params: {
+      'bookmarkGroupId': bookmarkGroupId,
       'page': page?.toString(),
       'pageSize': pageSize?.toString(),
     });
