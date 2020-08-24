@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:layout/deep-links.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/routes.dart';
-import 'package:layout/routes/splash/main.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/sharing-intent.dart';
-import 'package:layout/theme/style.dart';
+import 'package:mywonderbird/deep-links.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/routes.dart';
+import 'package:mywonderbird/routes/splash/main.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/sharing-intent.dart';
+import 'package:mywonderbird/theme/style.dart';
 
 class App extends StatefulWidget {
   @override

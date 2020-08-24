@@ -1,7 +1,6 @@
-name: layout
-description: >
-  Sample app from "Building Layouts", https://flutter.io/docs/development/ui/layout.
-version: 1.0.0
+name: mywonderbird
+description: MyWonderbird travel app
+version: 0.4.0+27
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -38,6 +37,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.5"
 
 flutter:
   uses-material-design: true

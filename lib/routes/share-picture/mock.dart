@@ -1,5 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:layout/models/location.dart';
+import 'package:mywonderbird/models/location.dart';
 
 const MOCK_IMAGE =
     'https://www.icelandreview.com/wp-content/uploads/2019/08/img_2324.jpg';

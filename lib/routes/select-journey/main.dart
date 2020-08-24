@@ -1,13 +1,13 @@
-import 'package:layout/locator.dart';
-import 'package:layout/models/journey.dart';
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/share-picture/main.dart';
-import 'package:layout/routes/share-picture/mock.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/types/share-screen-arguments.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/routes/share-picture/main.dart';
+import 'package:mywonderbird/routes/share-picture/mock.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/types/share-screen-arguments.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
-import 'package:layout/providers/journeys.dart';
+import 'package:mywonderbird/providers/journeys.dart';
 import 'package:provider/provider.dart';
 
 class SelectJourney extends StatefulWidget {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/custom-icons.dart';
-import 'package:layout/components/selection-list-item.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/journey.dart';
-import 'package:layout/models/location.dart';
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/select-journey/main.dart';
-import 'package:layout/routes/select-location/main.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/services/sharing.dart';
+import 'package:mywonderbird/components/custom-icons.dart';
+import 'package:mywonderbird/components/selection-list-item.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/routes/home/main.dart';
+import 'package:mywonderbird/routes/select-journey/main.dart';
+import 'package:mywonderbird/routes/select-location/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/sharing.dart';
 
 class SharingWidget extends StatefulWidget {
   final Journey selectedJourney;

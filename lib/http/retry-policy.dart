@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/services/api.dart';
-import 'package:layout/services/token.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/services/api.dart';
+import 'package:mywonderbird/services/token.dart';
 
 const REFRESH_TOKEN_PATH = '/api/auth/refresh';
 

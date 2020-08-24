@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/infinite-list.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/bookmark-group.dart';
-import 'package:layout/models/bookmarked-location.dart';
-import 'package:layout/routes/image-view/main.dart';
-import 'package:layout/services/bookmark.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:mywonderbird/components/infinite-list.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/bookmark-group.dart';
+import 'package:mywonderbird/models/bookmarked-location.dart';
+import 'package:mywonderbird/routes/image-view/main.dart';
+import 'package:mywonderbird/services/bookmark.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const DEFAULT_PAGE_SIZE = 20;

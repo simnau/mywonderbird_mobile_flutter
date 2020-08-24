@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/providers/journeys.dart';
-import 'package:layout/routes/profile/components/profile-app-bar.dart';
-import 'package:layout/routes/settings/main.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/journeys.dart';
+import 'package:mywonderbird/routes/profile/components/profile-app-bar.dart';
+import 'package:mywonderbird/routes/settings/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
 
 import 'components/badges-tab.dart';
 import 'components/map-tab.dart';

@@ -1,6 +1,6 @@
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:layout/constants/auth.dart';
-import 'package:layout/services/token.dart';
+import 'package:mywonderbird/constants/auth.dart';
+import 'package:mywonderbird/services/token.dart';
 
 class AuthenticationInterceptor implements InterceptorContract {
   final TokenService tokenService;

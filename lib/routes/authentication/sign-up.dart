@@ -1,13 +1,13 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:layout/components/auth-text-field.dart';
-import 'package:layout/constants/error-codes.dart';
-import 'package:layout/exceptions/authentication-exception.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/user.dart';
-import 'package:layout/routes/authentication/components/screen-layout.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/types/confirm-account-arguments.dart';
+import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/constants/error-codes.dart';
+import 'package:mywonderbird/exceptions/authentication-exception.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/types/confirm-account-arguments.dart';
 import 'package:provider/provider.dart';
 
 import 'confirm.dart';

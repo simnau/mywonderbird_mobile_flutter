@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:layout/models/bookmarked-location.dart';
-import 'package:layout/services/api.dart';
+import 'package:mywonderbird/models/bookmarked-location.dart';
+import 'package:mywonderbird/services/api.dart';
 
 const BOOKMARK_GEM_CAPTURE_PATH = '/api/bookmarks/gem-captures';
 const GET_BOOKMARKED_GEM_CAPTURES_PATH = BOOKMARK_GEM_CAPTURE_PATH;

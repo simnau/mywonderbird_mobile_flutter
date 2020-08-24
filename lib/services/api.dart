@@ -7,13 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:layout/constants/auth.dart';
-import 'package:layout/exceptions/unauthorized-exception.dart';
-import 'package:layout/http/authentication.dart';
-import 'package:layout/http/retry-policy.dart';
-import 'package:layout/routes/authentication/select-auth-option.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/services/token.dart';
+import 'package:mywonderbird/constants/auth.dart';
+import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
+import 'package:mywonderbird/http/authentication.dart';
+import 'package:mywonderbird/http/retry-policy.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/token.dart';
 
 final apiBase = DotEnv().env['API_BASE'];
 

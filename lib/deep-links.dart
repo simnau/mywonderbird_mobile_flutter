@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:layout/exceptions/authentication-exception.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/services/oauth.dart';
+import 'package:mywonderbird/exceptions/authentication-exception.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/oauth.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DeepLinks {

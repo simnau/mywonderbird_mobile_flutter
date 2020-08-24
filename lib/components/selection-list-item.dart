@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layout/types/named-item.dart';
+import 'package:mywonderbird/types/named-item.dart';
 
 class SelectionListItem extends StatelessWidget {
   final Icon icon;

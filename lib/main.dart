@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:layout/models/user.dart';
-import 'package:layout/providers/journeys.dart';
-import 'package:layout/providers/oauth.dart';
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/services/oauth.dart';
-import 'package:layout/util/sentry.dart';
+import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/journeys.dart';
+import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/oauth.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:provider/provider.dart';
 
 import 'locator.dart';

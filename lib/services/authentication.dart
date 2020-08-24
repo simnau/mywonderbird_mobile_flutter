@@ -2,20 +2,20 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:layout/exceptions/authentication-exception.dart';
-import 'package:layout/exceptions/unauthorized-exception.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/user-profile.dart';
-import 'package:layout/models/user.dart';
-import 'package:layout/providers/terms.dart';
-import 'package:layout/routes/authentication/select-auth-option.dart';
-import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/terms/main.dart';
-import 'package:layout/services/api.dart';
-import 'package:layout/services/profile.dart';
-import 'package:layout/services/terms.dart';
-import 'package:layout/services/token.dart';
-import 'package:layout/types/terms-arguments.dart';
+import 'package:mywonderbird/exceptions/authentication-exception.dart';
+import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/user-profile.dart';
+import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/terms.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/routes/home/main.dart';
+import 'package:mywonderbird/routes/terms/main.dart';
+import 'package:mywonderbird/services/api.dart';
+import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/services/terms.dart';
+import 'package:mywonderbird/services/token.dart';
+import 'package:mywonderbird/types/terms-arguments.dart';
 
 import 'navigation.dart';
 

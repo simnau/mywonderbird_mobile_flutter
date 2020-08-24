@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/location.dart';
-import 'package:layout/services/location.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/services/location.dart';
 
-import 'package:layout/components/showcase-icon.dart';
-import 'package:layout/util/debouncer.dart';
-import 'package:layout/util/location.dart';
+import 'package:mywonderbird/components/showcase-icon.dart';
+import 'package:mywonderbird/util/debouncer.dart';
+import 'package:mywonderbird/util/location.dart';
 import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
 

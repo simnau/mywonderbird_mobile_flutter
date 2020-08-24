@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:layout/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 
 import 'routes.dart';
 

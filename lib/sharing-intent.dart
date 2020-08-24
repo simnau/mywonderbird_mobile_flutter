@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/select-destination/main.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/services/picture-data.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/routes/select-destination/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/picture-data.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'locator.dart';

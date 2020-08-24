@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:layout/models/journey.dart';
-import 'package:layout/providers/journeys.dart';
+import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/providers/journeys.dart';
 import 'package:provider/provider.dart';
 
 class TripsTab extends StatefulWidget {

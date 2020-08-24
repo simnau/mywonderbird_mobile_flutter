@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:layout/routes/bookmarks/main.dart';
-import 'package:layout/routes/notifications/main.dart';
-import 'package:layout/routes/pdf/main.dart';
-import 'package:layout/routes/profile/main.dart';
-import 'package:layout/routes/terms/main.dart';
-import 'package:layout/types/pdf-arguments.dart';
-import 'package:layout/types/share-screen-arguments.dart';
-import 'package:layout/types/terms-arguments.dart';
+import 'package:mywonderbird/routes/bookmarks/main.dart';
+import 'package:mywonderbird/routes/notifications/main.dart';
+import 'package:mywonderbird/routes/pdf/main.dart';
+import 'package:mywonderbird/routes/profile/main.dart';
+import 'package:mywonderbird/routes/terms/main.dart';
+import 'package:mywonderbird/types/pdf-arguments.dart';
+import 'package:mywonderbird/types/share-screen-arguments.dart';
+import 'package:mywonderbird/types/terms-arguments.dart';
 
 import 'routes/authentication/main.dart';
 import 'routes/authentication/select-auth-option.dart';

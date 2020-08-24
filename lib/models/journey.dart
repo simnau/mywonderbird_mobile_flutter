@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:layout/types/named-item.dart';
-import 'package:layout/util/date.dart';
-import 'package:layout/util/json.dart';
+import 'package:mywonderbird/types/named-item.dart';
+import 'package:mywonderbird/util/date.dart';
+import 'package:mywonderbird/util/json.dart';
 
 class Journey extends NamedItem {
   final String id;

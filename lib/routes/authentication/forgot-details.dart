@@ -1,9 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:layout/components/auth-text-field.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/types/reset-password-arguments.dart';
+import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/types/reset-password-arguments.dart';
 
 import 'components/screen-layout.dart';
 import 'reset-password.dart';

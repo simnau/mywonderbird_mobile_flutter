@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/custom-list-item.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/select-journey/main.dart';
-import 'package:layout/routes/share-picture/main.dart';
-import 'package:layout/services/journeys.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/types/share-screen-arguments.dart';
+import 'package:mywonderbird/components/custom-list-item.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/routes/select-journey/main.dart';
+import 'package:mywonderbird/routes/share-picture/main.dart';
+import 'package:mywonderbird/services/journeys.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/types/share-screen-arguments.dart';
 
 class SelectDestination extends StatefulWidget {
   static const RELATIVE_PATH = "select-destination";

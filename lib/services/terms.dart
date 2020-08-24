@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:layout/models/terms.dart';
-import 'package:layout/services/api.dart';
+import 'package:mywonderbird/models/terms.dart';
+import 'package:mywonderbird/services/api.dart';
 
 const TERMS_PATH = '/api/terms/latest';
 const ACCEPT_TERMS_PATH = '/api/profile/terms';

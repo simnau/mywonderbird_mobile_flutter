@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:layout/routes/share-picture/mock.dart';
-import 'package:layout/types/named-item.dart';
-import 'package:layout/util/json.dart';
+import 'package:mywonderbird/routes/share-picture/mock.dart';
+import 'package:mywonderbird/types/named-item.dart';
+import 'package:mywonderbird/util/json.dart';
 
 class LocationModel extends NamedItem {
   final String id;

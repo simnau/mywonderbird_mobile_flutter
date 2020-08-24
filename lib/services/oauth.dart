@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:layout/constants/oauth.dart';
-import 'package:layout/exceptions/authentication-exception.dart';
-import 'package:layout/models/user.dart';
-import 'package:layout/services/api.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/services/profile.dart';
-import 'package:layout/services/token.dart';
+import 'package:mywonderbird/constants/oauth.dart';
+import 'package:mywonderbird/exceptions/authentication-exception.dart';
+import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/services/api.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/services/token.dart';
 
 const AUTHORIZATION_URL_PATH = '/api/oauth/authorize-url';
 const OAUTH_SIGN_IN_PATH = '/api/oauth/login';

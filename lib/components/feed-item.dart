@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/small-icon-button.dart';
+import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FeedItem extends StatefulWidget {

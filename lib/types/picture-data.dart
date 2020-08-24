@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:layout/models/location.dart';
-import 'package:layout/util/date.dart';
-import 'package:layout/util/json.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/util/date.dart';
+import 'package:mywonderbird/util/json.dart';
 
 class PictureData {
   final ImageProvider image; // TODO: remove when select picture works

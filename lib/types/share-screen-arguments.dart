@@ -1,4 +1,4 @@
-import 'package:layout/models/journey.dart';
+import 'package:mywonderbird/models/journey.dart';
 
 class ShareScreenArguments {
   final Journey selectedJourney;

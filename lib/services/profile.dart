@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:layout/models/user-profile.dart';
-import 'package:layout/services/api.dart';
-import 'package:layout/services/token.dart';
+import 'package:mywonderbird/models/user-profile.dart';
+import 'package:mywonderbird/services/api.dart';
+import 'package:mywonderbird/services/token.dart';
 
 const PROFILE_PATH = '/api/profile';
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:layout/routes/authentication/forgot-details.dart';
-import 'package:layout/routes/authentication/reset-password.dart';
-import 'package:layout/routes/authentication/select-auth-option.dart';
-import 'package:layout/types/confirm-account-arguments.dart';
-import 'package:layout/types/forgot-details-arguments.dart';
-import 'package:layout/types/reset-password-arguments.dart';
-import 'package:layout/types/sign-in-arguments.dart';
+import 'package:mywonderbird/routes/authentication/forgot-details.dart';
+import 'package:mywonderbird/routes/authentication/reset-password.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/types/confirm-account-arguments.dart';
+import 'package:mywonderbird/types/forgot-details-arguments.dart';
+import 'package:mywonderbird/types/reset-password-arguments.dart';
+import 'package:mywonderbird/types/sign-in-arguments.dart';
 
 import 'confirm.dart';
 import 'sign-in.dart';

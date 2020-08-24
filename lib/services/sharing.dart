@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:layout/models/location.dart';
-import 'package:layout/services/api.dart';
-import 'package:layout/util/image.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/services/api.dart';
+import 'package:mywonderbird/util/image.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:layout/types/picture-data.dart';
+import 'package:mywonderbird/types/picture-data.dart';
 import 'package:uuid/uuid.dart';
 
 final sharePicturePath = (journeyId) => "/api/pictures/$journeyId";

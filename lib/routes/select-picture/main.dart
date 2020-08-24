@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/providers/share-picture.dart';
-import 'package:layout/routes/select-destination/main.dart';
-import 'package:layout/routes/share-picture/mock.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/services/picture-data.dart';
-import 'package:layout/types/picture-data.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/routes/select-destination/main.dart';
+import 'package:mywonderbird/routes/share-picture/mock.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/picture-data.dart';
+import 'package:mywonderbird/types/picture-data.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class SelectPicture extends StatefulWidget {

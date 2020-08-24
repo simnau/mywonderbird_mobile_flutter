@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/routes/authentication/select-auth-option.dart';
-import 'package:layout/services/authentication.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/navigation.dart';
 
 class Settings extends StatelessWidget {
   static const RELATIVE_PATH = 'settings';

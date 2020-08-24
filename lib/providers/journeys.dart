@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/journey.dart';
-import 'package:layout/services/journeys.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/services/journeys.dart';
 
 class JourneysProvider with ChangeNotifier {
   bool _loading = true;

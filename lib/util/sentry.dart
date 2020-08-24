@@ -1,4 +1,4 @@
-import 'package:layout/locator.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:sentry/sentry.dart';
 
 bool get isInDebugMode {

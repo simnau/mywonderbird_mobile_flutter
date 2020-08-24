@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/routes/home/main.dart';
-import 'package:layout/routes/terms/components/initial.dart';
-import 'package:layout/routes/terms/components/updated.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/services/terms.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/routes/home/main.dart';
+import 'package:mywonderbird/routes/terms/components/initial.dart';
+import 'package:mywonderbird/routes/terms/components/updated.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/terms.dart';
 
 class TermsPage extends StatefulWidget {
   static const RELATIVE_PATH = 'terms';

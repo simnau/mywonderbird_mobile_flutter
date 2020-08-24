@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:layout/types/picture-data.dart';
+import 'package:mywonderbird/types/picture-data.dart';
 
 class SharePictureProvider with ChangeNotifier {
   PictureData pictureData;

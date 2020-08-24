@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:layout/models/location.dart';
-import 'package:layout/services/location.dart';
-import 'package:layout/types/picture-data.dart';
-import 'package:layout/util/geo.dart';
-import 'package:layout/util/location.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/services/location.dart';
+import 'package:mywonderbird/types/picture-data.dart';
+import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/location.dart';
 
 class PictureDataService {
   final LocationService locationService;

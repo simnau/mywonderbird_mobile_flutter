@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:layout/models/feed-location.dart';
-import 'package:layout/services/api.dart';
+import 'package:mywonderbird/models/feed-location.dart';
+import 'package:mywonderbird/services/api.dart';
 
 const FETCH_FEED_ITEMS_PATH = '/api/pictures/feed';
 

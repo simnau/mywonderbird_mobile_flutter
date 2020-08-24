@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:layout/constants/oauth.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/providers/oauth.dart';
-import 'package:layout/routes/authentication/sign-in.dart';
-import 'package:layout/routes/authentication/sign-up.dart';
+import 'package:mywonderbird/constants/oauth.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/routes/authentication/sign-in.dart';
+import 'package:mywonderbird/routes/authentication/sign-up.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SelectAuthOption extends StatefulWidget {

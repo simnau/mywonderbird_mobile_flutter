@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:layout/services/api.dart';
+import 'package:mywonderbird/services/api.dart';
 
 const LIKE_GEM_CAPTURE_PATH = '/api/likes/gem-captures';
 final unlikeGemCapturePath =

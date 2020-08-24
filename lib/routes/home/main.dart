@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:layout/components/bottom-nav-bar.dart';
-import 'package:layout/components/feed-item.dart';
-import 'package:layout/components/infinite-list.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/models/feed-location.dart';
-import 'package:layout/routes/image-view/main.dart';
-import 'package:layout/routes/select-bookmark-group/main.dart';
-import 'package:layout/routes/select-picture/main.dart';
-import 'package:layout/services/bookmark.dart';
-import 'package:layout/services/feed.dart';
-import 'package:layout/services/like.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:mywonderbird/components/bottom-nav-bar.dart';
+import 'package:mywonderbird/components/feed-item.dart';
+import 'package:mywonderbird/components/infinite-list.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/feed-location.dart';
+import 'package:mywonderbird/routes/image-view/main.dart';
+import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
+import 'package:mywonderbird/routes/select-picture/main.dart';
+import 'package:mywonderbird/services/bookmark.dart';
+import 'package:mywonderbird/services/feed.dart';
+import 'package:mywonderbird/services/like.dart';
+import 'package:mywonderbird/services/navigation.dart';
 
 Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
   final feedService = locator<FeedService>();

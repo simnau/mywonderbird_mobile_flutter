@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/providers/terms.dart';
-import 'package:layout/routes/pdf/main.dart';
-import 'package:layout/services/navigation.dart';
-import 'package:layout/types/pdf-arguments.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/terms.dart';
+import 'package:mywonderbird/routes/pdf/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/types/pdf-arguments.dart';
 
 class UpdatedTerms extends StatelessWidget {
   final bool termsAccepted;

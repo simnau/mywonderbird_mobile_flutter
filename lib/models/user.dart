@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:layout/models/user-profile.dart';
+import 'package:mywonderbird/models/user-profile.dart';
 
 class User {
   final String id;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:layout/locator.dart';
-import 'package:layout/services/navigation.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageView extends StatelessWidget {

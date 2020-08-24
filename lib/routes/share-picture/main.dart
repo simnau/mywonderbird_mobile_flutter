@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:layout/models/journey.dart';
-import 'package:layout/routes/share-picture/components/sharing-widget.dart';
+import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/routes/share-picture/components/sharing-widget.dart';
 
 class ShareScreen extends StatelessWidget {
   static const RELATIVE_PATH = 'share-picture';
