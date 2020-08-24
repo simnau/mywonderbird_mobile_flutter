@@ -60,7 +60,11 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
         backgroundColor: Colors.transparent,
         title: Text(
           widget.bookmarkGroup?.title ?? '',
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w500,
+            fontSize: 18.0,
+          ),
         ),
       ),
       body: RefreshIndicator(

@@ -34,11 +34,12 @@ class _SelectDestinationState extends State<SelectDestination> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        centerTitle: true,
         title: Text(
           'Share to',
           style: TextStyle(
             color: Colors.black87,
+            fontWeight: FontWeight.w500,
+            fontSize: 18.0,
           ),
         ),
       ),

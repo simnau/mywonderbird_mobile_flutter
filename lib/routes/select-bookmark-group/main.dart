@@ -32,7 +32,11 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
         backgroundColor: Colors.transparent,
         title: Text(
           'Select a bookmark group',
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w500,
+            fontSize: 18.0,
+          ),
         ),
       ),
       body: _bookmarkGroups(),
