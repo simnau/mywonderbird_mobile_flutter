@@ -1,3 +1,5 @@
+import 'package:mywonderbird/util/json.dart';
+
 class UserProfile {
   final String id;
   final String username;
@@ -30,5 +32,13 @@ class UserProfile {
           acceptedTermsAt != null ? DateTime.parse(acceptedTermsAt) : null,
       providerId: json['providerId'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return removeNulls({
+      'username': username,
+      'bio': bio,
+      'avatarUrl': avatarUrl,
+    });
   }
 }

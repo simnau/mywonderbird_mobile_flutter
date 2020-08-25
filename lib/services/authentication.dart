@@ -131,6 +131,10 @@ class AuthenticationService {
     return User.fromJson(response['body']);
   }
 
+  addUser(User user) async {
+    _userController.add(user);
+  }
+
   sendConfirmationCode(String email) async {
     final response = await api.post(
       CODE_PATH,

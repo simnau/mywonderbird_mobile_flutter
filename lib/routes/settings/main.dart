@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:mywonderbird/components/settings-list-header.dart';
+import 'package:mywonderbird/components/settings-list-icon.dart';
+import 'package:mywonderbird/components/settings-list-item.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/routes/change-password/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
@@ -26,11 +30,12 @@ class Settings extends StatelessWidget {
         ),
       ),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 16.0),
         children: [
-          _subHeader('GENERAL SETTINGS'),
-          _listItem(
+          SettingsListHeader(title: 'GENERAL SETTINGS'),
+          SettingsListItem(
             onTap: _onProfile,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: Icons.person,
               color: Colors.white,
               backgroundColor: Colors.black87,
@@ -38,9 +43,9 @@ class Settings extends StatelessWidget {
             title: 'Profile settings',
           ),
           Divider(),
-          _listItem(
+          SettingsListItem(
             onTap: _onNotifications,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: Icons.notifications,
               color: Colors.white,
               backgroundColor: Colors.black87,
@@ -48,19 +53,29 @@ class Settings extends StatelessWidget {
             title: 'Notifications',
           ),
           Divider(),
-          _listItem(
+          SettingsListItem(
+            onTap: _onChangePassword,
+            icon: SettingsListIcon(
+              icon: Icons.vpn_key,
+              color: Colors.white,
+              backgroundColor: Colors.black87,
+            ),
+            title: 'Change password',
+          ),
+          Divider(),
+          SettingsListItem(
             onTap: _onSignOut,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: MaterialCommunityIcons.logout_variant,
               color: Colors.white,
               backgroundColor: Colors.black87,
             ),
             title: 'Sign out',
           ),
-          _subHeader('FEEDBACK'),
-          _listItem(
+          SettingsListHeader(title: 'FEEDBACK'),
+          SettingsListItem(
             onTap: _onFeedback,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: Icons.feedback,
               color: Colors.white,
               backgroundColor: Colors.black87,
@@ -68,19 +83,19 @@ class Settings extends StatelessWidget {
             title: 'Give feedback',
           ),
           Divider(),
-          _listItem(
+          SettingsListItem(
             onTap: _onReportBug,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: Icons.bug_report,
               color: Colors.white,
               backgroundColor: Colors.black87,
             ),
             title: 'Report a bug',
           ),
-          _subHeader('LEGAL'),
-          _listItem(
+          SettingsListHeader(title: 'LEGAL'),
+          SettingsListItem(
             onTap: _onPrivacy,
-            icon: _listIcon(
+            icon: SettingsListIcon(
               icon: FontAwesome.book,
               color: Colors.white,
               backgroundColor: Colors.black87,
@@ -88,63 +103,6 @@ class Settings extends StatelessWidget {
             title: 'Privacy',
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _listItem({
-    void Function() onTap,
-    Widget icon,
-    String title,
-  }) {
-    return ListTile(
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 4.0,
-      ),
-      leading: icon,
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Colors.black87,
-          fontWeight: FontWeight.w500,
-          fontSize: 18.0,
-        ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right,
-      ),
-    );
-  }
-
-  Widget _listIcon({IconData icon, Color color, Color backgroundColor}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        color: backgroundColor,
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(
-          icon,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  Widget _subHeader(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 4.0,
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.black54,
-          fontWeight: FontWeight.w700,
-        ),
       ),
     );
   }
@@ -170,6 +128,14 @@ class Settings extends StatelessWidget {
 
     navigationService.push(MaterialPageRoute(
       builder: (context) => NotificationSettings(),
+    ));
+  }
+
+  _onChangePassword() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => ChangePassword(),
     ));
   }
 
