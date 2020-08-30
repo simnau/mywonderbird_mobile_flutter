@@ -11,6 +11,7 @@ import 'package:mywonderbird/routes/change-password/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:provider/provider.dart';
 
@@ -57,6 +58,18 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ..._changePasswordItem(context),
+          Builder(
+            builder: (context) => SettingsListItem(
+              onTap: () => _onResetToDefaults(context),
+              icon: SettingsListIcon(
+                icon: Icons.settings_backup_restore,
+                color: Colors.white,
+                backgroundColor: Colors.black87,
+              ),
+              title: 'Reset to defaults',
+            ),
+          ),
+          Divider(),
           SettingsListItem(
             onTap: _onSignOut,
             icon: SettingsListIcon(
@@ -152,6 +165,22 @@ class Settings extends StatelessWidget {
     navigationService.push(MaterialPageRoute(
       builder: (context) => ChangePassword(),
     ));
+  }
+
+  _onResetToDefaults(BuildContext context) async {
+    final defaultsService = locator<DefaultsService>();
+    await defaultsService.reset();
+
+    final snackBar = SnackBar(
+      content: Text(
+        'App defaults have been reset',
+        style: TextStyle(
+          color: Colors.green,
+        ),
+      ),
+    );
+
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 
   _onFeedback() {}

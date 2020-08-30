@@ -11,12 +11,14 @@ import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/bookmark.dart';
+import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/location.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/oauth.dart';
+import 'package:mywonderbird/services/onboarding.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/sharing.dart';
@@ -77,7 +79,16 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => BookmarkService(api: api));
   locator.registerLazySingleton(() => BookmarkGroupService(api: api));
   locator.registerLazySingleton(
-      () => PictureDataService(locationService: locationService));
+    () => DefaultsService(
+      storageService: storageService,
+    ),
+  );
+  locator.registerLazySingleton(
+    () => OnboardingService(storageService: storageService),
+  );
+  locator.registerLazySingleton(
+    () => PictureDataService(locationService: locationService),
+  );
   locator.registerLazySingleton(
     () => OAuthService(
       api: api,

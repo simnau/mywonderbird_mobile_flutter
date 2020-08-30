@@ -19,7 +19,8 @@ Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
 }
 
 class HomePage extends StatefulWidget {
-  static const PATH = '/';
+  static const RELATIVE_PATH = 'home';
+  static const PATH = "/$RELATIVE_PATH";
 
   @override
   _HomePageState createState() => _HomePageState();

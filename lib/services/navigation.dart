@@ -8,6 +8,13 @@ class NavigationService {
     return navigatorKey.currentState.push(route);
   }
 
+  Future<T> pushReplacement<T extends Object, TO extends Object>(
+    Route<T> route, {
+    TO result,
+  }) {
+    return navigatorKey.currentState.pushReplacement(route);
+  }
+
   Future<dynamic> pushNamed(String routeName, {dynamic arguments}) {
     return navigatorKey.currentState.pushNamed(routeName, arguments: arguments);
   }

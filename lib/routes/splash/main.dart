@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
-  static const RELATIVE_PATH = 'splash';
-  static const PATH = "/$RELATIVE_PATH";
+  static const PATH = '/';
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

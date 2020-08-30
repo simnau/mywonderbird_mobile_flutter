@@ -110,7 +110,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         padding: const EdgeInsets.only(bottom: 8.0),
                       ),
                       RaisedButton(
-                        color: Colors.grey,
+                        colorBrightness: Brightness.dark,
+                        color: Colors.black54,
                         child: Text('Change avatar'),
                         onPressed: _onChangeAvatar,
                       ),
@@ -151,6 +152,11 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
   _onChangeAvatar() async {
     final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile == null) {
+      return;
+    }
+
     final navigationService = locator<NavigationService>();
 
     ui.Image croppedImage = await navigationService.push(
