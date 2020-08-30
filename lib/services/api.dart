@@ -84,6 +84,7 @@ class API {
   Future<Map<String, dynamic>> postMultipartFiles(
     String path,
     List<MultipartFile> files, {
+    Map<String, String> fields,
     Map<String, dynamic> params,
     Map<String, String> headers,
     int retryCount = 0,
@@ -94,6 +95,7 @@ class API {
       uri,
     );
     request.files.addAll(files);
+    request.fields.addAll(fields);
 
     final accessToken = await tokenService.getAccessToken();
 

@@ -26,6 +26,7 @@ const CONFIRM_ACCOUNT_PATH = '/api/auth/confirm';
 const CODE_PATH = '/api/auth/code';
 const FORGOT_PASSWORD_PATH = '/api/auth/forgot-password';
 const RESET_PASSWORD_PATH = '/api/auth/reset-password';
+const CHANGE_PASSWORD_PATH = '/api/auth/change-password';
 
 class AuthenticationService {
   final StreamController<User> _userController = StreamController<User>();
@@ -174,6 +175,21 @@ class AuthenticationService {
 
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw new AuthenticationException('Invalid Code');
+    }
+  }
+
+  changePassword(String currentPassword, String newPassword) async {
+    final response = await api.post(
+      CHANGE_PASSWORD_PATH,
+      {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      },
+    );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new AuthenticationException('Unable to change the password');
     }
   }
 

@@ -86,7 +86,7 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
                 children: [
                   _avatar(user),
                   Text(
-                    _getUsername(user),
+                    user?.username ?? 'Anonymous',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black45,
@@ -94,7 +94,7 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
                     ),
                   ),
                   Text(
-                    _getLevel(),
+                    user?.level ?? 'Beginner',
                     style: TextStyle(
                       fontSize: 12.0,
                       color: Colors.black45,
@@ -133,11 +133,11 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
         percent: 0.4,
         center: CircleAvatar(
           backgroundImage: user?.profile?.avatarUrl != null
-              ? AssetImage('images/logo.png')
+              ? NetworkImage(user.profile.avatarUrl)
               : null,
           child: user?.profile?.avatarUrl == null
               ? Text(
-                  _getUserInitials(user),
+                  user?.initials ?? '??',
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 32,
@@ -151,19 +151,5 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
         ),
       ),
     );
-  }
-
-  // TODO: extract into the user class
-  String _getUsername(User user) {
-    return user?.profile?.username ?? 'Anonymous';
-  }
-
-  // TODO: extract into the user class
-  String _getUserInitials(User user) {
-    return user?.profile?.username?.substring(0, 2)?.toUpperCase() ?? '??';
-  }
-
-  String _getLevel() {
-    return 'Beginner';
   }
 }

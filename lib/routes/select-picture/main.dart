@@ -85,25 +85,23 @@ class _SelectPictureState extends State<SelectPicture> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        actions: [
+          FlatButton(
+            onPressed: _selectedPhoto != null ? _onNext : null,
+            child: Text(
+              'NEXT',
+              style: TextStyle(
+                color: _selectedPhoto != null
+                    ? theme.primaryColor
+                    : theme.disabledColor,
+              ),
+            ),
+            shape: ContinuousRectangleBorder(),
+          ),
+        ],
       ),
       body: Container(
-        child: Stack(
-          children: <Widget>[
-            _pictures(),
-            Positioned(
-              bottom: 32,
-              left: 32,
-              right: 32,
-              child: RaisedButton(
-                color: theme.primaryColor,
-                disabledColor: Colors.grey,
-                textColor: Colors.white,
-                child: Text('Next'),
-                onPressed: _selectedPhoto != null ? _onNext : null,
-              ),
-            )
-          ],
-        ),
+        child: _pictures(),
       ),
     );
   }

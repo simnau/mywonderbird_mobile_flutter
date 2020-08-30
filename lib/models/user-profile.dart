@@ -4,19 +4,19 @@ class UserProfile {
   final String id;
   final String username;
   final String bio;
-  final String avatarUrl;
   final bool acceptedNewsletter;
   final DateTime acceptedTermsAt;
   final String providerId;
+  String avatarUrl;
 
   UserProfile({
     this.id,
     this.username,
     this.bio,
-    this.avatarUrl,
     this.acceptedNewsletter,
     this.acceptedTermsAt,
     this.providerId,
+    this.avatarUrl,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -35,7 +35,15 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() {
-    return removeNulls({
+    return removeNulls<dynamic>({
+      'username': username,
+      'bio': bio,
+      'avatarUrl': avatarUrl,
+    });
+  }
+
+  Map<String, String> toFieldData() {
+    return removeNulls<String>({
       'username': username,
       'bio': bio,
       'avatarUrl': avatarUrl,

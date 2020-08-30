@@ -21,4 +21,16 @@ class User {
       provider: json['provider'],
     );
   }
+
+  String get username {
+    return profile?.username ?? 'Anonymous';
+  }
+
+  String get initials {
+    return profile?.username?.substring(0, 2)?.toUpperCase() ?? '??';
+  }
+
+  String get level {
+    return 'Beginner';
+  }
 }

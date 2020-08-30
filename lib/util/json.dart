@@ -1,5 +1,5 @@
-Map<String, dynamic> removeNulls(Map<String, dynamic> json) {
-  Map<String, dynamic> jsonWithoutNulls = Map();
+Map<String, T> removeNulls<T>(Map<String, T> json) {
+  Map<String, T> jsonWithoutNulls = Map();
 
   for (final entry in json.entries) {
     if (entry.value != null) {

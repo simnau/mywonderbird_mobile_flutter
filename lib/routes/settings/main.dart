@@ -3,13 +3,16 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/settings-list-header.dart';
 import 'package:mywonderbird/components/settings-list-icon.dart';
 import 'package:mywonderbird/components/settings-list-item.dart';
+import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/routes/change-password/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatelessWidget {
   static const RELATIVE_PATH = 'settings';
@@ -53,16 +56,7 @@ class Settings extends StatelessWidget {
             title: 'Notifications',
           ),
           Divider(),
-          SettingsListItem(
-            onTap: _onChangePassword,
-            icon: SettingsListIcon(
-              icon: Icons.vpn_key,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
-            ),
-            title: 'Change password',
-          ),
-          Divider(),
+          ..._changePasswordItem(context),
           SettingsListItem(
             onTap: _onSignOut,
             icon: SettingsListIcon(
@@ -105,6 +99,27 @@ class Settings extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> _changePasswordItem(BuildContext context) {
+    final user = Provider.of<User>(context);
+
+    if (user?.provider != COGNITO_PROVIDER) {
+      return [];
+    }
+
+    return [
+      SettingsListItem(
+        onTap: _onChangePassword,
+        icon: SettingsListIcon(
+          icon: Icons.vpn_key,
+          color: Colors.white,
+          backgroundColor: Colors.black87,
+        ),
+        title: 'Change password',
+      ),
+      Divider(),
+    ];
   }
 
   _onSignOut() async {

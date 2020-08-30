@@ -151,10 +151,7 @@ class _SignUpState extends State<SignUp> {
 
         final email = _emailController.text;
         final password = _emailController.text;
-        await authenticationService.signUp(
-          _emailController.text,
-          _passwordController.text,
-        );
+        await authenticationService.signUp(email, password);
         final user = await authenticationService.signIn(email, password);
 
         authenticationService.afterSignIn(user);

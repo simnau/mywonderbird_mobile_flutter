@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode focusNode;
   final String Function(String) validator;
   final String labelText;
   final TextInputType keyboardType;
@@ -10,6 +11,7 @@ class AuthTextField extends StatelessWidget {
   const AuthTextField({
     Key key,
     this.controller,
+    this.focusNode,
     this.validator,
     this.labelText,
     this.keyboardType,
@@ -28,6 +30,7 @@ class AuthTextField extends StatelessWidget {
       data: textFieldTheme,
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         validator: validator,
         decoration: InputDecoration(
           labelText: labelText,
@@ -43,7 +46,7 @@ class AuthTextField extends StatelessWidget {
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: Colors.black,
+          color: Colors.black87,
         ),
         keyboardType: keyboardType,
         obscureText: obscureText,
