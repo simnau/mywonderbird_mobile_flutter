@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/slide-indicator.dart';
 import 'package:mywonderbird/constants/onboarding.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/onboarding.dart';
@@ -39,98 +40,94 @@ class _OnboardingState extends State<Onboarding> {
               ),
         backgroundColor: Colors.transparent,
       ),
-      body: PageView.builder(
-        controller: pageViewController,
-        onPageChanged: _onPageChanged,
-        itemBuilder: _onboardingSlide,
-        itemCount: ONBOARDING_SLIDES.length,
+      body: Column(
+        children: [
+          Padding(padding: const EdgeInsets.only(top: 16.0)),
+          Expanded(
+            child: PageView.builder(
+              controller: pageViewController,
+              onPageChanged: _onPageChanged,
+              itemBuilder: _onboardingSlide,
+              itemCount: ONBOARDING_SLIDES.length,
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+          _bottomContent(),
+        ],
       ),
-      // Center(
-      //   child: RaisedButton(
-      //     onPressed: _onComplete,
-      //     colorBrightness: Brightness.dark,
-      //     child: Text('Continue'),
-      //   ),
-      // ),
     );
   }
 
   Widget _onboardingSlide(context, index) {
-    final theme = Theme.of(context);
     final item = ONBOARDING_SLIDES[index];
-    final isLastSlide = index == ONBOARDING_SLIDES.length - 1;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 16.0,
-          ),
-        ),
-        Expanded(
-          child: Image.asset(
-            item.imagePath,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            bottom: 16.0,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Text(
-            item.title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Text(
-            item.body,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.black54,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 32.0),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 32.0),
-          child: Center(
-            child: RaisedButton(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 56,
-                vertical: 12,
-              ),
-              colorBrightness: Brightness.dark,
+    return Image.asset(
+      item.imagePath,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _bottomContent() {
+    final theme = Theme.of(context);
+    final isLastPageSelected = _currentPage == ONBOARDING_SLIDES.length - 1;
+    final item = ONBOARDING_SLIDES[_currentPage];
+
+    return GestureDetector(
+      child: Column(
+        children: [
+          Center(
+            child: SlideIndicator(
               color: theme.accentColor,
-              child: Text(
-                isLastSlide ? "Let's go" : 'Next',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.0,
-                ),
-              ),
-              onPressed: isLastSlide ? _onComplete : _onNext,
+              itemCount: ONBOARDING_SLIDES.length,
+              currentItem: _currentPage,
             ),
           ),
-        ),
-      ],
+          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              item.title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              item.body,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+          RaisedButton(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 56,
+              vertical: 12,
+            ),
+            colorBrightness: Brightness.dark,
+            color: theme.accentColor,
+            child: Text(
+              isLastPageSelected ? "Let's go" : 'Next',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16.0,
+              ),
+            ),
+            onPressed: isLastPageSelected ? _onComplete : _onNext,
+          ),
+          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+        ],
+      ),
     );
   }
 

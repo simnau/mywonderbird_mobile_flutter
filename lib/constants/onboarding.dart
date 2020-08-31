@@ -13,8 +13,7 @@ const ONBOARDING_SLIDES = [
   ),
   OnboardingSlideData(
     title: 'Follow your friends',
-    body:
-        'Stay tuned for destinations and trips of your friends and other travelers',
+    body: 'Stay tuned for destinations and trips of your friends',
     imagePath: 'images/onboarding/3.png',
   ),
 ];
