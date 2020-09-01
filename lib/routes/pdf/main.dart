@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
 
 class PdfPage extends StatefulWidget {
-  static const RELATIVE_PATH = 'pdf';
-  static const PATH = "/$RELATIVE_PATH";
-
   final String url;
   final String title;
 

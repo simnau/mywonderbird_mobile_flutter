@@ -6,9 +6,11 @@ import 'package:mywonderbird/components/settings-list-item.dart';
 import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/routes/change-password/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
+import 'package:mywonderbird/routes/pdf/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/defaults.dart';
@@ -100,15 +102,7 @@ class Settings extends StatelessWidget {
             title: 'Report a bug',
           ),
           SettingsListHeader(title: 'LEGAL'),
-          SettingsListItem(
-            onTap: _onPrivacy,
-            icon: SettingsListIcon(
-              icon: FontAwesome.book,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
-            ),
-            title: 'Privacy',
-          ),
+          ..._legalWidgets(),
         ],
       ),
     );
@@ -133,6 +127,53 @@ class Settings extends StatelessWidget {
       ),
       Divider(),
     ];
+  }
+
+  List<Widget> _legalWidgets() {
+    final termsProvider = locator<TermsProvider>();
+
+    if (termsProvider.privacyPolicy != null &&
+        termsProvider.termsOfService != null) {
+      return [
+        _termsWidget(),
+        Divider(),
+        _privacyWidget(),
+      ];
+    }
+
+    if (termsProvider.termsOfService != null) {
+      return [_termsWidget()];
+    }
+
+    if (termsProvider.privacyPolicy != null) {
+      return [_privacyWidget()];
+    }
+
+    return [];
+  }
+
+  Widget _termsWidget() {
+    return SettingsListItem(
+      onTap: _onTermsOfService,
+      icon: SettingsListIcon(
+        icon: FontAwesome.book,
+        color: Colors.white,
+        backgroundColor: Colors.black87,
+      ),
+      title: 'Terms of service',
+    );
+  }
+
+  Widget _privacyWidget() {
+    return SettingsListItem(
+      onTap: _onPrivacy,
+      icon: SettingsListIcon(
+        icon: FontAwesome.book,
+        color: Colors.white,
+        backgroundColor: Colors.black87,
+      ),
+      title: 'Privacy policy',
+    );
   }
 
   _onSignOut() async {
@@ -187,7 +228,31 @@ class Settings extends StatelessWidget {
 
   _onReportBug() {}
 
-  _onPrivacy() {}
+  _onTermsOfService() {
+    final termsProvider = locator<TermsProvider>();
+
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => PdfPage(
+          url: termsProvider.termsOfService.url,
+          title: 'Terms of service',
+        ),
+      ),
+    );
+  }
+
+  _onPrivacy() {
+    final termsProvider = locator<TermsProvider>();
+
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => PdfPage(
+          url: termsProvider.privacyPolicy.url,
+          title: 'Privacy policy',
+        ),
+      ),
+    );
+  }
 
   _navigateToLogin() async {
     final navigationService = locator<NavigationService>();

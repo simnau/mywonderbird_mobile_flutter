@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/notifications/main.dart';
-import 'package:mywonderbird/routes/pdf/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/terms/main.dart';
-import 'package:mywonderbird/types/pdf-arguments.dart';
 import 'package:mywonderbird/types/share-screen-arguments.dart';
 import 'package:mywonderbird/types/terms-arguments.dart';
 
@@ -80,16 +78,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Notifications.PATH:
       return MaterialPageRoute(
         builder: (_) => Notifications(),
-        settings: settings,
-      );
-    case PdfPage.PATH:
-      PdfArguments arguments = settings.arguments;
-
-      return MaterialPageRoute(
-        builder: (_) => PdfPage(
-          url: arguments.url,
-          title: arguments.title,
-        ),
         settings: settings,
       );
     default:

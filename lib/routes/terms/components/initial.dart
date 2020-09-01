@@ -4,7 +4,6 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/pdf/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/types/pdf-arguments.dart';
 
 class InitialTerms extends StatelessWidget {
   final bool termsAccepted;
@@ -130,11 +129,12 @@ class InitialTerms extends StatelessWidget {
   _viewPrivacyPolicy() {
     final termsProvider = locator<TermsProvider>();
 
-    locator<NavigationService>().pushNamed(
-      PdfPage.PATH,
-      arguments: PdfArguments(
-        title: 'Privacy policy',
-        url: termsProvider.privacyPolicy.url,
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => PdfPage(
+          url: termsProvider.privacyPolicy.url,
+          title: 'Privacy policy',
+        ),
       ),
     );
   }
@@ -142,11 +142,12 @@ class InitialTerms extends StatelessWidget {
   _viewTermsOfService() {
     final termsProvider = locator<TermsProvider>();
 
-    locator<NavigationService>().pushNamed(
-      PdfPage.PATH,
-      arguments: PdfArguments(
-        title: 'Terms of service',
-        url: termsProvider.termsOfService.url,
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => PdfPage(
+          url: termsProvider.termsOfService.url,
+          title: 'Terms of service',
+        ),
       ),
     );
   }
