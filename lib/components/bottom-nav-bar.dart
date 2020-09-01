@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
-import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/notifications/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
+  final Function() onHome;
+
+  const BottomNavBar({
+    Key key,
+    this.onHome,
+  }) : super(key: key);
+
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
 }
@@ -36,7 +42,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               iconSize: 32,
               icon: Icon(Ionicons.md_globe),
               color: Colors.black87,
-              onPressed: _onNavigateToFeed,
+              onPressed: widget.onHome,
             ),
             IconButton(
               iconSize: 32,
@@ -63,14 +69,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
       ),
     );
-  }
-
-  _onNavigateToFeed() {
-    final currentRoute = ModalRoute.of(context).settings.name;
-
-    if (!routeSelected(currentRoute, HomePage.PATH)) {
-      locator<NavigationService>().pushReplacementNamed(HomePage.PATH);
-    }
   }
 
   _onNavigateToProfile() {

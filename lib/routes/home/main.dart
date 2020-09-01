@@ -43,6 +43,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       extendBody: true,
       backgroundColor: Color(0xFFF2F3F7),
@@ -54,12 +56,25 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         leading: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                'images/logo@025x.png',
+          padding: const EdgeInsets.all(4.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(100.0),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.primaryColor,
+                    theme.accentColor,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
-              fit: BoxFit.cover,
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                'images/logo@025x.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -104,7 +119,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(
+        onHome: _refresh,
+      ),
     );
   }
 

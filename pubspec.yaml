@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.4+32
+version: 0.4.5+33
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -96,5 +96,7 @@ flutter:
     - images/mywonderbird-travel.jpg
     - images/logo.png
     - images/logo@025x.png
+    - images/logo-inverse.png
+    - images/logo-inverse@025x.png
     - images/onboarding/
     - env/
