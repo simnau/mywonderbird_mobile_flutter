@@ -149,7 +149,7 @@ class _SignInState extends State<SignIn> {
           onPressed: _onSignIn,
           child: Text('SIGN IN'),
           color: theme.accentColor,
-          textColor: Colors.white,
+          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _onForgotDetails,

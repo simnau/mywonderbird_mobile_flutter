@@ -137,7 +137,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           onPressed: _onResetPassword,
           child: Text('RESET PASSWORD'),
           color: theme.accentColor,
-          textColor: Colors.white,
+          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _onResendCode,

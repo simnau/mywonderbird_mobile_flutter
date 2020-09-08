@@ -85,7 +85,7 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
             onPressed: _onFacebookFlow,
             child: Text('CONTINUE WITH FACEBOOK'),
             color: Color(0xFF3B5798),
-            textColor: Colors.white,
+            colorBrightness: Brightness.dark,
           ),
           RaisedButton(
             onPressed: _onGoogleFlow,

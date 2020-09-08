@@ -135,7 +135,7 @@ class _SharingWidgetState extends State<SharingWidget> {
                 ),
                 child: RaisedButton(
                   color: theme.primaryColor,
-                  textColor: Colors.white,
+                  colorBrightness: Brightness.dark,
                   child: _isSharing
                       ? SizedBox(
                           height: 16,

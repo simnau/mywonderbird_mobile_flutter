@@ -124,7 +124,7 @@ class _ConfirmState extends State<Confirm> {
           onPressed: _onConfirm,
           child: Text('CONFIRM ACCOUNT'),
           color: theme.accentColor,
-          textColor: Colors.white,
+          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _sendCode,

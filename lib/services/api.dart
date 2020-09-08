@@ -95,7 +95,10 @@ class API {
       uri,
     );
     request.files.addAll(files);
-    request.fields.addAll(fields);
+
+    if (fields != null) {
+      request.fields.addAll(fields);
+    }
 
     final accessToken = await tokenService.getAccessToken();
 

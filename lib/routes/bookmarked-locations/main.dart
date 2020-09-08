@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/models/bookmarked-location.dart';
+import 'package:mywonderbird/models/full-journey.dart';
+import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
+import 'package:mywonderbird/routes/share-picture/mock.dart';
+import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/suggestion.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -23,6 +30,36 @@ Future<List<BookmarkedLocationModel>> fetchBookmarkedLocations({
     offset,
   );
 }
+
+final journey = FullJourney(
+  name: 'Incredible trip to Iceland',
+  country: 'Iceland',
+  imageUrl: MOCK_IMAGE,
+  startDate: DateTime.now(),
+  locations: [
+    LocationModel(
+      name: 'Iceland canyon',
+      countryCode: 'IS',
+      country: 'Iceland',
+      latLng: LatLng(63.402945, -19.042128),
+      imageUrl: MOCK_IMAGE_2,
+    ),
+    LocationModel(
+      name: 'The black beach',
+      countryCode: 'IS',
+      country: 'Iceland',
+      latLng: LatLng(63.797931, -18.048729),
+      imageUrl: MOCK_IMAGE_4,
+    ),
+    LocationModel(
+      name: 'Reynisfjara',
+      countryCode: 'IS',
+      country: 'Iceland',
+      latLng: LatLng(64.045201, -16.186505),
+      imageUrl: MOCK_IMAGE_3,
+    ),
+  ],
+);
 
 class BookmarkedLocations extends StatefulWidget {
   final BookmarkGroupModel bookmarkGroup;
@@ -84,19 +121,36 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
       );
     }
 
-    return InfiniteList(
-      key: _infiniteListKey,
-      fetchMore: _fetchMore,
-      itemBuilder: (BuildContext context, int index) {
-        return _bookmarkItem(_items[index], index);
-      },
-      itemCount: _items.length,
-      padding: const EdgeInsets.only(
-        top: 16.0,
-        bottom: 64.0,
-      ),
-      rowPadding: const EdgeInsets.only(bottom: 0),
-      isPerformingRequest: _isPerformingRequest,
+    final theme = Theme.of(context);
+
+    return Stack(
+      children: [
+        InfiniteList(
+          key: _infiniteListKey,
+          fetchMore: _fetchMore,
+          itemBuilder: (BuildContext context, int index) {
+            return _bookmarkItem(_items[index], index);
+          },
+          itemCount: _items.length,
+          padding: const EdgeInsets.only(
+            top: 16.0,
+            bottom: 64.0,
+          ),
+          rowPadding: const EdgeInsets.only(bottom: 0),
+          isPerformingRequest: _isPerformingRequest,
+        ),
+        Positioned(
+          bottom: 16,
+          left: 16,
+          right: 16,
+          child: RaisedButton(
+            color: theme.primaryColor,
+            colorBrightness: Brightness.dark,
+            child: Text('Suggest me a trip'),
+            onPressed: _suggestTrip,
+          ),
+        ),
+      ],
     );
   }
 
@@ -222,5 +276,22 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
         }
       });
     }
+  }
+
+  _suggestTrip() async {
+    final navigationService = locator<NavigationService>();
+    final journeyProvider = locator<JourneyProvider>();
+
+    final journey = await journeyProvider.suggestJourney(
+      widget.bookmarkGroup.id,
+    );
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => TripOverview(
+          journey: journey,
+        ),
+      ),
+    );
   }
 }

@@ -42,7 +42,7 @@ class JourneysProvider with ChangeNotifier {
     return journey;
   }
 
-  void clearState() {
+  clearState() {
     _loading = true;
     _journeys = [];
   }

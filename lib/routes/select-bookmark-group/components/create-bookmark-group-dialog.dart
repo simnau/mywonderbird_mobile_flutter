@@ -53,8 +53,8 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
                 onPressed: _onCreate,
                 child: Text(
                   'Create',
-                  style: TextStyle(color: Colors.white),
                 ),
+                colorBrightness: Brightness.dark,
               ),
             ],
           ),

@@ -36,7 +36,7 @@ class LocationModel extends NamedItem {
       name: json['name'],
       country: json['country'],
       countryCode: json['countryCode'],
-      imageUrl: MOCK_IMAGE, // TODO
+      imageUrl: json['imageUrl'] ?? MOCK_IMAGE, // TODO
       latLng: LatLng(lat, lng),
       provider: json['provider'],
     );

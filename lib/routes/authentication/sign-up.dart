@@ -116,7 +116,7 @@ class _SignUpState extends State<SignUp> {
           onPressed: _onSignUp,
           child: Text('SIGN UP'),
           color: theme.accentColor,
-          textColor: Colors.white,
+          colorBrightness: Brightness.dark,
         ),
       ],
     );

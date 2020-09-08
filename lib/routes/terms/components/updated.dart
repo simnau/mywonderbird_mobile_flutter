@@ -155,7 +155,7 @@ class UpdatedTerms extends StatelessWidget {
         onPressed: termsAccepted ? onContinue : null,
         child: Text('CONTINUE'),
         color: theme.accentColor,
-        textColor: Colors.white,
+        colorBrightness: Brightness.dark,
       ),
     ];
   }

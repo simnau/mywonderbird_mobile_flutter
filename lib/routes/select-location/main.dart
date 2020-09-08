@@ -186,7 +186,7 @@ class _SelectLocationState extends State<SelectLocation> {
               right: 32,
               child: RaisedButton(
                 color: theme.primaryColor,
-                textColor: Colors.white,
+                colorBrightness: Brightness.dark,
                 child: Text(
                   'Select location',
                 ),
