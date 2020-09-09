@@ -39,21 +39,34 @@ bool isNegativeRef(String gpsRef) {
 }
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
-  double x0, x1, y0, y1;
+  double lat0, lat1, lng0, lng1;
 
   for (LatLng latLng in list) {
-    if (x0 == null) {
-      x0 = x1 = latLng.latitude;
-      y0 = y1 = latLng.longitude;
+    if (lat0 == null) {
+      lat0 = lat1 = latLng.latitude;
+      lng0 = lng1 = latLng.longitude;
     } else {
-      if (latLng.latitude > x1) x1 = latLng.latitude;
-      if (latLng.latitude < x0) x0 = latLng.latitude;
-      if (latLng.longitude > y1) y1 = latLng.longitude;
-      if (latLng.longitude < y0) y0 = latLng.longitude;
+      if (latLng.latitude > lat1) lat1 = latLng.latitude;
+      if (latLng.latitude < lat0) lat0 = latLng.latitude;
+      if (latLng.longitude > lng1) lng1 = latLng.longitude;
+      if (latLng.longitude < lng0) lng0 = latLng.longitude;
     }
   }
   return LatLngBounds(
-    northeast: LatLng(x1, y1),
-    southwest: LatLng(x0, y0),
+    northeast: LatLng(lat1, lng1),
+    southwest: LatLng(lat0, lng0),
   );
+}
+
+LatLng boundsCenter(LatLngBounds bounds) {
+  if (bounds == null) {
+    return null;
+  }
+
+  double latCenter =
+      (bounds.southwest.latitude + bounds.northeast.latitude) / 2;
+  double lngCenter =
+      (bounds.southwest.longitude + bounds.northeast.longitude) / 2;
+
+  return LatLng(latCenter, lngCenter);
 }

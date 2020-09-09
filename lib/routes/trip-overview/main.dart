@@ -22,7 +22,7 @@ class TripOverview extends StatefulWidget {
 }
 
 class _TripOverviewState extends State<TripOverview> {
-  static const _INITIAL_ZOOM = 6.4;
+  static const _INITIAL_ZOOM = 3.0;
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
       63.791580,
@@ -64,9 +64,9 @@ class _TripOverviewState extends State<TripOverview> {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                Colors.black26,
+                Colors.black54,
               ],
-              stops: [0, 0.9],
+              stops: [0, 0.6],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -101,9 +101,9 @@ class _TripOverviewState extends State<TripOverview> {
                     ),
                   ),
                 Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-                if (widget.journey.country != null)
+                if (widget.journey.countryDescription != null)
                   Text(
-                    widget.journey.country,
+                    widget.journey.countryDescription,
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 16.0,
@@ -135,7 +135,7 @@ class _TripOverviewState extends State<TripOverview> {
         child: GoogleMap(
           markers: _markers(),
           polylines: _lines(),
-          mapType: MapType.satellite,
+          mapType: MapType.hybrid,
           initialCameraPosition: _INITIAL_CAMERA_POSITION,
           onMapCreated: _onMapCreated,
           mapToolbarEnabled: false,
@@ -247,14 +247,17 @@ class _TripOverviewState extends State<TripOverview> {
 
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
+    final center = boundsCenter(_tripBounds);
+
     Future.delayed(
       Duration(milliseconds: 200),
-      () => controller.moveCamera(
-        CameraUpdate.newLatLngBounds(
-          _tripBounds,
-          32,
-        ),
-      ),
+      () {
+        if (center != null) {
+          controller.moveCamera(
+            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
+          );
+        }
+      },
     );
   }
 }

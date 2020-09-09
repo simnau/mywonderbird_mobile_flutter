@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/util/geo.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TripDetails extends StatefulWidget {
@@ -21,7 +22,7 @@ class TripDetails extends StatefulWidget {
 }
 
 class _TripDetailsState extends State<TripDetails> {
-  static const _INITIAL_ZOOM = 6.4;
+  static const _INITIAL_ZOOM = 3.0;
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
       63.791580,
@@ -52,7 +53,7 @@ class _TripDetailsState extends State<TripDetails> {
           AspectRatio(
             aspectRatio: 3 / 2,
             child: GoogleMap(
-              mapType: MapType.satellite,
+              mapType: MapType.hybrid,
               initialCameraPosition: _INITIAL_CAMERA_POSITION,
               polylines: _lines(),
               markers: _markers(),
@@ -74,35 +75,38 @@ class _TripDetailsState extends State<TripDetails> {
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                      horizontal: 24.0,
-                    ),
-                    child: Text(
-                      'Locations',
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+              child: Container(
+                color: Color(0xFFF2F3F7),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 24.0,
+                      ),
+                      child: Text(
+                        'Locations',
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
+                    Expanded(
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => Padding(
+                          padding: EdgeInsets.only(bottom: 16.0),
+                        ),
+                        padding: const EdgeInsets.all(0),
+                        itemBuilder: (context, index) => _item(index),
+                        itemCount: _locations.length,
                       ),
-                      padding: const EdgeInsets.all(0),
-                      itemBuilder: (context, index) => _item(index),
-                      itemCount: _locations.length,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -148,37 +152,41 @@ class _TripDetailsState extends State<TripDetails> {
   }
 
   Widget _item(index) {
-    final theme = Theme.of(context);
     final location = _locations[index];
 
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(color: theme.accentColor),
-      onDismissed: (direction) => setState(() {
-        _locations.removeAt(index);
-      }),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-        leading: AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            child: FadeInImage.memoryNetwork(
-              placeholder: kTransparentImage,
-              image: location.imageUrl,
-              fit: BoxFit.cover,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 8.0,
+          ),
+          leading: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: location.imageUrl,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        title: Text(
-          location.name,
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+          title: Text(
+            location.name,
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
           ),
         ),
       ),
@@ -187,14 +195,17 @@ class _TripDetailsState extends State<TripDetails> {
 
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
+    final center = boundsCenter(widget.bounds);
+
     Future.delayed(
       Duration(milliseconds: 200),
-      () => controller.moveCamera(
-        CameraUpdate.newLatLngBounds(
-          widget.bounds,
-          64,
-        ),
-      ),
+      () {
+        if (center != null) {
+          controller.moveCamera(
+            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
+          );
+        }
+      },
     );
   }
 }

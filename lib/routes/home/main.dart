@@ -7,8 +7,10 @@ import 'package:mywonderbird/models/feed-location.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
 import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
+import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/feed.dart';
+import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
@@ -164,6 +166,7 @@ class _HomePageState extends State<HomePage> {
       onBookmark: () =>
           item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
       onTap: () => _onFeedItemTap(item),
+      onViewJourney: () => _onViewJourney(item),
     );
   }
 
@@ -300,6 +303,19 @@ class _HomePageState extends State<HomePage> {
         item.isBookmarked = true;
       });
     }
+  }
+
+  _onViewJourney(FeedLocation item) async {
+    final journeyService = locator<JourneyService>();
+    final journey = await journeyService.getJourney(item.journeyId);
+
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => TripOverview(
+          journey: journey,
+        ),
+      ),
+    );
   }
 
   _onAddPicture() {

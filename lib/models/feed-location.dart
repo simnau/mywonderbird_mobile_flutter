@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class FeedLocation {
   final String id;
+  final String journeyId;
   final String imageUrl;
   final String title;
   final String country;
@@ -12,6 +13,7 @@ class FeedLocation {
 
   FeedLocation({
     @required this.id,
+    @required this.journeyId,
     @required this.imageUrl,
     @required this.title,
     @required this.country,
@@ -24,6 +26,7 @@ class FeedLocation {
   factory FeedLocation.fromJson(Map<String, dynamic> json) {
     return FeedLocation(
       id: json['id'],
+      journeyId: json['journeyId'],
       imageUrl: json['imageUrl'],
       title: json['title'],
       country: json['country'],

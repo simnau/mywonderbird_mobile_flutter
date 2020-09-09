@@ -11,6 +11,7 @@ class FeedItem extends StatefulWidget {
   final void Function() onLike;
   final void Function() onBookmark;
   final void Function() onTap;
+  final void Function() onViewJourney;
   final String imageUrl;
 
   const FeedItem({
@@ -23,6 +24,7 @@ class FeedItem extends StatefulWidget {
     @required this.onLike,
     @required this.onBookmark,
     @required this.onTap,
+    @required this.onViewJourney,
     @required this.imageUrl,
   }) : super(key: key);
 
@@ -69,27 +71,27 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
             ),
           ),
           Positioned(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
+            child: Material(
+              color: Colors.white,
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(16.0),
+              ),
+              child: InkWell(
+                onTap: widget.onViewJourney,
                 borderRadius: BorderRadius.horizontal(
                   left: Radius.circular(16.0),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFFBECDE2),
-                    offset: Offset(6, 6),
-                    blurRadius: 16,
+                child: Container(
+                  width: 200,
+                  height: 90,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
                   ),
-                ],
+                  child: _details(context),
+                ),
               ),
-              width: 200,
-              height: 90,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: _details(context),
             ),
             bottom: 0,
             right: 0,

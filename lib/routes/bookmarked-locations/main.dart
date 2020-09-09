@@ -139,17 +139,17 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
           rowPadding: const EdgeInsets.only(bottom: 0),
           isPerformingRequest: _isPerformingRequest,
         ),
-        Positioned(
-          bottom: 16,
-          left: 16,
-          right: 16,
-          child: RaisedButton(
-            color: theme.primaryColor,
-            colorBrightness: Brightness.dark,
-            child: Text('Suggest me a trip'),
-            onPressed: _suggestTrip,
-          ),
-        ),
+        // Positioned(
+        //   bottom: 16,
+        //   left: 16,
+        //   right: 16,
+        //   child: RaisedButton(
+        //     color: theme.primaryColor,
+        //     colorBrightness: Brightness.dark,
+        //     child: Text('Suggest me a trip'),
+        //     onPressed: _suggestTrip,
+        //   ),
+        // ),
       ],
     );
   }
@@ -279,19 +279,19 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
   }
 
   _suggestTrip() async {
-    final navigationService = locator<NavigationService>();
-    final journeyProvider = locator<JourneyProvider>();
+    // final navigationService = locator<NavigationService>();
+    // final journeyProvider = locator<JourneyProvider>();
 
-    final journey = await journeyProvider.suggestJourney(
-      widget.bookmarkGroup.id,
-    );
+    // final journey = await journeyProvider.suggestJourney(
+    //   widget.bookmarkGroup.id,
+    // );
 
-    navigationService.push(
-      MaterialPageRoute(
-        builder: (context) => TripOverview(
-          journey: journey,
-        ),
-      ),
-    );
+    // navigationService.push(
+    //   MaterialPageRoute(
+    //     builder: (context) => TripOverview(
+    //       journey: journey,
+    //     ),
+    //   ),
+    // );
   }
 }

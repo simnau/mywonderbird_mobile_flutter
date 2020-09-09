@@ -27,7 +27,8 @@ class FullJourney extends Journey {
     return FullJourney(
       id: json['id'],
       name: json['name'],
-      startDate: json['startDate'],
+      startDate:
+          json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
       imageUrl: json['imageUrl'],
       country: json['country'],
       locations: json['locations']
@@ -38,14 +39,31 @@ class FullJourney extends Journey {
     );
   }
 
+  List<LocationModel> get locationsWithImages {
+    return this
+        .locations
+        .where((location) => location.imageUrl != null)
+        .toList();
+  }
+
   List<LocationModel> get showCaseLocations {
-    if (this.locations.length <= SHOWCASE_PICTURE_COUNT) {
+    if (locationsWithImages.length <= SHOWCASE_PICTURE_COUNT) {
       return this.locations;
     }
 
-    return this.locations.sublist(0, SHOWCASE_PICTURE_COUNT);
+    return locationsWithImages.sublist(0, SHOWCASE_PICTURE_COUNT);
   }
 
-  int get morePictureCount => this.locations.length - SHOWCASE_PICTURE_COUNT;
-  bool get hasMorePictures => this.locations.length > SHOWCASE_PICTURE_COUNT;
+  int get morePictureCount =>
+      locationsWithImages.length - SHOWCASE_PICTURE_COUNT;
+  bool get hasMorePictures =>
+      locationsWithImages.length > SHOWCASE_PICTURE_COUNT;
+
+  String get countryDescription {
+    if (country == null) {
+      return null;
+    }
+
+    return "Starts in $country";
+  }
 }

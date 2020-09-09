@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/services/api.dart';
 
 const CREATE_JOURNEY_PATH = '/api/journeys';
 const MY_JOURNEYS_PATH = '/api/journeys/v2/my';
 const LAST_JOURNEY_PATH = '/api/journeys/last';
+final getJourneyPath = (journeyId) => "/api/journeys/v2/$journeyId";
 
 class JourneyService {
   final API api;
@@ -36,6 +38,14 @@ class JourneyService {
     final response = await api.get(LAST_JOURNEY_PATH);
     final journeyRaw = response['body']['journey'];
     final journey = Journey.fromRequestJson(journeyRaw);
+
+    return journey;
+  }
+
+  Future<FullJourney> getJourney(String id) async {
+    final response = await api.get(getJourneyPath(id));
+    final journeyRaw = response['body']['journey'];
+    final journey = FullJourney.fromJson(journeyRaw);
 
     return journey;
   }
