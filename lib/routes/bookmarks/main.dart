@@ -48,8 +48,8 @@ class _BookmarksState extends State<Bookmarks> {
     if (_isLoading) {
       return new Padding(
         padding: const EdgeInsets.all(8.0),
-        child: new Center(
-          child: new CircularProgressIndicator(),
+        child: Center(
+          child: CircularProgressIndicator(),
         ),
       );
     }

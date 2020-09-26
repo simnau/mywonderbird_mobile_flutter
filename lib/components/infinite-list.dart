@@ -76,10 +76,10 @@ class InfiniteListState extends State<InfiniteList> {
   Widget _progressIndicator() {
     return new Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: widget.isPerformingRequest ? 1.0 : 0.0,
-          child: new CircularProgressIndicator(),
+          child: CircularProgressIndicator(),
         ),
       ),
     );

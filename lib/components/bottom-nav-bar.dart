@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:mywonderbird/components/custom-icons.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/notifications/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
+import 'package:mywonderbird/routes/suggest-trip/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -55,9 +57,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
             IconButton(
               iconSize: 32,
-              icon: Icon(Icons.notifications_none),
+              icon: Icon(CustomIcons.route),
               color: Colors.black54,
-              onPressed: _onNavigateToNotifications,
+              onPressed: _onSuggestTrip,
             ),
             IconButton(
               iconSize: 32,
@@ -79,7 +81,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     locator<NavigationService>().pushNamed(Bookmarks.PATH);
   }
 
-  _onNavigateToNotifications() {
-    locator<NavigationService>().pushNamed(Notifications.PATH);
+  _onSuggestTrip() {
+    locator<NavigationService>().push(
+      MaterialPageRoute(builder: (context) => SuggestTrip()),
+    );
   }
 }

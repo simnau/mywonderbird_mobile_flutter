@@ -51,7 +51,6 @@ class _OnboardingState extends State<Onboarding> {
               itemCount: ONBOARDING_SLIDES.length,
             ),
           ),
-          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
           _bottomContent(),
         ],
       ),
@@ -73,32 +72,33 @@ class _OnboardingState extends State<Onboarding> {
     final item = ONBOARDING_SLIDES[_currentPage];
 
     return GestureDetector(
-      child: Column(
-        children: [
-          Center(
-            child: SlideIndicator(
-              color: theme.accentColor,
-              itemCount: ONBOARDING_SLIDES.length,
-              currentItem: _currentPage,
-            ),
-          ),
-          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
-              item.title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: SlideIndicator(
+                color: theme.primaryColor,
+                itemCount: ONBOARDING_SLIDES.length,
+                currentItem: _currentPage,
               ),
             ),
-          ),
-          Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
+            Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                item.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+            Text(
               item.body,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -107,26 +107,20 @@ class _OnboardingState extends State<Onboarding> {
                 color: Colors.black54,
               ),
             ),
-          ),
-          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-          RaisedButton(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 56,
-              vertical: 12,
-            ),
-            colorBrightness: Brightness.dark,
-            color: theme.accentColor,
-            child: Text(
-              isLastPageSelected ? "Let's go" : 'Next',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16.0,
+            Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+            RaisedButton(
+              colorBrightness: Brightness.dark,
+              child: Text(
+                isLastPageSelected ? "Let's go" : 'Next',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.0,
+                ),
               ),
+              onPressed: isLastPageSelected ? _onComplete : _onNext,
             ),
-            onPressed: isLastPageSelected ? _onComplete : _onNext,
-          ),
-          Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-        ],
+          ],
+        ),
       ),
     );
   }

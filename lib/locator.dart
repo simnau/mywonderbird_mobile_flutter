@@ -12,6 +12,7 @@ import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/bookmark.dart';
+import 'package:mywonderbird/services/country.dart';
 import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/journeys.dart';
@@ -81,6 +82,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => BookmarkService(api: api));
   locator.registerLazySingleton(() => BookmarkGroupService(api: api));
   locator.registerLazySingleton(() => SuggestionService(api: api));
+  locator.registerLazySingleton(() => CountryService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,

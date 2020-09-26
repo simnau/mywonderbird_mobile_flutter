@@ -125,7 +125,7 @@ class API {
     return _handleResponse(response);
   }
 
-  Uri _createUri(String base, String path, Map<String, dynamic> params) {
+  Uri _createUri(String base, String path, Map<String, String> params) {
     final parsedUri = Uri.parse(base);
     if (parsedUri.scheme == 'http') {
       return Uri.http(parsedUri.authority, path, params);

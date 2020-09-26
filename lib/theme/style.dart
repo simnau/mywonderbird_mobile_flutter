@@ -17,7 +17,7 @@ final ThemeData appTheme = ThemeData(
   buttonTheme: ButtonThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
-        Radius.circular(16.0),
+        Radius.circular(40.0),
       ),
     ),
   ),

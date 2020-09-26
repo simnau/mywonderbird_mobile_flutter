@@ -6,13 +6,11 @@ import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/models/bookmarked-location.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
 import 'package:mywonderbird/routes/share-picture/mock.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/routes/suggest-trip/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/services/suggestion.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -92,7 +90,6 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF2F3F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
@@ -115,42 +112,25 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
     if (_isLoading) {
       return new Padding(
         padding: const EdgeInsets.all(8.0),
-        child: new Center(
-          child: new CircularProgressIndicator(),
+        child: Center(
+          child: CircularProgressIndicator(),
         ),
       );
     }
 
-    final theme = Theme.of(context);
-
-    return Stack(
-      children: [
-        InfiniteList(
-          key: _infiniteListKey,
-          fetchMore: _fetchMore,
-          itemBuilder: (BuildContext context, int index) {
-            return _bookmarkItem(_items[index], index);
-          },
-          itemCount: _items.length,
-          padding: const EdgeInsets.only(
-            top: 16.0,
-            bottom: 64.0,
-          ),
-          rowPadding: const EdgeInsets.only(bottom: 0),
-          isPerformingRequest: _isPerformingRequest,
-        ),
-        // Positioned(
-        //   bottom: 16,
-        //   left: 16,
-        //   right: 16,
-        //   child: RaisedButton(
-        //     color: theme.primaryColor,
-        //     colorBrightness: Brightness.dark,
-        //     child: Text('Suggest me a trip'),
-        //     onPressed: _suggestTrip,
-        //   ),
-        // ),
-      ],
+    return InfiniteList(
+      key: _infiniteListKey,
+      fetchMore: _fetchMore,
+      itemBuilder: (BuildContext context, int index) {
+        return _bookmarkItem(_items[index], index);
+      },
+      itemCount: _items.length,
+      padding: const EdgeInsets.only(
+        top: 16.0,
+        bottom: 64.0,
+      ),
+      rowPadding: const EdgeInsets.only(bottom: 0),
+      isPerformingRequest: _isPerformingRequest,
     );
   }
 
@@ -276,22 +256,5 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
         }
       });
     }
-  }
-
-  _suggestTrip() async {
-    // final navigationService = locator<NavigationService>();
-    // final journeyProvider = locator<JourneyProvider>();
-
-    // final journey = await journeyProvider.suggestJourney(
-    //   widget.bookmarkGroup.id,
-    // );
-
-    // navigationService.push(
-    //   MaterialPageRoute(
-    //     builder: (context) => TripOverview(
-    //       journey: journey,
-    //     ),
-    //   ),
-    // );
   }
 }
