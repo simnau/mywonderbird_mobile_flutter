@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/services/location.dart';
@@ -303,10 +305,7 @@ class _BottomSheetState extends State<_BottomSheet> {
                   color: Colors.black26,
                 ),
               ),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
+              style: theme.textTheme.subtitle1,
             ),
           ),
           Visibility(
@@ -349,15 +348,10 @@ class _BottomSheetState extends State<_BottomSheet> {
                   ),
                 ),
                 Container(
-                  child: Text(
+                  child: Subtitle1(
                     "What are\n"
                     "you searching for?",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
                   ),
                 ),
                 Padding(
@@ -369,15 +363,10 @@ class _BottomSheetState extends State<_BottomSheet> {
                   padding: const EdgeInsets.only(
                     bottom: 32,
                   ),
-                  child: Text(
+                  child: Subtitle2(
                     "Is it an astonishing landmark?\n"
                     "Or perhaps it is a sight in a city?",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black26,
-                    ),
                   ),
                 ),
               ],
@@ -415,20 +404,8 @@ class _BottomSheetState extends State<_BottomSheet> {
                         ),
                       ),
                     ),
-                    title: Text(
-                      place.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    subtitle: Text(
-                      place.country,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black26,
-                      ),
-                    ),
+                    title: Subtitle1(place.name),
+                    subtitle: Subtitle2(place.country),
                   );
                 },
                 itemCount: _places.length,

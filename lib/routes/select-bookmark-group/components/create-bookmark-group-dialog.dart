@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 
 class CreateBookmarkGroupDialog extends StatefulWidget {
   final void Function(String) onCreate;
@@ -24,13 +25,9 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          Subtitle1(
             'Create a bookmark group',
             textAlign: TextAlign.start,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
           ),
           TextField(
             decoration: new InputDecoration(hintText: 'Bookmark group title'),

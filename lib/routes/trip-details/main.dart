@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/util/geo.dart';
@@ -86,14 +87,7 @@ class _TripDetailsState extends State<TripDetails> {
                         vertical: 16.0,
                         horizontal: 24.0,
                       ),
-                      child: Text(
-                        'Locations',
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
+                      child: Subtitle1('Locations'),
                     ),
                     Expanded(
                       child: ListView.separated(
@@ -180,14 +174,7 @@ class _TripDetailsState extends State<TripDetails> {
               ),
             ),
           ),
-          title: Text(
-            location.name,
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
+          title: Subtitle1(location.name),
         ),
       ),
     );

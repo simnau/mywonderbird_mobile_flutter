@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/typography/h5.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/extensions/text-theme.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SuggestedTrip extends StatefulWidget {
@@ -64,14 +67,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     return Column(
       children: [
-        Text(
-          'Your trip is ready!',
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
+        H5('Your trip is ready!'),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
         ),
@@ -84,19 +80,13 @@ class _SuggestedTripState extends State<SuggestedTrip>
             Tab(
               child: Text(
                 'LOCATIONS',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: theme.textTheme.tab,
               ),
             ),
             Tab(
               child: Text(
                 'MAP',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: theme.textTheme.tab,
               ),
             ),
           ],
@@ -163,14 +153,9 @@ class _LocationsTab extends StatelessWidget {
           horizontal: 8.0,
           vertical: 8.0,
         ),
-        title: Text(
+        title: Subtitle1(
           location.name,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
         ),
         leading: AspectRatio(
           aspectRatio: 1,

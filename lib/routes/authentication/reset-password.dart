@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/sign-in-arguments.dart';
@@ -77,28 +78,14 @@ class _ResetPasswordState extends State<ResetPassword> {
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.red,
-              child: Text(
-                _error,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(_error),
             )
           else if (_message != null)
             Container(
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.green,
-              child: Text(
-                _message,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(_message),
             ),
           AuthTextField(
             controller: _emailController,
@@ -141,14 +128,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         ),
         FlatButton(
           onPressed: _onResendCode,
-          child: Text(
-            'RESEND CODE',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
+          child: BodyText1('RESEND CODE'),
         ),
       ],
     );

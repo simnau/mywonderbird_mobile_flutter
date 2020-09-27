@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -39,40 +41,23 @@ class _SuggestTripState extends State<SuggestTrip> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          Subtitle1(
             'Tell us about your trip',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
           ),
-          Text(
+          Subtitle2(
             'In order for us to give you better suggestions, please let us know more about your trip',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.black54,
-            ),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
           ),
           RaisedButton(
-            colorBrightness: Brightness.dark,
             onPressed: _onStart,
-            child: Text(
-              'Start',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16.0,
-              ),
-            ),
+            child: Subtitle2.light('Start'),
           ),
         ],
       ),

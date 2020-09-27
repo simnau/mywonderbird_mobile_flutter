@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 
 class CustomListItem extends StatelessWidget {
   final String title;
@@ -46,25 +48,11 @@ class CustomListItem extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          this.title,
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        Subtitle1(this.title),
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                         ),
-                        Text(
-                          this.subtitle,
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        BodyText1(this.subtitle),
                       ],
                     ),
                   ),

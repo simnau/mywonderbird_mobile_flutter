@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/label-value-pair.dart';
 import 'package:mywonderbird/services/country.dart';
@@ -81,10 +82,7 @@ class _TripCountryState extends State<TripCountry> {
                 color: Colors.black26,
               ),
             ),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
+            style: theme.textTheme.subtitle1,
           ),
         ),
         Expanded(
@@ -122,14 +120,7 @@ class _TripCountryState extends State<TripCountry> {
       child: Material(
         color: Colors.transparent,
         child: ListTile(
-          title: Text(
-            country.label,
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
+          title: Subtitle1(country.label),
           onTap: () => _onSelectCountry(country),
         ),
       ),

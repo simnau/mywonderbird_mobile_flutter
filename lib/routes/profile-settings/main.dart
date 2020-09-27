@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user.dart';
@@ -70,14 +71,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Account details',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('Account details'),
         actions: [
           FlatButton(
             onPressed: _onSave,

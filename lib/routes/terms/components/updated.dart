@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/pdf/main.dart';
@@ -22,19 +23,13 @@ class UpdatedTerms extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          'Our terms have updated',
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Subtitle1('Our terms have updated'),
         Padding(
           padding: EdgeInsets.only(
             bottom: 8.0,
           ),
         ),
-        _createTermsText(),
+        _createTermsText(context),
         Padding(
           padding: EdgeInsets.only(
             bottom: 16.0,
@@ -51,7 +46,9 @@ class UpdatedTerms extends StatelessWidget {
     );
   }
 
-  Widget _createTermsText() {
+  Widget _createTermsText(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text.rich(
       TextSpan(
         children: [
@@ -62,9 +59,7 @@ class UpdatedTerms extends StatelessWidget {
           TextSpan(text: ' to continue enjoying our platform!'),
         ],
       ),
-      style: TextStyle(
-        fontSize: 16.0,
-      ),
+      style: theme.textTheme.subtitle2,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/terms/components/initial.dart';
@@ -56,14 +57,7 @@ class _TermsPageState extends State<TermsPage> {
                           padding: const EdgeInsets.all(8),
                           alignment: Alignment.center,
                           color: Colors.red,
-                          child: Text(
-                            _error,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
+                          child: BodyText1.light(_error),
                         ),
                       widget.isUpdate
                           ? UpdatedTerms(

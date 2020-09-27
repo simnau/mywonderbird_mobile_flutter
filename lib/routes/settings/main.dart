@@ -3,6 +3,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/settings-list-header.dart';
 import 'package:mywonderbird/components/settings-list-icon.dart';
 import 'package:mywonderbird/components/settings-list-item.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
@@ -26,14 +27,7 @@ class Settings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Settings',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('Settings'),
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 16.0),

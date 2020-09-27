@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/custom-grid-tile.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/routes/select-bookmark-group/components/create-bookmark-group-dialog.dart';
@@ -30,14 +31,7 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Select a bookmark group',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('Select a bookmark group'),
       ),
       body: _bookmarkGroups(),
     );

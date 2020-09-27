@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/builder-arguments.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/wizard-step.dart';
@@ -79,14 +81,9 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    Subtitle1(
                       step.title,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
                     ),
                     Expanded(
                       child: step.builder(BuilderArguments(
@@ -121,7 +118,6 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
     return SizedBox(
       width: double.infinity,
       child: RaisedButton(
-        colorBrightness: Brightness.dark,
         onPressed: onPressed,
         child: _isLoading
             ? SizedBox(
@@ -129,13 +125,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
                 width: 16,
                 child: CircularProgressIndicator(),
               )
-            : Text(
-                'Continue',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.0,
-                ),
-              ),
+            : Subtitle2.light('Continue'),
       ),
     );
   }

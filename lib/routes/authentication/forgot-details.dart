@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/reset-password-arguments.dart';
@@ -74,14 +75,7 @@ class _ForgotDetailsState extends State<ForgotDetails> {
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.red,
-              child: Text(
-                _error,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(_error),
             ),
           AuthTextField(
             controller: _emailController,
@@ -111,14 +105,7 @@ class _ForgotDetailsState extends State<ForgotDetails> {
         ),
         FlatButton(
           onPressed: _onHasCode,
-          child: Text(
-            'I HAVE A CODE',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
+          child: BodyText1('I HAVE A CODE'),
         ),
       ],
     );

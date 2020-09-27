@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 
 class ChangePasswordForm extends StatelessWidget {
   final String error;
@@ -35,14 +36,7 @@ class ChangePasswordForm extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.red,
-              child: Text(
-                error,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(error),
             ),
           AuthTextField(
             controller: currentPasswordController,

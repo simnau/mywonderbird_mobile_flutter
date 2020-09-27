@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 
 class SelectedLocations extends StatelessWidget {
@@ -20,14 +21,7 @@ class SelectedLocations extends StatelessWidget {
 
   Widget _content() {
     if (selectedLocations.isEmpty) {
-      return Text(
-        'No locations selected',
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-      );
+      return Subtitle1('No locations selected');
     }
 
     return Row(
@@ -42,14 +36,7 @@ class SelectedLocations extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          "${selectedLocations.length} selected",
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Subtitle1("${selectedLocations.length} selected"),
       ],
     );
   }

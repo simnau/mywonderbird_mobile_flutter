@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:provider/provider.dart';
@@ -66,20 +68,8 @@ class _TripsTabState extends State<TripsTab> {
                   color: Colors.black26,
                 ),
         ),
-        title: Text(
-          journey.country ?? '-',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.black87,
-          ),
-        ),
-        subtitle: Text(
-          journey.startDate.year.toString(),
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.black26,
-          ),
-        ),
+        title: Subtitle1(journey.country ?? '-'),
+        subtitle: Subtitle2(journey.startDate.year.toString()),
       ),
     );
   }

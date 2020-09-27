@@ -1,3 +1,5 @@
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
@@ -118,20 +120,8 @@ class _SelectJourneyState extends State<SelectJourney> {
                   ),
           ),
         ),
-        title: Text(
-          journey.name ?? 'Journey with no name',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.black87,
-          ),
-        ),
-        subtitle: Text(
-          timeago.format(journey.startDate),
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.black26,
-          ),
-        ),
+        title: Subtitle1(journey.name ?? 'Journey with no name'),
+        subtitle: Subtitle2(timeago.format(journey.startDate)),
       ),
     );
   }
@@ -146,6 +136,7 @@ class _SelectJourneyState extends State<SelectJourney> {
 
   Widget _buildCreateTripHeader() {
     final sharePictureProvider = locator<SharePictureProvider>();
+    final theme = Theme.of(context);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
@@ -173,10 +164,7 @@ class _SelectJourneyState extends State<SelectJourney> {
             color: Colors.black26,
           ),
         ),
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
+        style: theme.textTheme.subtitle1,
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -226,12 +214,9 @@ class _SelectJourneyState extends State<SelectJourney> {
           size: 32.0,
         ),
       ),
-      title: Text(
+      title: Subtitle1(
         'Create a new trip',
-        style: TextStyle(
-          color: Colors.black38,
-          fontSize: 20,
-        ),
+        color: Colors.black38,
       ),
     );
   }

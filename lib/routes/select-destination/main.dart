@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/custom-list-item.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
 import 'package:mywonderbird/routes/select-journey/main.dart';
@@ -34,14 +35,7 @@ class _SelectDestinationState extends State<SelectDestination> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Share to',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('Share to'),
       ),
       body: Container(
         padding: const EdgeInsets.all(32.0),

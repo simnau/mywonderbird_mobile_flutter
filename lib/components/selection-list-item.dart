@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text2.dart';
 import 'package:mywonderbird/types/named-item.dart';
+
+import 'typography/subtitle1.dart';
 
 class SelectionListItem extends StatelessWidget {
   final Icon icon;
@@ -46,14 +49,7 @@ class SelectionListItem extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text(
-                          item?.name ?? '',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        Subtitle1(item?.name ?? ''),
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                         ),
@@ -62,24 +58,13 @@ class SelectionListItem extends StatelessWidget {
                   ),
                   Visibility(
                     visible: item != null,
-                    child: Text(
-                      changeTitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: BodyText2(changeTitle),
                   ),
                   Visibility(
                     visible: item == null,
-                    child: Text(
+                    child: Subtitle1(
                       chooseTitle,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: theme.accentColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      color: theme.accentColor,
                     ),
                   ),
                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
@@ -77,28 +78,14 @@ class _ConfirmState extends State<Confirm> {
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.red,
-              child: Text(
-                _error,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(_error),
             )
           else if (_message != null)
             Container(
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
               color: Colors.green,
-              child: Text(
-                _message,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
+              child: BodyText1.light(_message),
             ),
           AuthTextField(
             controller: _codeController,
@@ -128,14 +115,7 @@ class _ConfirmState extends State<Confirm> {
         ),
         FlatButton(
           onPressed: _sendCode,
-          child: Text(
-            'RESEND CODE',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
+          child: BodyText1('RESEND CODE'),
         ),
       ],
     );

@@ -43,11 +43,7 @@ class AuthTextField extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.black87,
-        ),
+        style: theme.textTheme.subtitle1,
         keyboardType: keyboardType,
         obscureText: obscureText,
       ),

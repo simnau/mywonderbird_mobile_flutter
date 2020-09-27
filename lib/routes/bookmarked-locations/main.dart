@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/models/bookmarked-location.dart';
@@ -92,14 +94,7 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          widget.bookmarkGroup?.title ?? '',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1(widget.bookmarkGroup?.title ?? ''),
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
@@ -156,20 +151,12 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
           ),
         ),
       ),
-      title: Text(
+      title: Subtitle1(
         location.title ?? '-',
-        style: TextStyle(
-          fontSize: 20,
-          color: Colors.black87,
-        ),
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: Text(
+      subtitle: Subtitle2(
         location.country ?? '-',
-        style: TextStyle(
-          fontSize: 18,
-          color: Colors.black26,
-        ),
         overflow: TextOverflow.ellipsis,
       ),
       trailing: IconButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/h5.dart';
 
 class BoolPicker extends StatelessWidget {
   final bool value;
@@ -37,25 +38,16 @@ class BoolPicker extends StatelessWidget {
   Widget _noButton() {
     if (value == false) {
       return RaisedButton(
-        colorBrightness: Brightness.dark,
-        child: Text(
-          'No',
-          style: TextStyle(
-            fontSize: 24,
-          ),
-        ),
+        child: H5.light('No'),
         onPressed: _onNo,
         color: Colors.red,
       );
     }
 
     return OutlineButton(
-      child: Text(
+      child: H5(
         'No',
-        style: TextStyle(
-          color: Colors.red,
-          fontSize: 24,
-        ),
+        color: Colors.red,
       ),
       onPressed: _onNo,
       color: Colors.red,
@@ -67,25 +59,16 @@ class BoolPicker extends StatelessWidget {
   Widget _yesButton() {
     if (value == true) {
       return RaisedButton(
-        colorBrightness: Brightness.dark,
-        child: Text(
-          'Yes',
-          style: TextStyle(
-            fontSize: 24,
-          ),
-        ),
+        child: H5.light('Yes'),
         onPressed: _onYes,
         color: Colors.green,
       );
     }
 
     return OutlineButton(
-      child: Text(
+      child: H5(
         'Yes',
-        style: TextStyle(
-          color: Colors.green,
-          fontSize: 24,
-        ),
+        color: Colors.green,
       ),
       onPressed: _onYes,
       color: Colors.green,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/bottom-nav-bar.dart';
 import 'package:mywonderbird/components/feed-item.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/feed-location.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
@@ -81,14 +82,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         backgroundColor: Colors.white,
-        title: Text(
-          'MyWonderbird',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('MyWonderbird'),
         actions: <Widget>[
           IconButton(
             icon: Icon(

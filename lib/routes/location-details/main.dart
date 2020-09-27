@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -98,13 +100,8 @@ class _LocationDetailsState extends State<LocationDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          Subtitle1(
             widget.location.name,
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-            ),
             softWrap: true,
           ),
           Padding(padding: const EdgeInsets.only(bottom: 4.0)),
@@ -115,13 +112,8 @@ class _LocationDetailsState extends State<LocationDetails> {
                 color: Colors.black54,
               ),
               Padding(padding: const EdgeInsets.only(right: 4.0)),
-              Text(
+              Subtitle2(
                 widget.location.country,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
                 softWrap: true,
               ),
             ],

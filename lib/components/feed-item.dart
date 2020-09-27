@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
+import 'package:mywonderbird/components/typography/body-text2.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'typography/body-text1.dart';
 
 class FeedItem extends StatefulWidget {
   final String title;
@@ -109,22 +114,12 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
+            Subtitle2(
               widget.title ?? '',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black45,
-                fontWeight: FontWeight.w600,
-              ),
               overflow: TextOverflow.ellipsis,
             ),
-            Text(
+            BodyText2(
               widget.country ?? '',
-              style: TextStyle(
-                fontSize: 12.0,
-                color: Colors.black45,
-                fontWeight: FontWeight.w500,
-              ),
             ),
           ],
         ),
@@ -145,14 +140,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                 Padding(
                   padding: const EdgeInsets.only(right: 4),
                 ),
-                Text(
-                  widget.likeCount.toString(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
-                ),
+                BodyText1(widget.likeCount.toString()),
               ],
             ),
             Padding(

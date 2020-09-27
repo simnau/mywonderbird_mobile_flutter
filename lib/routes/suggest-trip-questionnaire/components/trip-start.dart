@@ -49,10 +49,7 @@ class _TripStartState extends State<TripStart> {
             color: Colors.black26,
           ),
         ),
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
+        style: theme.textTheme.subtitle1,
       ),
     );
   }

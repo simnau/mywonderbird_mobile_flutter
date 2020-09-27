@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text2.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -85,22 +87,8 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   _avatar(user),
-                  Text(
-                    user?.username ?? 'Anonymous',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black45,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    user?.level ?? 'Beginner',
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: Colors.black45,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  Subtitle1(user?.username ?? 'Anonymous'),
+                  BodyText2(user?.level ?? 'Beginner'),
                 ],
               ),
             ),

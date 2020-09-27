@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/routes/trip-details/main.dart';
@@ -82,16 +84,7 @@ class _TripOverviewState extends State<TripOverview> {
                     onTap: _tripDetails,
                     child: Row(
                       children: [
-                        Expanded(
-                          child: Text(
-                            widget.journey.name,
-                            style: TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        Expanded(child: H6.light(widget.journey.name)),
                         Icon(
                           Icons.chevron_right,
                           color: Colors.white,
@@ -102,14 +95,9 @@ class _TripOverviewState extends State<TripOverview> {
                   ),
                 Padding(padding: const EdgeInsets.only(bottom: 16.0)),
                 if (widget.journey.countryDescription != null)
-                  Text(
+                  Subtitle2.light(
                     widget.journey.countryDescription,
                     softWrap: true,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white70,
-                    ),
                   ),
                 Padding(padding: const EdgeInsets.only(bottom: 16.0)),
                 _map(),

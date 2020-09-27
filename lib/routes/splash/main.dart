@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 
 class SplashScreen extends StatefulWidget {
   static const PATH = '/';
@@ -75,14 +76,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        'MyWonderbird is loading...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      Subtitle1.light('MyWonderbird is loading...'),
                       CircularProgressIndicator(
                         strokeWidth: 5,
                         valueColor: _loaderColor,

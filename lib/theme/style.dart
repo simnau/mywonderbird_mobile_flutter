@@ -27,4 +27,34 @@ final ThemeData appTheme = ThemeData(
     ),
     elevation: 0,
   ),
+  textTheme: TextTheme(
+    headline5: TextStyle(
+      fontSize: 24.0,
+      color: Colors.black87,
+      fontWeight: FontWeight.w600,
+    ),
+    headline6: TextStyle(
+      fontSize: 20.0,
+      color: Colors.black45,
+      fontWeight: FontWeight.w500,
+    ),
+    subtitle1: TextStyle(
+      fontSize: 18.0,
+      color: Colors.black87,
+      fontWeight: FontWeight.w500,
+    ),
+    subtitle2: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black45,
+    ),
+    bodyText1: TextStyle(
+      fontSize: 14.0,
+      color: Colors.black87,
+      fontWeight: FontWeight.w500,
+    ),
+    bodyText2: TextStyle(
+      fontSize: 12.0,
+      color: Colors.black45,
+    ),
+  ),
 );

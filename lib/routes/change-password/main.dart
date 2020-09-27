@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
@@ -43,14 +44,7 @@ class _ChangePasswordState extends State<ChangePassword> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: Text(
-            'Change password',
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-              fontSize: 18.0,
-            ),
-          ),
+          title: Subtitle1('Change password'),
           actions: [
             Builder(
               builder: (context) {

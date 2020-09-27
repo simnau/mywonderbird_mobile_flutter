@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 
 import 'components/bool-picker.dart';
 import 'components/count-picker.dart';
@@ -47,20 +48,8 @@ final questionnaireSteps = [
       value: arguments.value,
       minValue: 1,
       maxValue: 365,
-      prefix: Text(
-        'Duration',
-        style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      postfix: Text(
-        'day(s)',
-        style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      prefix: Subtitle1('Duration'),
+      postfix: Subtitle1('day(s)'),
     ),
     validator: (value) => value != null && value > 0,
   ),
@@ -72,13 +61,7 @@ final questionnaireSteps = [
       value: arguments.value,
       minValue: 1,
       maxValue: 20,
-      postfix: Text(
-        'location(s)',
-        style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      postfix: Subtitle1('location(s)'),
     ),
     validator: (value) => value != null && value > 0,
   ),
@@ -90,13 +73,7 @@ final questionnaireSteps = [
       value: arguments.value,
       minValue: 0,
       maxValue: 10,
-      postfix: Text(
-        'traveler(s)',
-        style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      postfix: Subtitle1('traveler(s)'),
     ),
     validator: (value) => value != null && value >= 0,
   ),

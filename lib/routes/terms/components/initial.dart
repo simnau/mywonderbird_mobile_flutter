@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/pdf/main.dart';
@@ -26,30 +28,20 @@ class InitialTerms extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          'Terms and conditions',
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Subtitle1('Terms and conditions'),
         Padding(
           padding: EdgeInsets.only(
             bottom: 8.0,
           ),
         ),
-        Text(
-          'We are excited to welcome you to MyWonderbird! We hope you will have a great time using our platform.',
-          style: TextStyle(
-            fontSize: 16.0,
-          ),
-        ),
+        Subtitle2(
+            'We are excited to welcome you to MyWonderbird! We hope you will have a great time using our platform.'),
         Padding(
           padding: EdgeInsets.only(
             bottom: 8.0,
           ),
         ),
-        _createTermsText(),
+        _createTermsText(context),
         Padding(
           padding: EdgeInsets.only(
             bottom: 16.0,
@@ -66,7 +58,9 @@ class InitialTerms extends StatelessWidget {
     );
   }
 
-  Widget _createTermsText() {
+  Widget _createTermsText(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text.rich(
       TextSpan(
         children: [
@@ -77,9 +71,7 @@ class InitialTerms extends StatelessWidget {
           TextSpan(text: ' before you continue.'),
         ],
       ),
-      style: TextStyle(
-        fontSize: 16.0,
-      ),
+      style: theme.textTheme.subtitle2,
     );
   }
 

@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/gradient-icon.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/location-details/main.dart';
@@ -241,25 +243,15 @@ class _SwipeLocationsState extends State<SwipeLocations> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                Subtitle1.light(
                   item.name,
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4.0),
                 ),
-                Text(
+                Subtitle2.light(
                   item.country,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/slide-indicator.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/onboarding.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/onboarding.dart';
@@ -87,36 +90,19 @@ class _OnboardingState extends State<Onboarding> {
             Padding(padding: const EdgeInsets.only(bottom: 16.0)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
+              child: Subtitle1(
                 item.title,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
               ),
             ),
             Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-            Text(
+            Subtitle2(
               item.body,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.black54,
-              ),
             ),
             Padding(padding: const EdgeInsets.only(bottom: 16.0)),
             RaisedButton(
-              colorBrightness: Brightness.dark,
-              child: Text(
-                isLastPageSelected ? "Let's go" : 'Next',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.0,
-                ),
-              ),
+              child: Subtitle1.light(isLastPageSelected ? "Let's go" : 'Next'),
               onPressed: isLastPageSelected ? _onComplete : _onNext,
             ),
           ],

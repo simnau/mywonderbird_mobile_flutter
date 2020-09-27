@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'typography/subtitle1.dart';
+
 class SettingsListItem extends StatelessWidget {
   final void Function() onTap;
   final Widget icon;
@@ -20,14 +22,7 @@ class SettingsListItem extends StatelessWidget {
         horizontal: 16.0,
       ),
       leading: icon,
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Colors.black87,
-          fontWeight: FontWeight.w500,
-          fontSize: 18.0,
-        ),
-      ),
+      title: Subtitle1(title),
       trailing: Icon(
         Icons.chevron_right,
       ),

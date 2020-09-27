@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/custom-grid-tile.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/routes/bookmarked-locations/main.dart';
@@ -31,14 +32,7 @@ class _BookmarksState extends State<Bookmarks> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Your bookmark groups',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 18.0,
-          ),
-        ),
+        title: Subtitle1('Your bookmark groups'),
       ),
       body: _bookmarkGroups(),
     );

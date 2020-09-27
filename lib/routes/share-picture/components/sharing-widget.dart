@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/custom-icons.dart';
 import 'package:mywonderbird/components/selection-list-item.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/models/location.dart';
@@ -53,6 +54,7 @@ class _SharingWidgetState extends State<SharingWidget> {
 
   Widget _content() {
     final theme = Theme.of(context);
+
     return Column(
       children: <Widget>[
         AspectRatio(
@@ -86,11 +88,7 @@ class _SharingWidgetState extends State<SharingWidget> {
                       color: Colors.black26,
                     ),
                   ),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
+                  style: theme.textTheme.subtitle1,
                 ),
               ),
               if (_error != null)
@@ -98,14 +96,7 @@ class _SharingWidgetState extends State<SharingWidget> {
                   padding: const EdgeInsets.all(8),
                   alignment: Alignment.center,
                   color: Colors.red,
-                  child: Text(
-                    _error,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                  ),
+                  child: BodyText1.light(_error),
                 ),
               SelectionListItem(
                 icon: Icon(

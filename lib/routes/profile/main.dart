@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/routes/profile/components/profile-app-bar.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/extensions/text-theme.dart';
 
 import 'components/badges-tab.dart';
 import 'components/map-tab.dart';
@@ -64,28 +66,19 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                     Tab(
                       child: Text(
                         'TRIPS',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: theme.textTheme.tab,
                       ),
                     ),
                     Tab(
                       child: Text(
                         'MAP',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: theme.textTheme.tab,
                       ),
                     ),
                     Tab(
                       child: Text(
                         'BADGES',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: theme.textTheme.tab,
                       ),
                     ),
                   ],
