@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/sign-in-arguments.dart';
@@ -155,6 +156,8 @@ class _ResetPasswordState extends State<ResetPassword> {
   String _validatePassword(value) {
     if (value.isEmpty) {
       return 'Password is required';
+    } else if (value.length < MIN_PASSWORD_LENGTH) {
+      return "Password must be at least $MIN_PASSWORD_LENGTH characters long";
     }
 
     return null;

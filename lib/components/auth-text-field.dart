@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final String Function(String) validator;
@@ -19,6 +20,19 @@ class AuthTextField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _AuthTextFieldState createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  bool obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    obscureText = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textFieldTheme = theme.copyWith(
@@ -29,11 +43,11 @@ class AuthTextField extends StatelessWidget {
     return Theme(
       data: textFieldTheme,
       child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        validator: validator,
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        validator: widget.validator,
         decoration: InputDecoration(
-          labelText: labelText,
+          labelText: widget.labelText,
           labelStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -42,11 +56,29 @@ class AuthTextField extends StatelessWidget {
           errorStyle: TextStyle(
             fontWeight: FontWeight.w600,
           ),
+          suffixIcon: widget.obscureText ? _viewPasswordIcon() : null,
         ),
         style: theme.textTheme.subtitle1,
-        keyboardType: keyboardType,
+        keyboardType: widget.keyboardType,
         obscureText: obscureText,
       ),
     );
+  }
+
+  Widget _viewPasswordIcon() {
+    return IconButton(
+      icon: Icon(
+        obscureText
+            ? MaterialCommunityIcons.eye
+            : MaterialCommunityIcons.eye_off,
+      ),
+      onPressed: _toggleShowPassword,
+    );
+  }
+
+  _toggleShowPassword() {
+    setState(() {
+      obscureText = !obscureText;
+    });
   }
 }

@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
@@ -126,9 +127,11 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
-  String _validatePassword(value) {
+  String _validatePassword(String value) {
     if (value.isEmpty) {
       return 'Password is required';
+    } else if (value.length < MIN_PASSWORD_LENGTH) {
+      return "Password must be at least $MIN_PASSWORD_LENGTH characters long";
     }
 
     return null;
@@ -144,8 +147,10 @@ class _SignUpState extends State<SignUp> {
         final authenticationService = locator<AuthenticationService>();
 
         final email = _emailController.text;
-        final password = _emailController.text;
+        final password = _passwordController.text;
+
         await authenticationService.signUp(email, password);
+
         final user = await authenticationService.signIn(email, password);
 
         authenticationService.afterSignIn(user);
