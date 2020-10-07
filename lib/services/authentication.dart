@@ -200,7 +200,10 @@ class AuthenticationService {
     final rawResponse = response['response'];
 
     if (rawResponse.statusCode != HttpStatus.ok) {
-      throw new AuthenticationException('Unable to change the password');
+      throw new AuthenticationException(
+        'Unable to change the password',
+        errorCode: response['body']['code'],
+      );
     }
   }
 

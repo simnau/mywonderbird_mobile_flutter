@@ -8,7 +8,8 @@ class ChangePasswordForm extends StatelessWidget {
   final TextEditingController newPasswordController;
   final FocusNode currentPasswordFocusNode;
   final FocusNode newPasswordFocusNode;
-  final String Function(String) validatePassword;
+  final String Function(String) validateCurrentPassword;
+  final String Function(String) validateNewPassword;
 
   const ChangePasswordForm({
     Key key,
@@ -17,7 +18,8 @@ class ChangePasswordForm extends StatelessWidget {
     this.newPasswordController,
     this.currentPasswordFocusNode,
     this.newPasswordFocusNode,
-    this.validatePassword,
+    this.validateCurrentPassword,
+    this.validateNewPassword,
   }) : super(key: key);
 
   @override
@@ -41,7 +43,7 @@ class ChangePasswordForm extends StatelessWidget {
           AuthTextField(
             controller: currentPasswordController,
             focusNode: currentPasswordFocusNode,
-            validator: validatePassword,
+            validator: validateCurrentPassword,
             labelText: 'Current password',
             obscureText: true,
           ),
@@ -51,7 +53,7 @@ class ChangePasswordForm extends StatelessWidget {
           AuthTextField(
             controller: newPasswordController,
             focusNode: newPasswordFocusNode,
-            validator: validatePassword,
+            validator: validateNewPassword,
             labelText: 'New password',
             obscureText: true,
           ),

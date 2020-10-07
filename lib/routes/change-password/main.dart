@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
@@ -66,15 +67,26 @@ class _ChangePasswordState extends State<ChangePassword> {
           newPasswordController: _newPasswordController,
           currentPasswordFocusNode: _currentPasswordFocusNode,
           newPasswordFocusNode: _newPasswordFocusNode,
-          validatePassword: _validatePassword,
+          validateCurrentPassword: _validateCurrentPassword,
+          validateNewPassword: _validateNewPassword,
         ),
       ),
     );
   }
 
-  String _validatePassword(value) {
+  String _validateCurrentPassword(value) {
     if (value.isEmpty) {
       return 'Password is required';
+    }
+
+    return null;
+  }
+
+  String _validateNewPassword(value) {
+    if (value.isEmpty) {
+      return 'Password is required';
+    } else if (value.length < MIN_PASSWORD_LENGTH) {
+      return "Password must be at least $MIN_PASSWORD_LENGTH characters long";
     }
 
     return null;
@@ -94,23 +106,23 @@ class _ChangePasswordState extends State<ChangePassword> {
           currentPassword,
           newPassword,
         );
-      }
 
-      _currentPasswordController.clear();
-      _newPasswordController.clear();
-      _currentPasswordFocusNode.unfocus();
-      _newPasswordFocusNode.unfocus();
+        _currentPasswordController.clear();
+        _newPasswordController.clear();
+        _currentPasswordFocusNode.unfocus();
+        _newPasswordFocusNode.unfocus();
 
-      final snackBar = SnackBar(
-        content: Text(
-          'Password successfully changed',
-          style: TextStyle(
-            color: Colors.green,
+        final snackBar = SnackBar(
+          content: Text(
+            'Password successfully changed',
+            style: TextStyle(
+              color: Colors.green,
+            ),
           ),
-        ),
-      );
+        );
 
-      Scaffold.of(context).showSnackBar(snackBar);
+        Scaffold.of(context).showSnackBar(snackBar);
+      }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
         case NOT_AUTHORIZED:
