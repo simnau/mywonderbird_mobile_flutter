@@ -156,7 +156,7 @@ class AuthenticationService {
   }
 
   resetPassword(String email, String code, String password) async {
-    return api.post(
+    final response = await api.post(
       RESET_PASSWORD_PATH,
       {
         'email': email,
@@ -164,6 +164,14 @@ class AuthenticationService {
         'password': password,
       },
     );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new AuthenticationException(
+        'There was an error resetting the password',
+        errorCode: response['body']['code'],
+      );
+    }
   }
 
   confirmAccount(String email, String code) async {
@@ -174,7 +182,10 @@ class AuthenticationService {
     final rawResponse = response['response'];
 
     if (rawResponse.statusCode != HttpStatus.ok) {
-      throw new AuthenticationException('Invalid Code');
+      throw new AuthenticationException(
+        'Invalid Code',
+        errorCode: response['body']['code'],
+      );
     }
   }
 

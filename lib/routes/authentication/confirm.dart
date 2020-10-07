@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
@@ -148,9 +149,19 @@ class _ConfirmState extends State<Confirm> {
 
         authenticationService.afterSignIn(user);
       }
-    } on AuthenticationException {
+    } on AuthenticationException catch (e) {
       setState(() {
-        _error = 'Invalid code';
+        switch (e.errorCode) {
+          case CODE_MISMATCH:
+            _error = 'The code is invalid';
+            break;
+          case EXPIRED_CODE:
+            _error = 'The code has expired';
+            break;
+          default:
+            _error = 'An unexpected error occurred. Try again later';
+            break;
+        }
       });
     } catch (e) {
       setState(() {

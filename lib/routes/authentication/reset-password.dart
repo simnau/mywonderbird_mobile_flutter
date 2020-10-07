@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/auth.dart';
+import 'package:mywonderbird/constants/error-codes.dart';
+import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/sign-in-arguments.dart';
@@ -181,9 +183,22 @@ class _ResetPasswordState extends State<ResetPassword> {
 
         _navigateToSignIn();
       }
-    } catch (e) {
+    } on AuthenticationException catch (e) {
       setState(() {
-        _error = 'An unexpected error has occurred. Please try again later.';
+        switch (e.errorCode) {
+          case CODE_MISMATCH:
+            _error = 'The code is invalid';
+            break;
+          case EXPIRED_CODE:
+            _error = 'The code has expired';
+            break;
+          case LIMIT_EXCEEDED:
+            _error = 'You have exceeded the limit of tries. Try again later';
+            break;
+          default:
+            _error = 'There was an error resetting the password';
+            break;
+        }
       });
     }
   }
