@@ -106,7 +106,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             controller: _passwordController,
             validator: _validatePassword,
             keyboardType: TextInputType.text,
-            labelText: 'PASSWORD',
+            labelText: 'NEW PASSWORD',
             obscureText: true,
           ),
           Padding(

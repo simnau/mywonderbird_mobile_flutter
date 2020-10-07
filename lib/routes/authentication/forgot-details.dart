@@ -99,7 +99,7 @@ class _ForgotDetailsState extends State<ForgotDetails> {
       children: <Widget>[
         RaisedButton(
           onPressed: _onResetPassword,
-          child: Text('RESET PASSWORD'),
+          child: Text('REMIND PASSWORD'),
           color: theme.accentColor,
           colorBrightness: Brightness.dark,
         ),
