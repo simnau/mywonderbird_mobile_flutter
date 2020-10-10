@@ -40,7 +40,7 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   int get _currentNonSkippedIndex {
-    if (_journey == null) {
+    if (_journey == null || _currentPage == 0) {
       return 0;
     }
 
