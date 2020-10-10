@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 
-class CreateBookmarkGroupDialog extends StatefulWidget {
-  final void Function(String) onCreate;
+class InputTitleDialog extends StatefulWidget {
+  final String title;
+  final String hint;
+  final String cancelLabel;
+  final String saveLabel;
 
-  const CreateBookmarkGroupDialog({
+  const InputTitleDialog({
     Key key,
-    this.onCreate,
+    this.title = 'Enter a title',
+    this.hint = '',
+    this.cancelLabel = 'Cancel',
+    this.saveLabel = 'Save',
   }) : super(key: key);
 
   @override
-  _CreateBookmarkGroupDialogState createState() =>
-      _CreateBookmarkGroupDialogState();
+  _InputTitleDialogState createState() => _InputTitleDialogState();
 }
 
-class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
+class _InputTitleDialogState extends State<InputTitleDialog> {
   final _titleController = TextEditingController();
 
   @override
@@ -26,11 +32,11 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Subtitle1(
-            'Create a bookmark group',
+            widget.title,
             textAlign: TextAlign.start,
           ),
           TextField(
-            decoration: new InputDecoration(hintText: 'Bookmark group title'),
+            decoration: new InputDecoration(hintText: widget.hint),
             controller: _titleController,
           ),
           Padding(
@@ -42,16 +48,13 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
               FlatButton(
                 onPressed: _onCancel,
                 child: Text(
-                  'Cancel',
+                  widget.cancelLabel,
                   style: TextStyle(color: Colors.redAccent),
                 ),
               ),
               RaisedButton(
                 onPressed: _onCreate,
-                child: Text(
-                  'Create',
-                ),
-                colorBrightness: Brightness.dark,
+                child: BodyText1.light(widget.saveLabel),
               ),
             ],
           ),
@@ -61,8 +64,7 @@ class _CreateBookmarkGroupDialogState extends State<CreateBookmarkGroupDialog> {
   }
 
   _onCreate() {
-    widget?.onCreate(_titleController.text);
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(_titleController.text);
   }
 
   _onCancel() {

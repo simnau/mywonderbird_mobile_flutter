@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/custom-grid-tile.dart';
+import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
-import 'package:mywonderbird/routes/select-bookmark-group/components/create-bookmark-group-dialog.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -154,16 +154,19 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
     }
   }
 
-  _onOpenCreateBookmarkGroup() {
-    showDialog(
+  _onOpenCreateBookmarkGroup() async {
+    final title = await showDialog(
       context: context,
       child: Dialog(
-        child: CreateBookmarkGroupDialog(
-          onCreate: _onCreateBookmarkGroup,
+        child: InputTitleDialog(
+          title: 'Create a bookmark group',
+          hint: 'Bookmark group title',
         ),
       ),
       barrierDismissible: true,
     );
+
+    await _onCreateBookmarkGroup(title);
   }
 
   _onCreateBookmarkGroup(String title) async {

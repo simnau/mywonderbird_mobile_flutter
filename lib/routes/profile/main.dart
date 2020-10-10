@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/routes/profile/components/profile-app-bar.dart';
+import 'package:mywonderbird/routes/profile/components/saved-trips-tab.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
 
-import 'components/badges-tab.dart';
-import 'components/map-tab.dart';
 import 'components/trips-tab.dart';
 
 const double AVATAR_RADIUS = 50;
@@ -27,7 +25,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   TabController _tabController;
 
   _ProfileState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -65,19 +63,13 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                   tabs: [
                     Tab(
                       child: Text(
-                        'TRIPS',
+                        'SAVED TRIPS',
                         style: theme.textTheme.tab,
                       ),
                     ),
                     Tab(
                       child: Text(
-                        'MAP',
-                        style: theme.textTheme.tab,
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'BADGES',
+                        'MY TRIPS',
                         style: theme.textTheme.tab,
                       ),
                     ),
@@ -90,9 +82,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           children: [
-            TripsTab(),
-            MapTab(),
-            BadgesTab(),
+            SavedTripsTab(),
+            MyTripsTab(),
           ],
         ),
       ),

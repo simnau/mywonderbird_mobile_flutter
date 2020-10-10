@@ -110,9 +110,8 @@ class _ConfirmState extends State<Confirm> {
       children: <Widget>[
         RaisedButton(
           onPressed: _onConfirm,
-          child: Text('CONFIRM ACCOUNT'),
+          child: BodyText1.light('CONFIRM ACCOUNT'),
           color: theme.accentColor,
-          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _sendCode,

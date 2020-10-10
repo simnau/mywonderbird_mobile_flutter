@@ -102,7 +102,7 @@ class _OnboardingState extends State<Onboarding> {
             ),
             Padding(padding: const EdgeInsets.only(bottom: 16.0)),
             RaisedButton(
-              child: Subtitle1.light(isLastPageSelected ? "Let's go" : 'Next'),
+              child: BodyText1.light(isLastPageSelected ? "Let's go" : 'Next'),
               onPressed: isLastPageSelected ? _onComplete : _onNext,
             ),
           ],

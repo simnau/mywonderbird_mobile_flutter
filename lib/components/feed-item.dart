@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text2.dart';
-import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:transparent_image/transparent_image.dart';
 

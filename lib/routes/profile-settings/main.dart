@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user-profile.dart';
@@ -104,9 +105,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         padding: const EdgeInsets.only(bottom: 8.0),
                       ),
                       RaisedButton(
-                        colorBrightness: Brightness.dark,
                         color: Colors.black54,
-                        child: Text('Change avatar'),
+                        child: BodyText1.light('Change avatar'),
                         onPressed: _onChangeAvatar,
                       ),
                       Padding(

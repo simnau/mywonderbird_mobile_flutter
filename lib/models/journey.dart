@@ -6,6 +6,7 @@ import 'package:mywonderbird/util/json.dart';
 class Journey extends NamedItem {
   final String id;
   final DateTime startDate;
+  final DateTime finishDate;
   final String imageUrl;
   final String country;
 
@@ -14,6 +15,7 @@ class Journey extends NamedItem {
     this.id,
     this.country,
     @required this.startDate,
+    this.finishDate,
     @required this.imageUrl,
   }) : super(name: name);
 
@@ -22,16 +24,22 @@ class Journey extends NamedItem {
       id: json['id'],
       name: json['name'],
       startDate: json['startDate'],
+      finishDate: json['finishDate'],
       imageUrl: json['imageUrl'],
       country: json['country'],
     );
   }
 
   factory Journey.fromRequestJson(Map<String, dynamic> json) {
+    final startDate = json['startDate'];
+    final finishDate = json['finishDate'];
+
     return Journey(
       id: json['id'],
       name: json['title'],
-      startDate: DateTime.parse(json['startDate']),
+      startDate: startDate != null ? DateTime.parse(json['startDate']) : null,
+      finishDate:
+          finishDate != null ? DateTime.parse(json['finishDate']) : null,
       imageUrl: (json['images'] ?? []).isNotEmpty ? json['images'][0] : null,
       country: json['country'],
     );

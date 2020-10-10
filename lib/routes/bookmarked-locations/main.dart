@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/models/bookmarked-location.dart';
-import 'package:mywonderbird/models/full-journey.dart';
-import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
-import 'package:mywonderbird/routes/share-picture/mock.dart';
-import 'package:mywonderbird/routes/suggest-trip/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -30,36 +25,6 @@ Future<List<BookmarkedLocationModel>> fetchBookmarkedLocations({
     offset,
   );
 }
-
-final journey = FullJourney(
-  name: 'Incredible trip to Iceland',
-  country: 'Iceland',
-  imageUrl: MOCK_IMAGE,
-  startDate: DateTime.now(),
-  locations: [
-    LocationModel(
-      name: 'Iceland canyon',
-      countryCode: 'IS',
-      country: 'Iceland',
-      latLng: LatLng(63.402945, -19.042128),
-      imageUrl: MOCK_IMAGE_2,
-    ),
-    LocationModel(
-      name: 'The black beach',
-      countryCode: 'IS',
-      country: 'Iceland',
-      latLng: LatLng(63.797931, -18.048729),
-      imageUrl: MOCK_IMAGE_4,
-    ),
-    LocationModel(
-      name: 'Reynisfjara',
-      countryCode: 'IS',
-      country: 'Iceland',
-      latLng: LatLng(64.045201, -16.186505),
-      imageUrl: MOCK_IMAGE_3,
-    ),
-  ],
-);
 
 class BookmarkedLocations extends StatefulWidget {
   final BookmarkGroupModel bookmarkGroup;

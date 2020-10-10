@@ -117,8 +117,8 @@ class _SwipeLocationsState extends State<SwipeLocations> {
           children: [
             FloatingActionButton(
               onPressed: _onBack,
-              foregroundColor: Colors.black87,
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.black87,
+              foregroundColor: Colors.white,
               child: BackButtonIcon(),
               heroTag: null,
               mini: true,
@@ -127,17 +127,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
               alignment: Alignment.center,
               child: FloatingActionButton(
                 onPressed: _onDismiss,
-                foregroundColor: Colors.black87,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
                 heroTag: null,
-                child: GradientIcon(
+                child: Icon(
                   Icons.close,
-                  32,
-                  LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.red[100], Colors.red],
-                  ),
+                  size: 32,
                 ),
               ),
             ),
@@ -164,34 +159,24 @@ class _SwipeLocationsState extends State<SwipeLocations> {
               alignment: Alignment.center,
               child: FloatingActionButton(
                 onPressed: _onSelect,
-                foregroundColor: Colors.black87,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
                 heroTag: null,
-                child: GradientIcon(
+                child: Icon(
                   Icons.check,
-                  32,
-                  LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.green[100], Colors.green],
-                  ),
+                  size: 32,
                 ),
               ),
             ),
             FloatingActionButton(
               onPressed: _onReset,
-              foregroundColor: Colors.black87,
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.purple,
+              foregroundColor: Colors.white,
               heroTag: null,
               mini: true,
-              child: GradientIcon(
+              child: Icon(
                 Icons.refresh,
-                24,
-                LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.purple[100], Colors.purple],
-                ),
+                size: 24,
               ),
             ),
           ],

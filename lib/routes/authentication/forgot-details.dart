@@ -101,7 +101,6 @@ class _ForgotDetailsState extends State<ForgotDetails> {
           onPressed: _onResetPassword,
           child: Text('REMIND PASSWORD'),
           color: theme.accentColor,
-          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _onHasCode,

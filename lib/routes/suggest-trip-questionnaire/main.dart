@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
-import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/builder-arguments.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/wizard-step.dart';
@@ -125,7 +125,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
                 width: 16,
                 child: CircularProgressIndicator(),
               )
-            : Subtitle2.light('Continue'),
+            : BodyText1.light('Continue'),
       ),
     );
   }

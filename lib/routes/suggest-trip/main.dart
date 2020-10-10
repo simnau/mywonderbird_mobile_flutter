@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -57,7 +58,7 @@ class _SuggestTripState extends State<SuggestTrip> {
           ),
           RaisedButton(
             onPressed: _onStart,
-            child: Subtitle2.light('Start'),
+            child: BodyText1.light('Start'),
           ),
         ],
       ),

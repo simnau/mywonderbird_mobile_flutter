@@ -13,6 +13,7 @@ class FullJourney extends Journey {
     id,
     country,
     @required startDate,
+    finishDate,
     @required imageUrl,
     @required this.locations,
   }) : super(
@@ -20,15 +21,19 @@ class FullJourney extends Journey {
           id: id,
           country: country,
           startDate: startDate,
+          finishDate: finishDate,
           imageUrl: imageUrl,
         );
 
   factory FullJourney.fromJson(Map<String, dynamic> json) {
     return FullJourney(
       id: json['id'],
-      name: json['name'],
+      name: json['title'],
       startDate:
           json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
+      finishDate: json['finishDate'] != null
+          ? DateTime.parse(json['finishDate'])
+          : null,
       imageUrl: json['imageUrl'],
       country: json['country'],
       locations: json['locations']

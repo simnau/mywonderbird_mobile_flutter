@@ -37,6 +37,7 @@ dependencies:
   crop: ^0.4.1
   vector_math: ^2.0.8
   numberpicker: ^1.2.1
+  maps_launcher: ^1.2.2+1
 
 dev_dependencies:
   flutter_test:

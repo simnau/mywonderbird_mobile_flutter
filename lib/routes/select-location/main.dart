@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -188,10 +189,7 @@ class _SelectLocationState extends State<SelectLocation> {
               right: 32,
               child: RaisedButton(
                 color: theme.primaryColor,
-                colorBrightness: Brightness.dark,
-                child: Text(
-                  'Select location',
-                ),
+                child: BodyText1.light('Select location'),
                 onPressed: _selectedLocation != null ? _selectPlace : null,
                 disabledColor: Colors.grey,
               ),

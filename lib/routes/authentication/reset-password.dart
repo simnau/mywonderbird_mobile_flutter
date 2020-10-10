@@ -125,9 +125,8 @@ class _ResetPasswordState extends State<ResetPassword> {
       children: <Widget>[
         RaisedButton(
           onPressed: _onResetPassword,
-          child: Text('RESET PASSWORD'),
+          child: BodyText1.light('RESET PASSWORD'),
           color: theme.accentColor,
-          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _onResendCode,

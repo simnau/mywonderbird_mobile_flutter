@@ -2,10 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/saved-trip-location.dart';
+import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/routes/home/main.dart';
+import 'package:mywonderbird/routes/profile/main.dart';
+import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -119,7 +128,53 @@ class _SuggestedTripState extends State<SuggestedTrip>
     });
   }
 
-  _onSaveTrip() {}
+  _onSaveTrip() async {
+    final title = await showDialog(
+      context: context,
+      child: Dialog(
+        child: InputTitleDialog(
+          title: 'Give a name to your trip',
+          hint: 'Trip name',
+        ),
+      ),
+      barrierDismissible: true,
+    );
+
+    await _saveTrip(title);
+  }
+
+  _saveTrip(String title) async {
+    final savedTripService = locator<SavedTripService>();
+    final navigationService = locator<NavigationService>();
+
+    final savedTrip = await savedTripService.saveTrip(_createSavedTrip(title));
+
+    navigationService.popUntil((route) => route.isFirst);
+    navigationService.pushNamed(Profile.PATH);
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => SavedTripOverview(
+        id: savedTrip.id,
+      ),
+    ));
+  }
+
+  _createSavedTrip(String title) {
+    List<SavedTripLocation> savedTripLocations = [];
+
+    for (int i = 0; i < widget.suggestedJourney.locations.length; i++) {
+      final location = widget.suggestedJourney.locations[i];
+
+      savedTripLocations.add(
+        SavedTripLocation(placeId: location.id, sequenceNumber: i),
+      );
+    }
+
+    return SavedTrip(
+      title: title,
+      countryCode: widget.suggestedJourney.countryCode,
+      savedTripLocations: savedTripLocations,
+    );
+  }
 }
 
 class _LocationsTab extends StatelessWidget {

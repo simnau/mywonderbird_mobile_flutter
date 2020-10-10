@@ -49,7 +49,7 @@ class InfiniteListState extends State<InfiniteList> {
     if (offsetFromBottom < edge) {
       _scrollController.animateTo(
           _scrollController.offset - (edge - offsetFromBottom),
-          duration: new Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
           curve: Curves.easeOut);
     }
   }

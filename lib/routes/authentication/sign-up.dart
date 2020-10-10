@@ -109,9 +109,8 @@ class _SignUpState extends State<SignUp> {
       children: <Widget>[
         RaisedButton(
           onPressed: _onSignUp,
-          child: Text('SIGN UP'),
+          child: BodyText1.light('SIGN UP'),
           color: theme.accentColor,
-          colorBrightness: Brightness.dark,
         ),
       ],
     );

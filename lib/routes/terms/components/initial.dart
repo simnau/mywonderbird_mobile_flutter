@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -172,9 +173,8 @@ class InitialTerms extends StatelessWidget {
     return [
       RaisedButton(
         onPressed: termsAccepted ? onContinue : null,
-        child: Text('CONTINUE'),
+        child: BodyText1.light('CONTINUE'),
         color: theme.accentColor,
-        colorBrightness: Brightness.dark,
       ),
     ];
   }

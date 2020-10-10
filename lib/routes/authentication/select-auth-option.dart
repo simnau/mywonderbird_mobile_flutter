@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/oauth.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/oauth.dart';
@@ -66,7 +67,7 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
         children: <Widget>[
           RaisedButton(
             onPressed: _signIn,
-            child: Text('SIGN IN'),
+            child: BodyText1('SIGN IN'),
             color: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
@@ -75,23 +76,21 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
           ),
           RaisedButton(
             onPressed: _signUp,
-            child: Text(
-              'SIGN UP',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: BodyText1.light('SIGN UP'),
             color: theme.accentColor,
           ),
           RaisedButton(
             onPressed: _onFacebookFlow,
-            child: Text('CONTINUE WITH FACEBOOK'),
+            child: BodyText1.light('CONTINUE WITH FACEBOOK'),
             color: Color(0xFF3B5798),
-            colorBrightness: Brightness.dark,
           ),
           RaisedButton(
             onPressed: _onGoogleFlow,
-            child: Text('CONTINUE WITH GOOGLE'),
+            child: BodyText1(
+              'CONTINUE WITH GOOGLE',
+              color: Color(0xFF757575),
+            ),
             color: Colors.white,
-            textColor: Color(0xFF757575),
           ),
         ],
       ),

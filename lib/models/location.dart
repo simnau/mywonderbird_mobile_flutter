@@ -11,8 +11,10 @@ class LocationModel extends NamedItem {
   final String imageUrl;
   final LatLng latLng;
   final String provider;
+  bool skipped;
+  DateTime visitedAt;
 
-  const LocationModel({
+  LocationModel({
     @required name,
     this.id,
     @required this.country,
@@ -20,6 +22,8 @@ class LocationModel extends NamedItem {
     @required this.imageUrl,
     @required this.latLng,
     this.provider,
+    this.skipped,
+    this.visitedAt,
   }) : super(name: name);
 
   factory LocationModel.fromResponseJson(Map<String, dynamic> json) {
@@ -39,6 +43,9 @@ class LocationModel extends NamedItem {
       imageUrl: json['imageUrl'] ?? MOCK_IMAGE, // TODO
       latLng: LatLng(lat, lng),
       provider: json['provider'],
+      skipped: json['skipped'],
+      visitedAt:
+          json['visitedAt'] != null ? DateTime.parse(json['visitedAt']) : null,
     );
   }
 
@@ -52,6 +59,8 @@ class LocationModel extends NamedItem {
       'lat': latLng.latitude,
       'lng': latLng.longitude,
       'provider': provider,
+      'skipped': skipped,
+      'visitedAt': visitedAt,
     });
   }
 }

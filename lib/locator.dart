@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/http/authentication.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
+import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
@@ -23,6 +24,7 @@ import 'package:mywonderbird/services/oauth.dart';
 import 'package:mywonderbird/services/onboarding.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/services/sharing.dart';
 import 'package:mywonderbird/services/storage.dart';
 import 'package:mywonderbird/services/suggestion.dart';
@@ -83,6 +85,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => BookmarkGroupService(api: api));
   locator.registerLazySingleton(() => SuggestionService(api: api));
   locator.registerLazySingleton(() => CountryService(api: api));
+  locator.registerLazySingleton(() => SavedTripService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,

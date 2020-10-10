@@ -10,7 +10,7 @@ const MOCK_IMAGE_3 =
 const MOCK_IMAGE_4 =
     'https://www.followmeaway.com/wp-content/uploads/2018/01/gullfoss-waterfall-Iceland-green-traditional-view-1280x533.jpg';
 const MOCK_IMAGE_LAT_LNG = LatLng(64.128288, -21.827774);
-const MOCK_LOCATION = LocationModel(
+final MOCK_LOCATION = LocationModel(
   id: 'Just a key',
   country: 'Iceland',
   countryCode: 'ISL',

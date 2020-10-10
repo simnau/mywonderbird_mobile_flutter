@@ -134,9 +134,8 @@ class _SignInState extends State<SignIn> {
       children: <Widget>[
         RaisedButton(
           onPressed: _onSignIn,
-          child: Text('SIGN IN'),
+          child: BodyText1.light('SIGN IN'),
           color: theme.accentColor,
-          colorBrightness: Brightness.dark,
         ),
         FlatButton(
           onPressed: _onForgotDetails,

@@ -79,27 +79,8 @@ class _TripOverviewState extends State<TripOverview> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (widget.journey.name != null)
-                  GestureDetector(
-                    onTap: _tripDetails,
-                    child: Row(
-                      children: [
-                        Expanded(child: H6.light(widget.journey.name)),
-                        Icon(
-                          Icons.chevron_right,
-                          color: Colors.white,
-                          size: 36.0,
-                        ),
-                      ],
-                    ),
-                  ),
-                Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-                if (widget.journey.countryDescription != null)
-                  Subtitle2.light(
-                    widget.journey.countryDescription,
-                    softWrap: true,
-                  ),
-                Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+                ..._journeyName(),
+                ..._journeyCountry(),
                 _map(),
                 Padding(padding: const EdgeInsets.only(bottom: 16.0)),
                 _picturePreview(),
@@ -184,6 +165,43 @@ class _TripOverviewState extends State<TripOverview> {
         ),
       ),
     );
+  }
+
+  List<Widget> _journeyName() {
+    if (widget.journey.name == null) {
+      return [];
+    }
+
+    return [
+      GestureDetector(
+        onTap: _tripDetails,
+        child: Row(
+          children: [
+            Expanded(child: H6.light(widget.journey.name)),
+            Icon(
+              Icons.chevron_right,
+              color: Colors.white,
+              size: 36.0,
+            ),
+          ],
+        ),
+      ),
+      Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+    ];
+  }
+
+  List<Widget> _journeyCountry() {
+    if (widget.journey.countryDescription == null) {
+      return [];
+    }
+
+    return [
+      Subtitle2.light(
+        widget.journey.countryDescription,
+        softWrap: true,
+      ),
+      Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+    ];
   }
 
   Set<Marker> _markers() {

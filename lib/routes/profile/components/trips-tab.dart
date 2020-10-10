@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
+import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/services/journeys.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:provider/provider.dart';
 
-class TripsTab extends StatefulWidget {
+class MyTripsTab extends StatefulWidget {
   @override
-  _TripsTabState createState() => _TripsTabState();
+  _MyTripsTabState createState() => _MyTripsTabState();
 }
 
-class _TripsTabState extends State<TripsTab> {
+class _MyTripsTabState extends State<MyTripsTab> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,12 +72,22 @@ class _TripsTabState extends State<TripsTab> {
                   color: Colors.black26,
                 ),
         ),
-        title: Subtitle1(journey.country ?? '-'),
-        subtitle: Subtitle2(journey.startDate.year.toString()),
+        title: Subtitle1(journey.name ?? '-'),
+        subtitle: Subtitle2(journey.country ?? '-'),
       ),
     );
   }
 
-  // TODO implement this
-  _viewJourney(Journey journey) {}
+  _viewJourney(Journey item) async {
+    final journeyService = locator<JourneyService>();
+    final journey = await journeyService.getJourney(item.id);
+
+    locator<NavigationService>().push(
+      MaterialPageRoute(
+        builder: (context) => TripOverview(
+          journey: journey,
+        ),
+      ),
+    );
+  }
 }
