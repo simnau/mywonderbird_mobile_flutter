@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
 
-const INITIAL_ZOOM = 3.0;
-const PLACE_ZOOM = 6.0;
+const INITIAL_ZOOM = 6.0;
+const PLACE_ZOOM = 9.0;
 
 class TripMap extends StatelessWidget {
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
@@ -17,6 +17,7 @@ class TripMap extends StatelessWidget {
   final List<LocationModel> locations;
   final int currentLocationIndex;
   final Function(GoogleMapController) onMapCreated;
+  final Function(CameraPosition) onCameraMove;
 
   List<LocationModel> get nonSkippedLocations => locations
       .where((element) => element.skipped == null || !element.skipped)
@@ -27,6 +28,7 @@ class TripMap extends StatelessWidget {
     @required this.locations,
     @required this.currentLocationIndex,
     this.onMapCreated,
+    this.onCameraMove,
   }) : super(key: key);
 
   @override
@@ -41,6 +43,7 @@ class TripMap extends StatelessWidget {
       polylines: _lines(),
       markers: _markers(),
       onMapCreated: onMapCreated,
+      onCameraMove: onCameraMove,
       mapToolbarEnabled: false,
       rotateGesturesEnabled: false,
       zoomControlsEnabled: false,

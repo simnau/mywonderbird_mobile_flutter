@@ -33,6 +33,7 @@ class _SavedTripState extends State<SavedTripOverview> {
   PageController _pageController;
   LatLngBounds _tripBounds;
   int _currentPage;
+  double _currentZoom;
 
   int get _currentLocationIndex => locationIndexFromPage(_currentPage);
   bool get _isLastLocation {
@@ -86,6 +87,7 @@ class _SavedTripState extends State<SavedTripOverview> {
             child: TripMap(
               locations: _journey?.locations,
               onMapCreated: _onMapCreated,
+              onCameraMove: _onCameraMove,
               currentLocationIndex: _currentNonSkippedIndex,
             ),
           ),
@@ -191,7 +193,10 @@ class _SavedTripState extends State<SavedTripOverview> {
       int locationIndex = locationIndexFromPage(_currentPage);
       LocationModel location = _journey.locations[locationIndex];
 
-      cameraUpdate = CameraUpdate.newLatLngZoom(location.latLng, PLACE_ZOOM);
+      cameraUpdate = CameraUpdate.newLatLngZoom(
+        location.latLng,
+        _currentZoom ?? PLACE_ZOOM,
+      );
     }
 
     Future.delayed(
@@ -202,6 +207,12 @@ class _SavedTripState extends State<SavedTripOverview> {
         }
       },
     );
+  }
+
+  _onCameraMove(CameraPosition cameraPosition) {
+    if (cameraPosition.zoom != _currentZoom) {
+      _currentZoom = cameraPosition.zoom;
+    }
   }
 
   _onPageChanged(int page) async {
@@ -216,7 +227,10 @@ class _SavedTripState extends State<SavedTripOverview> {
       int locationIndex = locationIndexFromPage(page);
       LocationModel location = _journey.locations[locationIndex];
 
-      cameraUpdate = CameraUpdate.newLatLngZoom(location.latLng, PLACE_ZOOM);
+      cameraUpdate = CameraUpdate.newLatLngZoom(
+        location.latLng,
+        _currentZoom ?? PLACE_ZOOM,
+      );
     }
 
     if (cameraUpdate != null) {
