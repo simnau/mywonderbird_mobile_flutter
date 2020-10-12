@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes.dart';
+import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/routes/onboarding/main.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
@@ -11,14 +12,24 @@ import 'package:mywonderbird/sharing-intent.dart';
 import 'package:mywonderbird/theme/style.dart';
 
 class App extends StatefulWidget {
+  final String initialRoute;
+
+  const App({
+    Key key,
+    this.initialRoute,
+  }) : super(key: key);
+
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
+  String initialRoute;
+
   @override
   void initState() {
     super.initState();
+    initialRoute = widget.initialRoute ?? SplashScreen.PATH;
     _onStartup();
   }
 
@@ -34,7 +45,7 @@ class _AppState extends State<App> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MyWonderbird',
-      initialRoute: SplashScreen.PATH,
+      initialRoute: initialRoute,
       navigatorKey: locator<NavigationService>().navigatorKey,
       theme: appTheme,
       onGenerateRoute: generateRoute,
@@ -70,6 +81,13 @@ class _AppState extends State<App> {
   Future _checkAuth() async {
     final authenticationService = locator<AuthenticationService>();
     final user = await authenticationService.checkAuth();
-    await authenticationService.onStartup(user);
+
+    if (user != null) {
+      await authenticationService.onStartup(user);
+    } else {
+      setState(() {
+        initialRoute = SelectAuthOption.PATH;
+      });
+    }
   }
 }

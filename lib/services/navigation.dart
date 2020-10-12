@@ -21,11 +21,11 @@ class NavigationService {
 
   Future<dynamic> pushReplacementNamed(String routeName, {dynamic arguments}) {
     return navigatorKey.currentState
-        .pushReplacementNamed(routeName, arguments: arguments);
+        ?.pushReplacementNamed(routeName, arguments: arguments);
   }
 
   void popUntil(RoutePredicate predicate) {
-    navigatorKey.currentState.popUntil(predicate);
+    navigatorKey.currentState?.popUntil(predicate);
   }
 
   void pop<T extends Object>([T result]) {
