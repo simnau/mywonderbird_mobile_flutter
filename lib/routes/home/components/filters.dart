@@ -50,7 +50,7 @@ class _FiltersState extends State<Filters> {
   @override
   void initState() {
     super.initState();
-    _selectedTypes = List.from(widget.types) ?? [];
+    _selectedTypes = List.from(widget.types ?? []);
   }
 
   @override

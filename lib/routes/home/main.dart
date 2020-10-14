@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   final _focusNode = FocusNode();
   bool _searching = false;
   bool _autoFocus = false;
-  List<String> _selectedTypes;
+  List<String> _selectedTypes = [];
 
   @override
   Widget build(BuildContext context) {
