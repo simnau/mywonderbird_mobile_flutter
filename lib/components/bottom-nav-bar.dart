@@ -3,7 +3,6 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/custom-icons.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
-import 'package:mywonderbird/routes/notifications/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/suggest-trip/main.dart';
 import 'package:mywonderbird/services/navigation.dart';

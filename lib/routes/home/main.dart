@@ -1,25 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/bottom-nav-bar.dart';
-import 'package:mywonderbird/components/feed-item.dart';
-import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/feed-location.dart';
-import 'package:mywonderbird/routes/image-view/main.dart';
-import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
-import 'package:mywonderbird/services/bookmark.dart';
-import 'package:mywonderbird/services/feed.dart';
-import 'package:mywonderbird/services/journeys.dart';
-import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
-Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
-  final feedService = locator<FeedService>();
-
-  return feedService.fetchFeedItems(lastDatetime);
-}
+import 'components/feed.dart';
+import 'components/filters.dart';
+import 'components/search.dart';
 
 class HomePage extends StatefulWidget {
   static const RELATIVE_PATH = 'home';
@@ -30,19 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<InfiniteListState> _infiniteListKey = GlobalKey();
-
-  List<FeedLocation> _items = [];
-  bool _isPerformingRequest = false;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _fetchInitial();
-    });
-  }
+  final _feedController = FeedController();
+  final _searchController = SearchController();
+  final _searchQueryController = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _searching = false;
+  bool _autoFocus = false;
+  List<String> _selectedTypes;
 
   @override
   Widget build(BuildContext context) {
@@ -82,26 +64,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         backgroundColor: Colors.white,
-        title: Subtitle1('MyWonderbird'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.tune,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.search,
-            ),
-            onPressed: () {},
-          ),
-        ],
+        title: _title(),
+        actions: _actions(),
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        child: _feed(),
-      ),
+      body: _searching
+          ? Search(
+              controller: _searchController,
+              queryController: _searchQueryController,
+              types: _selectedTypes,
+            )
+          : Feed(
+              controller: _feedController,
+            ),
       floatingActionButton: Container(
         width: 60,
         height: 60,
@@ -116,200 +90,122 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
-        onHome: _refresh,
+        onHome: _onRefresh,
       ),
     );
   }
 
-  Widget _feed() {
-    if (_isLoading) {
-      return new Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: CircularProgressIndicator(),
+  Widget _title() {
+    if (_searching) {
+      return TextField(
+        autofocus: _autoFocus,
+        focusNode: _focusNode,
+        controller: _searchQueryController,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Search...',
         ),
       );
     }
 
-    return InfiniteList(
-      key: _infiniteListKey,
-      fetchMore: _fetchMore,
-      itemBuilder: (BuildContext context, int index) {
-        return _feedItem(_items[index]);
-      },
-      itemCount: _items.length,
-      padding: const EdgeInsets.only(
-        top: 16.0,
-        bottom: 64.0,
-      ),
-      rowPadding: const EdgeInsets.only(bottom: 24.0),
-      isPerformingRequest: _isPerformingRequest,
-    );
+    return Subtitle1('MyWonderbird');
   }
 
-  Widget _feedItem(FeedLocation item) {
-    return FeedItem(
-      key: Key(item.id),
-      imageUrl: item.imageUrl,
-      title: item.title,
-      country: item.country,
-      likeCount: item.likeCount,
-      isLiked: item.isLiked,
-      isBookmarked: item.isBookmarked,
-      onLike: () => item.isLiked ? _onUnlike(item) : _onLike(item),
-      onBookmark: () =>
-          item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
-      onTap: () => _onFeedItemTap(item),
-      onViewJourney: () => _onViewJourney(item),
-    );
-  }
+  List<Widget> _actions() {
+    final theme = Theme.of(context);
 
-  _fetchInitial() async {
-    setState(() {
-      _isLoading = true;
-    });
-    List<FeedLocation> newEntries = await fetchFeedItems();
-    setState(() {
-      _items = newEntries;
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _refresh() async {
-    setState(() {
-      _isLoading = true;
-      _items = [];
-    });
-    List<FeedLocation> newEntries = await fetchFeedItems();
-    setState(() {
-      _items = newEntries;
-      _isLoading = false;
-    });
-  }
-
-  _fetchMore() async {
-    if (!_isPerformingRequest) {
-      setState(() => _isPerformingRequest = true);
-      List<FeedLocation> newEntries = await fetchFeedItems(
-        lastDatetime: _items.last != null ? _items.last.updatedAt : null,
-      );
-
-      if (newEntries.isEmpty) {
-        _infiniteListKey.currentState.onNoNewResults();
-      }
-
-      setState(() {
-        _isPerformingRequest = false;
-
-        if (newEntries.isNotEmpty) {
-          _items = List.from(_items)..addAll(newEntries);
-        }
-      });
-    }
-  }
-
-  _onFeedItemTap(FeedLocation item) async {
-    final navigationService = locator<NavigationService>();
-
-    navigationService.push(
-      MaterialPageRoute(
-        builder: (context) => ImageView(
-          image: NetworkImage(item.imageUrl),
+    if (_searching) {
+      return [
+        IconButton(
+          key: UniqueKey(),
+          icon: Icon(Icons.filter_list),
+          color: _selectedTypes.isNotEmpty ? theme.primaryColorDark : null,
+          onPressed: _filter,
         ),
-      ),
-    );
-  }
-
-  _onLike(FeedLocation item) async {
-    final likeService = locator<LikeService>();
-
-    try {
-      setState(() {
-        item.isLiked = true;
-        item.likeCount += 1;
-      });
-
-      await likeService.likeGemCapture(item.id);
-    } catch (e) {
-      setState(() {
-        item.isLiked = false;
-        item.likeCount -= 1;
-      });
+        IconButton(
+          key: UniqueKey(),
+          icon: Icon(Icons.close),
+          onPressed: _closeSearch,
+        ),
+      ];
     }
-  }
 
-  _onUnlike(FeedLocation item) async {
-    final likeService = locator<LikeService>();
-
-    try {
-      setState(() {
-        item.isLiked = false;
-        item.likeCount -= 1;
-      });
-
-      await likeService.unlikeGemCapture(item.id);
-    } catch (e) {
-      setState(() {
-        item.isLiked = true;
-        item.likeCount += 1;
-      });
-    }
-  }
-
-  _onBookmark(FeedLocation item) async {
-    final navigationService = locator<NavigationService>();
-    final bookmarkGroup = await navigationService.push(
-      MaterialPageRoute(
-        builder: (context) => SelectBookmarkGroup(),
+    return [
+      IconButton(
+        key: UniqueKey(),
+        icon: Icon(Icons.filter_list),
+        onPressed: _filterFromFeed,
       ),
-    );
+      IconButton(
+        key: UniqueKey(),
+        icon: Icon(Icons.search),
+        onPressed: _onSearch,
+      ),
+    ];
+  }
 
-    if (bookmarkGroup == null) {
+  _onRefresh() {
+    _feedController.refresh();
+  }
+
+  _onSearch() {
+    setState(() {
+      _autoFocus = true;
+      _searching = true;
+    });
+  }
+
+  _closeSearch() {
+    setState(() {
+      _autoFocus = false;
+      _searching = false;
+      _searchQueryController.text = '';
+      _selectedTypes = [];
+    });
+  }
+
+  _filterFromFeed() async {
+    final selectedTypes = await _selectFilters();
+
+    if (selectedTypes == null) {
       return;
     }
 
-    final bookmarkService = locator<BookmarkService>();
-
-    try {
-      setState(() {
-        item.isBookmarked = true;
-      });
-
-      await bookmarkService.bookmarkGemCapture(item.id, bookmarkGroup.id);
-    } catch (e) {
-      setState(() {
-        item.isBookmarked = false;
-      });
-    }
+    setState(() {
+      _autoFocus = false;
+      _searching = true;
+      _selectedTypes = selectedTypes;
+      _searchController.runSearch();
+    });
   }
 
-  _onUnbookmark(FeedLocation item) async {
-    final bookmarkService = locator<BookmarkService>();
+  _filter() async {
+    setState(() {
+      _autoFocus = false;
+    });
 
-    try {
-      setState(() {
-        item.isBookmarked = false;
-      });
+    _focusNode.unfocus();
+    final selectedTypes = await _selectFilters();
 
-      await bookmarkService.unbookmarkGemCapture(item.id);
-    } catch (e) {
-      setState(() {
-        item.isBookmarked = true;
-      });
+    if (selectedTypes == null) {
+      return;
     }
+
+    setState(() {
+      _selectedTypes = selectedTypes;
+      _searchController.runSearch();
+    });
   }
 
-  _onViewJourney(FeedLocation item) async {
-    final journeyService = locator<JourneyService>();
-    final journey = await journeyService.getJourney(item.journeyId);
-
-    locator<NavigationService>().push(
-      MaterialPageRoute(
-        builder: (context) => TripOverview(
-          journey: journey,
-        ),
+  Future<List<String>> _selectFilters() async {
+    final navigationService = locator<NavigationService>();
+    final selectedTypes = await navigationService.push(MaterialPageRoute(
+      builder: (context) => Filters(
+        types: _selectedTypes,
       ),
-    );
+    ));
+
+    return selectedTypes;
   }
 
   _onAddPicture() {

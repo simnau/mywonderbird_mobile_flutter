@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/search-input.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
@@ -273,8 +274,6 @@ class _BottomSheetState extends State<_BottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       height: 400,
       child: Column(
@@ -282,28 +281,9 @@ class _BottomSheetState extends State<_BottomSheet> {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(32.0),
-            child: TextField(
-              autofocus: true,
-              controller: _searchController,
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: theme.primaryColor,
-                ),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    style: BorderStyle.solid,
-                    color: theme.primaryColor,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                hintText: 'Search for places',
-                hintStyle: TextStyle(
-                  color: Colors.black26,
-                ),
-              ),
-              style: theme.textTheme.subtitle1,
+            child: SearchInput(
+              hintText: 'Search for places',
+              searchController: _searchController,
             ),
           ),
           Visibility(
