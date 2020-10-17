@@ -1,33 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
-
-const TYPE_FILTERS = [
-  {
-    'title': 'Museums',
-    'value': 'museums',
-    'imageAsset': 'images/filters/museums.jpg',
-  },
-  {
-    'title': 'Architecture',
-    'value': 'architecture',
-    'imageAsset': 'images/filters/architecture.jpg',
-  },
-  {
-    'title': 'Hidden gems',
-    'value': 'hidden-gems',
-    'imageAsset': 'images/filters/hidden-gems.jpg',
-  },
-  {
-    'title': 'Viewpoints',
-    'value': 'viewpoints',
-    'imageAsset': 'images/filters/viewpoints.jpg',
-  },
-  {
-    'title': 'Hikes',
-    'value': 'hikes',
-    'imageAsset': 'images/filters/hikes.jpg',
-  },
-];
+import 'package:mywonderbird/models/tag.dart';
+import 'package:mywonderbird/providers/tags.dart';
+import 'package:provider/provider.dart';
 
 class TypesOfPlacePicker extends StatelessWidget {
   final List<String> types;
@@ -40,9 +15,6 @@ class TypesOfPlacePicker extends StatelessWidget {
     @required this.onValueChanged,
     @required this.value,
   }) : super(key: key);
-
-  // @override
-  // _FiltersState createState() => _FiltersState(value: value);
 
   @override
   Widget build(BuildContext context) {
@@ -79,12 +51,18 @@ class TypesOfPlacePicker extends StatelessWidget {
   }
 
   List<Widget> _typeFilters(BuildContext context) {
-    return TYPE_FILTERS.map((filter) => _typeFilter(filter, context)).toList();
+    final tagsProvider = Provider.of<TagsProvider>(
+      context,
+    );
+
+    return tagsProvider.tags
+        .map((filter) => _typeFilter(filter, context))
+        .toList();
   }
 
-  Widget _typeFilter(Map<String, String> typeFilter, BuildContext context) {
+  Widget _typeFilter(Tag tags, BuildContext context) {
     final theme = Theme.of(context);
-    final selected = value.contains(typeFilter['value']);
+    final selected = value.contains(tags.code);
     print(value);
     return SizedBox(
       width: 96,
@@ -96,7 +74,7 @@ class TypesOfPlacePicker extends StatelessWidget {
             child: Ink(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(typeFilter['imageAsset']),
+                  image: NetworkImage(tags.imageUrl),
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.circular(8.0),
@@ -108,12 +86,12 @@ class TypesOfPlacePicker extends StatelessWidget {
                     : null,
               ),
               child: InkWell(
-                onTap: () => _toggleFilter(typeFilter['value']),
+                onTap: () => _toggleFilter(tags.code),
               ),
             ),
           ),
           BodyText1(
-            typeFilter['title'],
+            tags.title,
             textAlign: TextAlign.center,
           ),
         ],

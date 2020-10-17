@@ -101,7 +101,6 @@ final questionnaireSteps = [
           arguments.onValueChanged(value);
         },
         value: arguments.value,
-        // value: arguments.value,
       );
     },
     validator: (value) => value.length != 0,
