@@ -7,6 +7,7 @@ import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/authentication.dart';
@@ -28,6 +29,7 @@ import 'package:mywonderbird/services/search.dart';
 import 'package:mywonderbird/services/sharing.dart';
 import 'package:mywonderbird/services/storage.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:mywonderbird/services/tag.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/sharing-intent.dart';
@@ -87,6 +89,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => CountryService(api: api));
   locator.registerLazySingleton(() => SavedTripService(api: api));
   locator.registerLazySingleton(() => SearchService(api: api));
+  locator.registerLazySingleton(() => TagService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,
@@ -112,6 +115,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => JourneyProvider());
   locator.registerLazySingleton(() => SharePictureProvider());
   locator.registerLazySingleton(() => OAuthProvider());
+  locator.registerLazySingleton(() => TagsProvider());
   locator.registerLazySingleton(() => termsProvider);
 
   // Other

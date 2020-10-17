@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
 
-const INITIAL_ZOOM = 6.0;
-const PLACE_ZOOM = 9.0;
+const INITIAL_ZOOM = 10.0;
+const PLACE_ZOOM = 13.0;
 
 class TripMap extends StatelessWidget {
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
@@ -53,6 +53,15 @@ class TripMap extends StatelessWidget {
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
+    const hueMap = {
+      0: BitmapDescriptor.hueBlue,
+      1: BitmapDescriptor.hueViolet,
+      2: BitmapDescriptor.hueAzure,
+      3: BitmapDescriptor.hueOrange,
+      4: BitmapDescriptor.hueRose,
+      5: BitmapDescriptor.hueAzure
+    };
+
     for (var i = 0; i < nonSkippedLocations.length; i++) {
       final location = nonSkippedLocations[i];
       var icon;
@@ -62,7 +71,7 @@ class TripMap extends StatelessWidget {
       } else if (location.visitedAt != null) {
         icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
       } else {
-        icon = BitmapDescriptor.defaultMarker;
+        icon = BitmapDescriptor.defaultMarkerWithHue(hueMap[location.dayIndex]);
       }
 
       markers.add(Marker(
@@ -80,9 +89,12 @@ class TripMap extends StatelessWidget {
     Set<Polyline> polylines = Set();
 
     for (var i = 0; i < nonSkippedLocations.length - 1; i++) {
-      final point1 = nonSkippedLocations[i].latLng;
-      final point2 = nonSkippedLocations[i + 1].latLng;
+      final point1 = nonSkippedLocations[i];
+      final point2 = nonSkippedLocations[i + 1];
 
+      if(point1.dayIndex != point2.dayIndex) {
+        continue;
+      }
       polylines.add(Polyline(
         polylineId: PolylineId("Polyline-$i"),
         width: 1,
@@ -90,7 +102,7 @@ class TripMap extends StatelessWidget {
         color: Colors.white,
         jointType: JointType.bevel,
         patterns: [PatternItem.dash(12), PatternItem.gap(12)],
-        points: [point1, point2],
+        points: [point1.latLng, point2.latLng],
       ));
     }
 

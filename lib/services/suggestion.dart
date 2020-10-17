@@ -37,6 +37,9 @@ class SuggestionService {
   Future<List<SuggestedLocation>> suggestedLocations(
     Map<String, String> questionnaireValues,
   ) async {
+    questionnaireValues["countryCode"] = "Lt";
+    questionnaireValues["country"] = "LTU";
+
     final response =
         await api.get(SUGGESTED_LOCATIONS_PATH, params: questionnaireValues);
     final suggestionsRaw = response['body']['locations'];

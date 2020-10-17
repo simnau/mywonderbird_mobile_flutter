@@ -11,6 +11,7 @@ class LocationModel extends NamedItem {
   final String imageUrl;
   final LatLng latLng;
   final String provider;
+  final int dayIndex;
   bool skipped;
   DateTime visitedAt;
 
@@ -24,6 +25,7 @@ class LocationModel extends NamedItem {
     this.provider,
     this.skipped,
     this.visitedAt,
+    this.dayIndex,
   }) : super(name: name);
 
   factory LocationModel.fromResponseJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class LocationModel extends NamedItem {
       latLng: LatLng(lat, lng),
       provider: json['provider'],
       skipped: json['skipped'],
+      dayIndex: json['dayIndex'],
       visitedAt:
           json['visitedAt'] != null ? DateTime.parse(json['visitedAt']) : null,
     );

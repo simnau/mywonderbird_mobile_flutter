@@ -31,6 +31,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
     'locationCount': 3,
     'travelerCount': 0,
     'travelingWithChildren': null,
+    'types': List<String>(),
   };
   int _currentPage = 0;
   bool _isLoading = false;
@@ -77,7 +78,6 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
               itemCount: questionnaireSteps.length,
               itemBuilder: (context, index) {
                 final step = questionnaireSteps[index];
-
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
