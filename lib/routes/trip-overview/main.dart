@@ -223,9 +223,12 @@ class _TripOverviewState extends State<TripOverview> {
     Set<Polyline> polylines = Set();
 
     for (var i = 0; i < widget.journey.locations.length - 1; i++) {
-      final point1 = widget.journey.locations[i].latLng;
-      final point2 = widget.journey.locations[i + 1].latLng;
+      final point1 = widget.journey.locations[i];
+      final point2 = widget.journey.locations[i + 1];
 
+      if(point1.dayIndex != point2.dayIndex) {
+        continue;
+      }
       polylines.add(Polyline(
         polylineId: PolylineId("Polyline-$i"),
         width: 1,
@@ -233,7 +236,7 @@ class _TripOverviewState extends State<TripOverview> {
         color: Colors.white,
         jointType: JointType.bevel,
         patterns: [PatternItem.dash(12), PatternItem.gap(12)],
-        points: [point1, point2],
+        points: [point1.latLng, point2.latLng],
       ));
     }
 

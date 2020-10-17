@@ -117,6 +117,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
               ),
               _MapTab(
                 locations: _locations,
+                qValues: widget.qValues,
               ),
             ],
           ),
@@ -249,10 +250,12 @@ class _LocationsTab extends StatelessWidget {
 
 class _MapTab extends StatefulWidget {
   final List<SuggestedLocation> locations;
+  final Map<String, dynamic> qValues;
 
   const _MapTab({
     Key key,
     this.locations,
+    this.qValues,
   }) : super(key: key);
 
   @override
@@ -315,9 +318,20 @@ class _MapTabState extends State<_MapTab>
   Set<Polyline> _lines() {
     Set<Polyline> polylines = Set();
 
+    final locationCountPerDay = widget.qValues['locationCount'] - 1;
+    var locationIndex = 0;
+    print(locationCountPerDay);
+
     for (var i = 0; i < widget.locations.length - 1; i++) {
-      final point1 = widget.locations[i].latLng;
-      final point2 = widget.locations[i + 1].latLng;
+      final point1 = widget.locations[i];
+      final point2 = widget.locations[i + 1];
+
+      if (locationIndex >= locationCountPerDay) {
+        locationIndex = 0;
+        continue;
+      }
+
+      locationIndex++;
 
       polylines.add(Polyline(
         polylineId: PolylineId("Polyline-$i"),
@@ -326,7 +340,7 @@ class _MapTabState extends State<_MapTab>
         color: Colors.white,
         jointType: JointType.bevel,
         patterns: [PatternItem.dash(12), PatternItem.gap(12)],
-        points: [point1, point2],
+        points: [point1.latLng, point2.latLng],
       ));
     }
 
