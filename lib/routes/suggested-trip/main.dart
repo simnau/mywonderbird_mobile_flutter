@@ -10,7 +10,6 @@ import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
-import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -255,7 +254,7 @@ class _MapTab extends StatefulWidget {
 
 class _MapTabState extends State<_MapTab>
     with AutomaticKeepAliveClientMixin<_MapTab> {
-  static const _INITIAL_ZOOM = 6.0;
+  static const _INITIAL_ZOOM = 11.0;
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
       63.791580,
