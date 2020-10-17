@@ -7,39 +7,40 @@ import 'components/trip-country.dart';
 import 'components/trip-end.dart';
 import 'components/trip-start.dart';
 import 'wizard-step.dart';
+import 'components/trip-places-picker.dart';
 
 final questionnaireSteps = [
-  WizardStep(
-    key: 'country',
-    title: 'Where do you want to travel?',
-    builder: (arguments) => TripCountry(
-      focusNode: arguments.focusNode,
-      onValueChanged: arguments.onValueChanged,
-      value: arguments.value,
-    ),
-    validator: (value) => value != null,
-    stringValue: (country) => country?.value,
-  ),
-  WizardStep(
-    key: 'start',
-    title: 'Where does your trip start?',
-    builder: (arguments) => TripStart(
-      focusNode: arguments.focusNode,
-      onValueChanged: arguments.onValueChanged,
-      value: arguments.value,
-    ),
-    validator: (value) => true,
-  ),
-  WizardStep(
-    key: 'end',
-    title: 'Where does it end?',
-    builder: (arguments) => TripEnd(
-      focusNode: arguments.focusNode,
-      onValueChanged: arguments.onValueChanged,
-      value: arguments.value,
-    ),
-    validator: (value) => true,
-  ),
+  // WizardStep(
+  //   key: 'country',
+  //   title: 'Where do you want to travel?',
+  //   builder: (arguments) => TripCountry(
+  //     focusNode: arguments.focusNode,
+  //     onValueChanged: arguments.onValueChanged,
+  //     value: arguments.value,
+  //   ),
+  //   validator: (value) => value != null,
+  //   stringValue: (country) => country?.value,
+  // ),
+  // WizardStep(
+  //   key: 'start',
+  //   title: 'Where does your trip start?',
+  //   builder: (arguments) => TripStart(
+  //     focusNode: arguments.focusNode,
+  //     onValueChanged: arguments.onValueChanged,
+  //     value: arguments.value,
+  //   ),
+  //   validator: (value) => true,
+  // ),
+  // WizardStep(
+  //   key: 'end',
+  //   title: 'Where does it end?',
+  //   builder: (arguments) => TripEnd(
+  //     focusNode: arguments.focusNode,
+  //     onValueChanged: arguments.onValueChanged,
+  //     value: arguments.value,
+  //   ),
+  //   validator: (value) => true,
+  // ),
   WizardStep(
     key: 'duration',
     title: 'How long is your trip?',
@@ -67,7 +68,7 @@ final questionnaireSteps = [
   ),
   WizardStep(
     key: 'travelerCount',
-    title: 'How many more people are traveling with you?',
+    title: 'How many more people are in your group?',
     builder: (arguments) => CountPicker(
       onValueChanged: arguments.onValueChanged,
       value: arguments.value,
@@ -77,19 +78,32 @@ final questionnaireSteps = [
     ),
     validator: (value) => value != null && value >= 0,
   ),
+  // WizardStep(
+  //   key: 'travelingWithChildren',
+  //   title: 'Are you traveling with children?',
+  //   builder: (arguments) => BoolPicker(
+  //     onValueChanged: (bool value) {
+  //       arguments.onValueChanged(value);
+  //       if (value != null) {
+  //         arguments.onComplete();
+  //       }
+  //     },
+  //     value: arguments.value,
+  //   ),
+  //   validator: (value) => value != null,
+  // )
   WizardStep(
-    key: 'travelingWithChildren',
-    title: 'Are you traveling with children?',
-    builder: (arguments) => BoolPicker(
-      onValueChanged: (bool value) {
-        arguments.onValueChanged(value);
-        if (value != null) {
-          arguments.onComplete();
-        }
-      },
-      value: arguments.value,
-    ),
-    validator: (value) => value != null,
+    key: 'types',
+    title: 'What kind of places would you like to visit each day?',
+    builder: (arguments) {
+      return TypesOfPlacePicker(
+        onValueChanged: (List<String> value) {
+          arguments.onValueChanged(value);
+        },
+        value: arguments.value,
+      );
+    },
+    validator: (value) => value.length != 0,
   )
 ];
 
