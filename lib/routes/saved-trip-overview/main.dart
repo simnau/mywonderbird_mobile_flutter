@@ -288,7 +288,7 @@ class _SavedTripState extends State<SavedTripOverview> {
     } else {
       setState(() {
         _journey.locations[_currentLocationIndex].visitedAt = DateTime.now();
-        _showUploadPhotoSnackbar(context);
+        // _showUploadPhotoSnackbar(context);
         _goToPage(_currentPage + 1);
       });
     }
