@@ -13,7 +13,6 @@ import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
-import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
@@ -22,12 +21,10 @@ import 'package:transparent_image/transparent_image.dart';
 
 class SuggestedTrip extends StatefulWidget {
   final SuggestedJourney suggestedJourney;
-  final Map<String, dynamic> qValues;
 
   const SuggestedTrip({
     Key key,
     @required this.suggestedJourney,
-    @required this.qValues,
   }) : super(key: key);
 
   @override
@@ -113,7 +110,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
             children: [
               _LocationsTab(
                 locations: _locations,
-                qValues: widget.qValues,
                 onRemoveLocation: _onRemoveLocation,
               ),
               _MapTab(
@@ -151,8 +147,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
     final savedTripService = locator<SavedTripService>();
     final navigationService = locator<NavigationService>();
 
-    final savedTrip = await savedTripService.saveTrip(
-        _createSavedTrip(title), stepValues(widget.qValues));
+    final savedTrip = await savedTripService.saveTrip(_createSavedTrip(title));
 
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushNamed(Profile.PATH);
@@ -184,13 +179,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
 class _LocationsTab extends StatelessWidget {
   final List<SuggestedLocation> locations;
-  final Map<String, dynamic> qValues;
   final Function(int) onRemoveLocation;
 
   const _LocationsTab({
     Key key,
     this.locations,
-    this.qValues,
     this.onRemoveLocation,
   }) : super(key: key);
 
