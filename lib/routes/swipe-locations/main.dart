@@ -18,10 +18,12 @@ const LOCATIONS_LOADED = 3;
 
 class SwipeLocations extends StatefulWidget {
   final List<SuggestedLocation> initialLocations;
+  final Map<String, dynamic> qValues;
 
   const SwipeLocations({
     Key key,
     @required this.initialLocations,
+    @required this.qValues,
   }) : super(key: key);
 
   @override
@@ -308,6 +310,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       MaterialPageRoute(
         builder: (context) => SuggestedTrip(
           suggestedJourney: suggestedJourney,
+          qValues: widget.qValues,
         ),
       ),
     );
