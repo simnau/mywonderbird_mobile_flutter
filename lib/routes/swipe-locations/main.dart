@@ -67,6 +67,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   Widget _body() {
+    var duration = (widget.qValues['duration']) as int;
+    var locationCount = (widget.qValues['locationCount']) as int;
+
+    if (_selectedLocations.length == duration * locationCount) {
+      _next();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
