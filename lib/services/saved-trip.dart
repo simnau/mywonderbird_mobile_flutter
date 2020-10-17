@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/full-journey.dart';
@@ -55,11 +54,8 @@ class SavedTripService {
     return journey;
   }
 
-  Future<Journey> saveTrip(SavedTrip trip, Map<String, String> qValues) async {
-    final response = await api.post(SAVE_TRIP_PATH, {
-      "trip": trip.toJson(),
-      "qValues": qValues,
-    });
+  Future<Journey> saveTrip(SavedTrip trip) async {
+    final response = await api.post(SAVE_TRIP_PATH, trip.toJson());
     final rawResponse = response['response'];
 
     if (rawResponse.statusCode != HttpStatus.ok) {

@@ -198,8 +198,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
 
       navigationService.pushReplacement(
         MaterialPageRoute(
-          builder: (context) =>
-              SwipeLocations(initialLocations: locations, qValues: _values),
+          builder: (context) => SwipeLocations(initialLocations: locations),
         ),
       );
     } catch (e) {
