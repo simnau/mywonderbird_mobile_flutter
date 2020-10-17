@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
 
-const INITIAL_ZOOM = 6.0;
-const PLACE_ZOOM = 9.0;
+const INITIAL_ZOOM = 10.0;
+const PLACE_ZOOM = 13.0;
 
 class TripMap extends StatelessWidget {
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
