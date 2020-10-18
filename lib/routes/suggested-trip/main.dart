@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quiver/iterables.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
@@ -16,6 +17,7 @@ import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -38,6 +40,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
   final _tabBarKey = GlobalKey();
   TabController _tabController;
   List<SuggestedLocation> _locations = [];
+  List<List<SuggestedLocation>> _suggestedLocationParts = [];
 
   _SuggestedTripState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -47,6 +50,9 @@ class _SuggestedTripState extends State<SuggestedTrip>
   void initState() {
     super.initState();
     _locations = List.from(widget.suggestedJourney.locations);
+    _suggestedLocationParts = partition<SuggestedLocation>(
+            _locations, widget.qValues["locationCount"])
+        .toList();
   }
 
   @override
@@ -111,7 +117,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
             physics: NeverScrollableScrollPhysics(),
             children: [
               _LocationsTab(
-                locations: _locations,
+                locations: _suggestedLocationParts,
                 qValues: widget.qValues,
                 onRemoveLocation: _onRemoveLocation,
               ),
@@ -143,7 +149,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
       ),
       barrierDismissible: true,
     );
-
     await _saveTrip(title);
   }
 
@@ -183,7 +188,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 }
 
 class _LocationsTab extends StatelessWidget {
-  final List<SuggestedLocation> locations;
+  final List<List<SuggestedLocation>> locations;
   final Map<String, dynamic> qValues;
   final Function(int) onRemoveLocation;
 
@@ -196,7 +201,7 @@ class _LocationsTab extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemBuilder: _location,
+      itemBuilder: _day,
       itemCount: locations.length,
       separatorBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -204,8 +209,30 @@ class _LocationsTab extends StatelessWidget {
     );
   }
 
-  Widget _location(context, index) {
-    final location = locations[index];
+  Widget _day(context, dayIndex) {
+    final day = locations[dayIndex];
+    print(day);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 24.0),
+          child: H6(
+            "Day ${dayIndex + 1}",
+          ),
+        ),
+        _locations(day),
+      ],
+    );
+  }
+
+  Widget _locations(List<SuggestedLocation> locations) {
+    return Column(
+      children: locations.map((location) => _location(location)).toList(),
+    );
+  }
+
+  Widget _location(location) {
     final imageUrl = location.coverImage?.url;
 
     return Container(
@@ -241,7 +268,7 @@ class _LocationsTab extends StatelessWidget {
             Icons.delete_forever,
             color: Colors.red,
           ),
-          onPressed: () => onRemoveLocation(index),
+          onPressed: () {},
         ),
       ),
     );
