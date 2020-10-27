@@ -6,11 +6,13 @@ import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/location-details/main.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:provider/provider.dart';
 
 import 'components/animated-card.dart';
 
@@ -18,12 +20,10 @@ const LOCATIONS_LOADED = 3;
 
 class SwipeLocations extends StatefulWidget {
   final List<SuggestedLocation> initialLocations;
-  final Map<String, dynamic> qValues;
 
   const SwipeLocations({
     Key key,
     @required this.initialLocations,
-    @required this.qValues,
   }) : super(key: key);
 
   @override
@@ -67,8 +67,11 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   Widget _body() {
-    var duration = (widget.qValues['duration']) as int;
-    var locationCount = (widget.qValues['locationCount']) as int;
+    final questionnaireProvider = Provider.of<QuestionnaireProvider>(context);
+
+    final duration = (questionnaireProvider.qValues['duration']) as int;
+    final locationCount =
+        (questionnaireProvider.qValues['locationCount']) as int;
 
     if (_selectedLocations.length == duration * locationCount) {
       _next();
@@ -316,7 +319,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       MaterialPageRoute(
         builder: (context) => SuggestedTrip(
           suggestedJourney: suggestedJourney,
-          qValues: widget.qValues,
         ),
       ),
     );

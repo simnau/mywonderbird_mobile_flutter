@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/builder-arguments.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/wizard-step.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
@@ -193,13 +194,15 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
 
       final suggestionService = locator<SuggestionService>();
       final navigationService = locator<NavigationService>();
+      final questionnaireProvider = locator<QuestionnaireProvider>();
       final locations =
           await suggestionService.suggestedLocations(stepValues(_values));
 
+      questionnaireProvider.qValues = _values;
+
       navigationService.pushReplacement(
         MaterialPageRoute(
-          builder: (context) =>
-              SwipeLocations(initialLocations: locations, qValues: _values),
+          builder: (context) => SwipeLocations(initialLocations: locations),
         ),
       );
     } catch (e) {
