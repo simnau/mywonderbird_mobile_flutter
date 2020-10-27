@@ -63,7 +63,7 @@ class TypesOfPlacePicker extends StatelessWidget {
   Widget _typeFilter(Tag tags, BuildContext context) {
     final theme = Theme.of(context);
     final selected = value.contains(tags.code);
-    print(value);
+
     return SizedBox(
       width: 96,
       child: Column(

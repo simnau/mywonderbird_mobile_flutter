@@ -6,11 +6,13 @@ import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/location-details/main.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:provider/provider.dart';
 
 import 'components/animated-card.dart';
 
@@ -65,6 +67,15 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   Widget _body() {
+    final questionnaireProvider = Provider.of<QuestionnaireProvider>(context);
+
+    final duration = (questionnaireProvider.qValues['duration']) as int;
+    final locationCount =
+        (questionnaireProvider.qValues['locationCount']) as int;
+
+    if (_selectedLocations.length == duration * locationCount) {
+      _next();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

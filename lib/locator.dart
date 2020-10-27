@@ -6,6 +6,7 @@ import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
 import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/providers/terms.dart';
@@ -116,6 +117,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SharePictureProvider());
   locator.registerLazySingleton(() => OAuthProvider());
   locator.registerLazySingleton(() => TagsProvider());
+  locator.registerLazySingleton(() => QuestionnaireProvider());
   locator.registerLazySingleton(() => termsProvider);
 
   // Other

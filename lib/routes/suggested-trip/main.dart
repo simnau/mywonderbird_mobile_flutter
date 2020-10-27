@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
+import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
+import 'package:mywonderbird/routes/title-entry/main.dart';
+import 'package:provider/provider.dart';
+import 'package:quiver/iterables.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
@@ -15,6 +19,7 @@ import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -35,6 +40,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
   final _tabBarKey = GlobalKey();
   TabController _tabController;
   List<SuggestedLocation> _locations = [];
+  List<List<SuggestedLocation>> _suggestedLocationParts = [];
 
   _SuggestedTripState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -43,7 +49,13 @@ class _SuggestedTripState extends State<SuggestedTrip>
   @override
   void initState() {
     super.initState();
+
+    final questionnaireProvider = locator<QuestionnaireProvider>();
+
     _locations = List.from(widget.suggestedJourney.locations);
+    _suggestedLocationParts = partition<SuggestedLocation>(
+            _locations, questionnaireProvider.qValues["locationCount"])
+        .toList();
   }
 
   @override
@@ -108,12 +120,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
             physics: NeverScrollableScrollPhysics(),
             children: [
               _LocationsTab(
-                locations: _locations,
+                locations: _suggestedLocationParts,
                 onRemoveLocation: _onRemoveLocation,
               ),
               _MapTab(
                 locations: _locations,
-                qValues: widget.qValues,
               ),
             ],
           ),
@@ -129,25 +140,22 @@ class _SuggestedTripState extends State<SuggestedTrip>
   }
 
   _onSaveTrip() async {
-    final title = await showDialog(
-      context: context,
-      child: Dialog(
-        child: InputTitleDialog(
-          title: 'Give a name to your trip',
-          hint: 'Trip name',
-        ),
-      ),
-      barrierDismissible: true,
-    );
+    final navigationService = locator<NavigationService>();
+    final title = await navigationService
+        .push(MaterialPageRoute(builder: (_) => TitleEntry()));
 
-    await _saveTrip(title);
+    if (title != null) {
+      await _saveTrip(title);
+    }
   }
 
   _saveTrip(String title) async {
     final savedTripService = locator<SavedTripService>();
     final navigationService = locator<NavigationService>();
+    final questionnaireProvider = locator<QuestionnaireProvider>();
 
-    final savedTrip = await savedTripService.saveTrip(_createSavedTrip(title));
+    final savedTrip = await savedTripService.saveTrip(
+        _createSavedTrip(title), stepValues(questionnaireProvider.qValues));
 
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushNamed(Profile.PATH);
@@ -178,7 +186,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 }
 
 class _LocationsTab extends StatelessWidget {
-  final List<SuggestedLocation> locations;
+  final List<List<SuggestedLocation>> locations;
   final Function(int) onRemoveLocation;
 
   const _LocationsTab({
@@ -189,7 +197,7 @@ class _LocationsTab extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemBuilder: _location,
+      itemBuilder: _day,
       itemCount: locations.length,
       separatorBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -197,8 +205,30 @@ class _LocationsTab extends StatelessWidget {
     );
   }
 
-  Widget _location(context, index) {
-    final location = locations[index];
+  Widget _day(context, dayIndex) {
+    final day = locations[dayIndex];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 24.0),
+          child: H6(
+            "Day ${dayIndex + 1}",
+          ),
+        ),
+        _locations(day),
+      ],
+    );
+  }
+
+  Widget _locations(List<SuggestedLocation> locations) {
+    return Column(
+      children: locations.map((location) => _location(location)).toList(),
+    );
+  }
+
+  Widget _location(location) {
     final imageUrl = location.coverImage?.url;
 
     return Container(
@@ -234,7 +264,7 @@ class _LocationsTab extends StatelessWidget {
             Icons.delete_forever,
             color: Colors.red,
           ),
-          onPressed: () => onRemoveLocation(index),
+          onPressed: () {},
         ),
       ),
     );
@@ -243,12 +273,10 @@ class _LocationsTab extends StatelessWidget {
 
 class _MapTab extends StatefulWidget {
   final List<SuggestedLocation> locations;
-  final Map<String, dynamic> qValues;
 
   const _MapTab({
     Key key,
     this.locations,
-    this.qValues,
   }) : super(key: key);
 
   @override
@@ -309,11 +337,15 @@ class _MapTabState extends State<_MapTab>
   }
 
   Set<Polyline> _lines() {
+    final questionnaireProvider = Provider.of<QuestionnaireProvider>(
+      context,
+      listen: false,
+    );
     Set<Polyline> polylines = Set();
 
-    final locationCountPerDay = widget.qValues['locationCount'] - 1;
+    final locationCountPerDay =
+        questionnaireProvider.qValues['locationCount'] - 1;
     var locationIndex = 0;
-    print(locationCountPerDay);
 
     for (var i = 0; i < widget.locations.length - 1; i++) {
       final point1 = widget.locations[i];

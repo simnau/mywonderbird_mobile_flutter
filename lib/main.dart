@@ -6,6 +6,7 @@ import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
 import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
@@ -40,6 +41,7 @@ Future main({String env = 'dev'}) async {
 Widget _app(initialRoute) {
   final oauthProvider = locator<OAuthProvider>();
   final tagsProvider = locator<TagsProvider>();
+  final questionnaireProvider = locator<QuestionnaireProvider>();
 
   return MultiProvider(
     providers: [
@@ -58,7 +60,10 @@ Widget _app(initialRoute) {
       ),
       ChangeNotifierProvider<TagsProvider>(
         create: (_) => tagsProvider,
-      )
+      ),
+      ChangeNotifierProvider<QuestionnaireProvider>(
+        create: (_) => questionnaireProvider,
+      ),
     ],
     child: App(initialRoute: initialRoute),
   );
