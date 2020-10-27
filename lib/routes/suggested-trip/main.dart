@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
+import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:mywonderbird/routes/title-entry/main.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
@@ -15,7 +16,6 @@ import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
-import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
