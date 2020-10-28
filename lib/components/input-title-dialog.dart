@@ -7,6 +7,7 @@ class InputTitleDialog extends StatefulWidget {
   final String hint;
   final String cancelLabel;
   final String saveLabel;
+  final bool autofocus;
 
   const InputTitleDialog({
     Key key,
@@ -14,6 +15,7 @@ class InputTitleDialog extends StatefulWidget {
     this.hint = '',
     this.cancelLabel = 'Cancel',
     this.saveLabel = 'Save',
+    this.autofocus = true,
   }) : super(key: key);
 
   @override
@@ -36,6 +38,7 @@ class _InputTitleDialogState extends State<InputTitleDialog> {
             textAlign: TextAlign.start,
           ),
           TextField(
+            autofocus: widget.autofocus,
             decoration: new InputDecoration(hintText: widget.hint),
             controller: _titleController,
           ),

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
-import 'package:mywonderbird/routes/title-entry/main.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -140,9 +140,16 @@ class _SuggestedTripState extends State<SuggestedTrip>
   }
 
   _onSaveTrip() async {
-    final navigationService = locator<NavigationService>();
-    final title = await navigationService
-        .push(MaterialPageRoute(builder: (_) => TitleEntry()));
+    final title = await showDialog(
+      context: context,
+      child: Dialog(
+        child: InputTitleDialog(
+          title: 'Give a name to your trip',
+          hint: 'Trip name',
+        ),
+      ),
+      barrierDismissible: true,
+    );
 
     if (title != null) {
       await _saveTrip(title);
@@ -224,7 +231,7 @@ class _LocationsTab extends StatelessWidget {
 
   Widget _locations(List<SuggestedLocation> locations) {
     return Column(
-      children: locations.map((location) => _location(location)).toList(),
+      children: locations.map(_location).toList(),
     );
   }
 

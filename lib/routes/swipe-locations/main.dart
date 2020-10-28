@@ -12,7 +12,6 @@ import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
-import 'package:provider/provider.dart';
 
 import 'components/animated-card.dart';
 
@@ -35,6 +34,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   List<SuggestedLocation> _locations;
   List<SuggestedLocation> _selectedLocations = [];
   int _currentLocationIndex = 0;
+  bool _isLoading = false;
 
   SuggestedLocation get _currentLocation =>
       _locations.isNotEmpty ? _locations[_locations.length - 1] : null;
@@ -67,15 +67,15 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   Widget _body() {
-    final questionnaireProvider = Provider.of<QuestionnaireProvider>(context);
-
-    final duration = (questionnaireProvider.qValues['duration']) as int;
-    final locationCount =
-        (questionnaireProvider.qValues['locationCount']) as int;
-
-    if (_selectedLocations.length == duration * locationCount) {
-      _next();
+    if (_isLoading) {
+      return new Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -302,12 +302,23 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _locations = _locationSublist;
     });
 
-    if (_currentLocationIndex >= widget.initialLocations.length) {
+    final questionnaireProvider = locator<QuestionnaireProvider>();
+
+    final duration = (questionnaireProvider.qValues['duration']) as int;
+    final locationCount =
+        (questionnaireProvider.qValues['locationCount']) as int;
+
+    if (_selectedLocations.length == duration * locationCount ||
+        _currentLocationIndex >= widget.initialLocations.length) {
       _next();
     }
   }
 
   _next() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final navigationService = locator<NavigationService>();
     final suggestionService = locator<SuggestionService>();
     final locationIds =
@@ -315,15 +326,21 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     final suggestedJourney =
         await suggestionService.suggestJourneyFromLocations(locationIds);
 
-    await navigationService.push(
-      MaterialPageRoute(
-        builder: (context) => SuggestedTrip(
-          suggestedJourney: suggestedJourney,
+    try {
+      await navigationService.push(
+        MaterialPageRoute(
+          builder: (context) => SuggestedTrip(
+            suggestedJourney: suggestedJourney,
+          ),
         ),
-      ),
-    );
+      );
 
-    _onReset();
+      _onReset();
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   _onBack() {
@@ -344,6 +361,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _currentLocationIndex = 0;
       _locations = _locationSublist;
       _selectedLocations = [];
+      _isLoading = false;
     });
   }
 }
