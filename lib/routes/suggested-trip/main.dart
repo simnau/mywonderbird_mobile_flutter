@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,9 @@ import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+const LOCATIONS_TAB_INDEX = 0;
+const MAP_TAB_INDEX = 1;
 
 class SuggestedTrip extends StatefulWidget {
   final SuggestedJourney suggestedJourney;
@@ -96,6 +101,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
           controller: _tabController,
           labelColor: theme.accentColor,
           unselectedLabelColor: Colors.black45,
+          onTap: _onTabTap,
           tabs: [
             Tab(
               child: Text(
@@ -164,6 +170,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
     final savedTrip = await savedTripService.saveTrip(
         _createSavedTrip(title), stepValues(questionnaireProvider.qValues));
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: SAVE_SUGGESTED, parameters: {
+      'saved_trip_id': savedTrip.id,
+    });
+
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushNamed(Profile.PATH);
     navigationService.push(MaterialPageRoute(
@@ -189,6 +200,16 @@ class _SuggestedTripState extends State<SuggestedTrip>
       countryCode: widget.suggestedJourney.countryCode,
       savedTripLocations: savedTripLocations,
     );
+  }
+
+  _onTabTap(value) {
+    final analytics = locator<FirebaseAnalytics>();
+
+    if (value == LOCATIONS_TAB_INDEX) {
+      analytics.logEvent(name: LOCATIONS_SUGGESTED);
+    } else if (value == MAP_TAB_INDEX) {
+      analytics.logEvent(name: MAP_SUGGESTED);
+    }
   }
 }
 
@@ -266,13 +287,14 @@ class _LocationsTab extends StatelessWidget {
                 : null,
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.delete_forever,
-            color: Colors.red,
-          ),
-          onPressed: () {},
-        ),
+        // TODO: Implement this when necessary
+        // trailing: IconButton(
+        //   icon: Icon(
+        //     Icons.delete_forever,
+        //     color: Colors.red,
+        //   ),
+        //   onPressed: () {},
+        // ),
       ),
     );
   }

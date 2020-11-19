@@ -1,6 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/builder-arguments.dart';
@@ -183,6 +185,9 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
     final navigationService = locator<NavigationService>();
 
     navigationService.popUntil((route) => route.isFirst);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: CANCEL_QUESTIONNAIRE);
   }
 
   _onComplete() async {
@@ -195,10 +200,13 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
       final suggestionService = locator<SuggestionService>();
       final navigationService = locator<NavigationService>();
       final questionnaireProvider = locator<QuestionnaireProvider>();
-      final locations =
-          await suggestionService.suggestedLocations(stepValues(_values));
+      final values = stepValues(_values);
+      final locations = await suggestionService.suggestedLocations(values);
 
       questionnaireProvider.qValues = _values;
+
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logEvent(name: FINISH_QUESTIONNAIRE, parameters: values);
 
       navigationService.pushReplacement(
         MaterialPageRoute(

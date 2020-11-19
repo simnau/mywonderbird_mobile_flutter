@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
@@ -85,6 +86,9 @@ class AuthenticationService {
     );
     _userController.add(user);
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logLogin();
+
     return user;
   }
 
@@ -101,6 +105,9 @@ class AuthenticationService {
         errorCode: response['body']['code'],
       );
     }
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logSignUp(signUpMethod: 'email_password');
   }
 
   Future<User> signOut() async {
@@ -108,6 +115,9 @@ class AuthenticationService {
 
     final user = null;
     _userController.add(user);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.setUserId(null);
 
     return user;
   }
@@ -211,6 +221,9 @@ class AuthenticationService {
     if (user != null) {
       _handleTerms(user.profile?.acceptedTermsAt);
     }
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.setUserId(user?.id);
   }
 
   onStartup(User user) async {

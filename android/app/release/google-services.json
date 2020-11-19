@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "874546630664",
+    "firebase_url": "https://mywonderbird-256205.firebaseio.com",
+    "project_id": "mywonderbird-256205",
+    "storage_bucket": "mywonderbird-256205.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874546630664:android:0c1a84c67db084e095c1bd",
+        "android_client_info": {
+          "package_name": "com.mywonderbird"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874546630664-g2v5plkfqiclh08cbt4o3ersr4lq5ne6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnxWlDfC41OgnVmodKB_zQrd-6FxFTpo8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874546630664-g2v5plkfqiclh08cbt4o3ersr4lq5ne6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

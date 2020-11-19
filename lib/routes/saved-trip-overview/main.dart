@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
@@ -56,7 +58,14 @@ class _SavedTripState extends State<SavedTripOverview> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadJourney());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadJourney();
+
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logEvent(name: OPEN_SAVED, parameters: {
+        'saved_trip_id': widget.id,
+      });
+    });
   }
 
   @override
@@ -131,7 +140,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       if (savedJourney.finishDate != null) {
         navigationService.pushReplacement(
           MaterialPageRoute(
-            builder: (context) => SavedTripFinished(),
+            builder: (context) => SavedTripFinished(id: widget.id),
           ),
         );
       } else {
@@ -245,6 +254,11 @@ class _SavedTripState extends State<SavedTripOverview> {
   _onStart() async {
     final savedTripService = locator<SavedTripService>();
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: START_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+    });
+
     await savedTripService.startTrip(_journey.id);
     _goToPage(1);
   }
@@ -253,10 +267,15 @@ class _SavedTripState extends State<SavedTripOverview> {
     final savedTripService = locator<SavedTripService>();
     final navigationService = locator<NavigationService>();
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: FINISH_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+    });
+
     await savedTripService.endTrip(_journey.id);
     navigationService.pushReplacement(
       MaterialPageRoute(
-        builder: (context) => SavedTripFinished(),
+        builder: (context) => SavedTripFinished(id: widget.id),
       ),
     );
   }
@@ -264,6 +283,13 @@ class _SavedTripState extends State<SavedTripOverview> {
   _onSkip(LocationModel location, BuildContext context) async {
     final savedTripService = locator<SavedTripService>();
     await savedTripService.skipLocation(_journey.id, location.id);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: SKIP_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
 
     if (_isLastLocation) {
       _onEnd();
@@ -276,12 +302,24 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _onUploadPhoto(LocationModel location, BuildContext context) async {
-    print('upload photo');
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
   }
 
   _onVisited(LocationModel location, BuildContext context) async {
     final savedTripService = locator<SavedTripService>();
     await savedTripService.visitLocation(_journey.id, location.id);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: VISIT_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
 
     if (_isLastLocation) {
       _onEnd();
@@ -295,6 +333,13 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _onNavigate(LocationModel location, BuildContext context) async {
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: NAVIGATE_TO_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
+
     await MapsLauncher.launchCoordinates(
       location.latLng.latitude,
       location.latLng.longitude,
@@ -324,6 +369,9 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _uploadPhoto() async {
-    print('upload photo');
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+    });
   }
 }

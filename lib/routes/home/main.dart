@@ -1,6 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/bottom-nav-bar.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -210,5 +212,8 @@ class _HomePageState extends State<HomePage> {
 
   _onAddPicture() {
     locator<NavigationService>().pushNamed(SelectPicture.PATH);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: INIT_PHOTO_UPLOAD);
   }
 }

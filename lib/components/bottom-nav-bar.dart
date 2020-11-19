@@ -1,6 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/custom-icons.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
@@ -84,5 +86,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     locator<NavigationService>().push(
       MaterialPageRoute(builder: (context) => SuggestTrip()),
     );
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: INIT_TRIP_SUGGESTION);
   }
 }
