@@ -54,17 +54,19 @@ class Settings extends StatelessWidget {
           ),
           Divider(),
           ..._changePasswordItem(context),
-          Builder(
-            builder: (context) => SettingsListItem(
-              onTap: () => _onResetToDefaults(context),
-              icon: SettingsListIcon(
-                icon: Icons.settings_backup_restore,
-                color: Colors.white,
-                backgroundColor: Colors.black87,
-              ),
-              title: 'Reset to defaults',
-            ),
-          ),
+          // TODO: add this back once it's relevant to the user
+          // Builder(
+          //   builder: (context) => SettingsListItem(
+          //     onTap: () => _onResetToDefaults(context),
+          //     icon: SettingsListIcon(
+          //       icon: Icons.settings_backup_restore,
+          //       color: Colors.white,
+          //       backgroundColor: Colors.black87,
+          //     ),
+          //     title: 'Reset to defaults',
+          //     hideTrailing: true,
+          //   ),
+          // ),
           Divider(),
           SettingsListItem(
             onTap: _onSignOut,
@@ -74,6 +76,7 @@ class Settings extends StatelessWidget {
               backgroundColor: Colors.black87,
             ),
             title: 'Sign out',
+            hideTrailing: true,
           ),
           SettingsListHeader(title: 'FEEDBACK'),
           SettingsListItem(
@@ -85,16 +88,17 @@ class Settings extends StatelessWidget {
             ),
             title: 'Give feedback',
           ),
-          Divider(),
-          SettingsListItem(
-            onTap: _onReportBug,
-            icon: SettingsListIcon(
-              icon: Icons.bug_report,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
-            ),
-            title: 'Report a bug',
-          ),
+          // TODO: Implement Report Bug functionality
+          // Divider(),
+          // SettingsListItem(
+          //   onTap: _onReportBug,
+          //   icon: SettingsListIcon(
+          //     icon: Icons.bug_report,
+          //     color: Colors.white,
+          //     backgroundColor: Colors.black87,
+          //   ),
+          //   title: 'Report a bug',
+          // ),
           SettingsListHeader(title: 'LEGAL'),
           ..._legalWidgets(),
         ],
