@@ -42,19 +42,6 @@ class _SavedTripState extends State<SavedTripOverview> {
     return _currentLocationIndex == _journey.locations.length - 1;
   }
 
-  int get _currentNonSkippedIndex {
-    if (_journey == null || _currentPage == 0) {
-      return 0;
-    }
-
-    int skippedLocationCount = _journey.locations
-        .getRange(0, _currentLocationIndex)
-        .where((element) => element.skipped != null && element.skipped)
-        .length;
-
-    return _currentLocationIndex - skippedLocationCount;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -97,7 +84,7 @@ class _SavedTripState extends State<SavedTripOverview> {
               locations: _journey?.locations,
               onMapCreated: _onMapCreated,
               onCameraMove: _onCameraMove,
-              currentLocationIndex: _currentNonSkippedIndex,
+              currentLocationIndex: _currentLocationIndex,
             ),
           ),
           Expanded(
