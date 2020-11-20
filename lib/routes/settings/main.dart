@@ -67,7 +67,7 @@ class Settings extends StatelessWidget {
           //     hideTrailing: true,
           //   ),
           // ),
-          Divider(),
+          // Divider(),
           SettingsListItem(
             onTap: _onSignOut,
             icon: SettingsListIcon(
