@@ -37,6 +37,31 @@ class _MyTripsTabState extends State<MyTripsTab> {
       );
     }
 
+    if (journeysProvider.journeys.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Subtitle1(
+                'You have no trips',
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+              Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+              Subtitle2(
+                'Once you create a trip it will appear here',
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       itemBuilder: (_, index) => _buildJourneyListItem(

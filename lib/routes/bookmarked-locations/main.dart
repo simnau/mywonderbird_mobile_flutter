@@ -61,10 +61,7 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
         backgroundColor: Colors.transparent,
         title: Subtitle1(widget.bookmarkGroup?.title ?? ''),
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        child: _bookmarks(),
-      ),
+      body: _bookmarks(),
     );
   }
 
@@ -78,19 +75,47 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
       );
     }
 
-    return InfiniteList(
-      key: _infiniteListKey,
-      fetchMore: _fetchMore,
-      itemBuilder: (BuildContext context, int index) {
-        return _bookmarkItem(_items[index], index);
-      },
-      itemCount: _items.length,
-      padding: const EdgeInsets.only(
-        top: 16.0,
-        bottom: 64.0,
+    if (_items.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Subtitle1(
+                'This bookmark group is empty',
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+              Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+              Subtitle2(
+                'Locations bookmarked to this group will appear here',
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: InfiniteList(
+        key: _infiniteListKey,
+        fetchMore: _fetchMore,
+        itemBuilder: (BuildContext context, int index) {
+          return _bookmarkItem(_items[index], index);
+        },
+        itemCount: _items.length,
+        padding: const EdgeInsets.only(
+          top: 16.0,
+          bottom: 64.0,
+        ),
+        rowPadding: const EdgeInsets.only(bottom: 0),
+        isPerformingRequest: _isPerformingRequest,
       ),
-      rowPadding: const EdgeInsets.only(bottom: 0),
-      isPerformingRequest: _isPerformingRequest,
     );
   }
 
