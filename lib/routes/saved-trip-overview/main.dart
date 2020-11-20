@@ -4,6 +4,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
@@ -295,6 +299,28 @@ class _SavedTripState extends State<SavedTripOverview> {
       'saved_location_id': location.id,
       'saved_location_name': location.name,
     });
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Subtitle1('Coming soon!'),
+          content: SingleChildScrollView(
+            child: BodyText1(
+              'You will be able to upload photos from your trip soon. Stay tuned!',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Got it!'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _onVisited(LocationModel location, BuildContext context) async {
@@ -342,23 +368,24 @@ class _SavedTripState extends State<SavedTripOverview> {
     );
   }
 
-  _showUploadPhotoSnackbar(BuildContext context) async {
-    final snackBar = SnackBar(
-      content: Text('You visited this location! Upload a photo?'),
-      action: SnackBarAction(
-        label: 'Upload photo',
-        textColor: Colors.green,
-        onPressed: _uploadPhoto,
-      ),
-    );
+  // TODO: either makes this work or remove it if we deem it unnecessary
+  // _showUploadPhotoSnackbar(BuildContext context) async {
+  //   final snackBar = SnackBar(
+  //     content: Text('You visited this location! Upload a photo?'),
+  //     action: SnackBarAction(
+  //       label: 'Upload photo',
+  //       textColor: Colors.green,
+  //       onPressed: _uploadPhoto,
+  //     ),
+  //   );
 
-    Scaffold.of(context).showSnackBar(snackBar);
-  }
+  //   Scaffold.of(context).showSnackBar(snackBar);
+  // }
 
-  _uploadPhoto() async {
-    final analytics = locator<FirebaseAnalytics>();
-    analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
-      'saved_trip_id': widget.id,
-    });
-  }
+  // _uploadPhoto() async {
+  //   final analytics = locator<FirebaseAnalytics>();
+  //   analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
+  //     'saved_trip_id': widget.id,
+  //   });
+  // }
 }
