@@ -153,10 +153,9 @@ class _SuggestedTripState extends State<SuggestedTrip>
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.blue[300], width: 1),
-        color: Colors.blue[100],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: Colors.blue[100],
         child: InkWell(
           onTap: _showIncompleteAlert,
           child: Padding(
