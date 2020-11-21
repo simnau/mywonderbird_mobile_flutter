@@ -151,35 +151,43 @@ class _SuggestedTripState extends State<SuggestedTrip>
   Widget _incompleteNotification() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      padding: const EdgeInsets.all(4.0),
       decoration: BoxDecoration(
-        color: Colors.blue[100],
         border: Border.all(color: Colors.blue[300], width: 1),
+        color: Colors.blue[100],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          SizedBox(
-            width: 24.0,
-          ),
-          Expanded(
-            child: BodyText1(
-              'This trip is incomplete',
-              textAlign: TextAlign.center,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _showIncompleteAlert,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: 24.0,
+                ),
+                Expanded(
+                  child: BodyText1(
+                    'We could not fill your trip',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SmallIconButton(
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.black87,
+                    size: 24.0,
+                  ),
+                  padding: const EdgeInsets.all(6.0),
+                  borderRadius: BorderRadius.circular(24.0),
+                  onTap: _showIncompleteAlert,
+                ),
+              ],
             ),
           ),
-          SmallIconButton(
-            icon: Icon(
-              Icons.info_outline,
-              color: Colors.black87,
-              size: 24.0,
-            ),
-            padding: const EdgeInsets.all(6.0),
-            borderRadius: BorderRadius.circular(24.0),
-            onTap: _showIncompleteAlert,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -189,10 +197,10 @@ class _SuggestedTripState extends State<SuggestedTrip>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Subtitle1('This trip is incomplete'),
+          title: Subtitle1('We could not fill your trip'),
           content: SingleChildScrollView(
             child: BodyText1(
-              'We were unable to complete your trip as we do not have enough locations that suit you. Try liking more locations',
+              'We were unable to fill your trip as we do not have enough locations that suit you. Try selecting more locations',
             ),
           ),
           actions: <Widget>[

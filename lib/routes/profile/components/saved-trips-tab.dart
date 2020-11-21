@@ -173,22 +173,22 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
 
   Widget _progressIndicator(Journey journey) {
     if (journey.finishDate != null) {
-      return BodyText1(
+      return Subtitle2(
         'Finished',
-        color: Colors.green[600],
+        color: Colors.green[900],
       );
     }
 
     if (journey.startDate != null) {
-      return BodyText1(
+      return Subtitle2(
         'In progress',
-        color: Colors.amber[900],
+        color: Colors.orange[900],
       );
     }
 
-    return BodyText1(
+    return Subtitle2(
       'Ready to start',
-      color: Colors.blue,
+      color: Colors.blue[900],
     );
   }
 }
