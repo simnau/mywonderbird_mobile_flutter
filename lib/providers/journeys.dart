@@ -39,7 +39,7 @@ class JourneysProvider with ChangeNotifier {
     _journeys.insert(0, createdJourney);
     notifyListeners();
 
-    return journey;
+    return createdJourney;
   }
 
   clearState() {
