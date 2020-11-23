@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/full-journey.dart';
@@ -37,6 +38,14 @@ class JourneyService {
   Future<Journey> getLastJourney() async {
     final response = await api.get(LAST_JOURNEY_PATH);
     final journeyRaw = response['body']['journey'];
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode == HttpStatus.notFound) {
+      return null;
+    } else if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error getting the last journey');
+    }
+
     final journey = Journey.fromRequestJson(journeyRaw);
 
     return journey;
@@ -45,6 +54,14 @@ class JourneyService {
   Future<FullJourney> getJourney(String id) async {
     final response = await api.get(getJourneyPath(id));
     final journeyRaw = response['body']['journey'];
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode == HttpStatus.notFound) {
+      return null;
+    } else if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error getting the journey');
+    }
+
     final journey = FullJourney.fromJson(journeyRaw);
 
     return journey;

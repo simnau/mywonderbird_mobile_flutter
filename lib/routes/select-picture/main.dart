@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/select-destination/main.dart';
+import 'package:mywonderbird/routes/share-picture/main.dart';
 import 'package:mywonderbird/routes/share-picture/mock.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
@@ -180,7 +180,7 @@ class _SelectPictureState extends State<SelectPicture> {
           await pictureDataService.extractPictureData(selectedFile.path);
 
       sharePictureProvider.pictureData = pictureData;
-      navigationService.pushNamed(SelectDestination.PATH);
+      navigationService.pushNamed(ShareScreen.PATH);
     }
   }
 }
