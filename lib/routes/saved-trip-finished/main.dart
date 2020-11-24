@@ -6,6 +6,7 @@ import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/routes/feedback/main.dart';
 
 class SavedTripFinished extends StatefulWidget {
   final String id;
@@ -43,7 +44,11 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
             ),
             FlatButton(
               child: BodyText1('Close'),
-              onPressed: _onClose,
+              onPressed: () {
+                locator<NavigationService>().pushReplacement(
+                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                );
+              },
             ),
           ],
         ),
@@ -57,11 +62,5 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
       'saved_trip_id': widget.id,
     });
     locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
-  }
-
-  _onClose() {
-    final navigationService = locator<NavigationService>();
-
-    navigationService.pop();
   }
 }

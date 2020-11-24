@@ -16,6 +16,7 @@ import 'routes/settings/main.dart';
 import 'routes/share-picture/main.dart';
 import 'routes/splash/main.dart';
 import 'routes/functionality-coming-soon/main.dart';
+import 'routes/feedback/form/main.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -86,6 +87,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: (_) => ComingSoonScreen(),
         settings: settings,
       );
+    case FeedbackForm.PATH:
+      return MaterialPageRoute(
+          builder: (_) => FeedbackForm(), settings: settings);
     default:
       return MaterialPageRoute(
         builder: (_) => Scaffold(

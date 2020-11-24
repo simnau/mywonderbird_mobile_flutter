@@ -41,6 +41,7 @@ dependencies:
   quiver: ^2.1.3
   firebase_analytics: ^6.2.0
   firebase_core: 0.5.2
+  im_stepper: ^0.1.2+6
 
 dev_dependencies:
   flutter_test:
@@ -106,5 +107,6 @@ flutter:
     - images/logo-inverse@025x.png
     - images/coming-soon.png
     - images/onboarding/
+    - images/feedback/
     - images/filters/
     - env/
