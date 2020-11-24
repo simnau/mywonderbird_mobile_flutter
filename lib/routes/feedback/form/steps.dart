@@ -8,5 +8,5 @@ final feedbackSteps = [
   FeedbackStep(
       key: 'newFunctionalities',
       title:
-          'What would new functionality would you like to see when planning your trip on our platform?'),
+          'What new functionality would you like to see when planning your trip on our platform?'),
 ];
