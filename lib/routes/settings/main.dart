@@ -10,6 +10,7 @@ import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/routes/change-password/main.dart';
+import 'package:mywonderbird/routes/feedback/form/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
 import 'package:mywonderbird/routes/pdf/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
@@ -222,7 +223,9 @@ class Settings extends StatelessWidget {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-  _onFeedback() {}
+  _onFeedback() {
+    locator<NavigationService>().pushNamed(FeedbackForm.PATH);
+  }
 
   _onReportBug() {}
 
