@@ -3,6 +3,7 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/routes/feedback/main.dart';
 
 class SavedTripFinished extends StatefulWidget {
   @override
@@ -36,9 +37,9 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
             FlatButton(
               child: BodyText1('Close'),
               onPressed: () {
-                final navigationService = locator<NavigationService>();
-
-                navigationService.pop();
+                locator<NavigationService>().pushReplacement(
+                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                );
               },
             ),
           ],

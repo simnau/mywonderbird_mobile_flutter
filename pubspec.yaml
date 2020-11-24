@@ -39,6 +39,7 @@ dependencies:
   numberpicker: ^1.2.1
   maps_launcher: ^1.2.2+1
   quiver: ^2.1.3
+  im_stepper: ^0.1.2+6
 
 dev_dependencies:
   flutter_test:
@@ -103,5 +104,6 @@ flutter:
     - images/logo-inverse.png
     - images/logo-inverse@025x.png
     - images/onboarding/
+    - images/feedback/
     - images/filters/
     - env/
