@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/select-destination/main.dart';
+import 'package:mywonderbird/routes/share-picture/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -49,6 +49,6 @@ class SharingIntent {
     final sharePictureProvider = locator<SharePictureProvider>();
 
     sharePictureProvider.pictureData = pictureData;
-    locator<NavigationService>().pushReplacementNamed(SelectDestination.PATH);
+    locator<NavigationService>().pushReplacementNamed(ShareScreen.PATH);
   }
 }

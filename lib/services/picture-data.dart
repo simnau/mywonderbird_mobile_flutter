@@ -35,20 +35,13 @@ class PictureDataService {
       longitude = isNegativeRef(longitudeRef) ? -longitude : longitude;
     }
 
-    if ((latitude == null || latitude.isNaN) &&
-        (longitude == null || longitude.isNaN)) {
-      final currentLocation = await getCurrentLocation();
-      latitude = currentLocation.latitude;
-      longitude = currentLocation.longitude;
-    }
+    var location;
 
-    final latLng = LatLng(latitude, longitude);
-    final locationModel = await locationService.reverseGeocode(latLng);
+    if (latitude != null && longitude != null) {
+      final latLng = LatLng(latitude, longitude);
+      final locationModel = await locationService.reverseGeocode(latLng);
 
-    return PictureData(
-      image: FileImage(File(filePath)),
-      imagePath: filePath,
-      location: LocationModel(
+      location = LocationModel(
         id: locationModel?.id,
         latLng: LatLng(latitude, longitude),
         country: locationModel?.country,
@@ -56,7 +49,13 @@ class PictureDataService {
         name: locationModel?.name ?? latLngToString(latLng),
         imageUrl: filePath,
         provider: locationModel?.provider,
-      ),
+      );
+    }
+
+    return PictureData(
+      image: FileImage(File(filePath)),
+      imagePath: filePath,
+      location: location,
       creationDate: creationDate,
     );
   }

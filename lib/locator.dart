@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mywonderbird/deep-links.dart';
@@ -71,6 +73,9 @@ setupLocator({String env}) {
     termsService: termsService,
     navigationService: navigationService,
   );
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  FirebaseAnalyticsObserver analyticsObserver =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   // Services
   locator.registerLazySingleton(() => navigationService);
@@ -127,6 +132,8 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SharingIntent());
   locator.registerLazySingleton(() => authenticationInterceptor);
   locator.registerLazySingleton(() => retryPolicy);
+  locator.registerLazySingleton(() => analytics);
+  locator.registerLazySingleton(() => analyticsObserver);
 
   SentryClient sentryClient =
       env == 'prod' ? SentryClient(dsn: sentryDSN) : null;

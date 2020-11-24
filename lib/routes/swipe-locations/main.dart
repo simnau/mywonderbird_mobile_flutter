@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
@@ -282,9 +284,17 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     navigationService.push(MaterialPageRoute(
       builder: (context) => LocationDetails(location: _currentLocation),
     ));
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: LOCATION_INFO_SWIPING, parameters: {
+      'location_id': _currentLocation.id,
+      'location_name': _currentLocation.name,
+      'location_country_code': _currentLocation.countryCode,
+    });
   }
 
   _dismissLeft() {
+    _logSwipeEvent(DISLIKE_SWIPING);
     setState(() {
       _currentLocationIndex += 1;
       _locations = _locationSublist;
@@ -297,6 +307,8 @@ class _SwipeLocationsState extends State<SwipeLocations> {
 
   _dismissRight() {
     _selectedLocations.add(_currentLocation);
+    _logSwipeEvent(LIKE_SWIPING);
+
     setState(() {
       _currentLocationIndex += 1;
       _locations = _locationSublist;
@@ -327,6 +339,9 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         await suggestionService.suggestJourneyFromLocations(locationIds);
 
     try {
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logEvent(name: FINISH_SWIPING);
+
       await navigationService.push(
         MaterialPageRoute(
           builder: (context) => SuggestedTrip(
@@ -335,7 +350,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         ),
       );
 
-      _onReset();
+      _onReset(logEvent: false);
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -346,6 +361,9 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   _onBack() {
     final navigationService = locator<NavigationService>();
     navigationService.pop();
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: CANCEL_SWIPING);
   }
 
   _onDismiss() {
@@ -356,12 +374,26 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     _animatedCardController.swipeRight();
   }
 
-  _onReset() {
+  _onReset({logEvent: true}) {
     setState(() {
       _currentLocationIndex = 0;
       _locations = _locationSublist;
       _selectedLocations = [];
       _isLoading = false;
+    });
+
+    if (logEvent) {
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logEvent(name: RESET_SWIPING);
+    }
+  }
+
+  _logSwipeEvent(eventName) async {
+    final analytics = locator<FirebaseAnalytics>();
+    await analytics.logEvent(name: eventName, parameters: {
+      'location_id': _currentLocation.id,
+      'location_name': _currentLocation.name,
+      'location_country_code': _currentLocation.countryCode,
     });
   }
 }

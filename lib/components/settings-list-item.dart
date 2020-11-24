@@ -6,12 +6,14 @@ class SettingsListItem extends StatelessWidget {
   final void Function() onTap;
   final Widget icon;
   final String title;
+  final bool hideTrailing;
 
   const SettingsListItem({
     Key key,
     this.onTap,
     this.icon,
     this.title,
+    this.hideTrailing = false,
   }) : super(key: key);
 
   @override
@@ -23,9 +25,11 @@ class SettingsListItem extends StatelessWidget {
       ),
       leading: icon,
       title: Subtitle1(title),
-      trailing: Icon(
-        Icons.chevron_right,
-      ),
+      trailing: hideTrailing
+          ? null
+          : Icon(
+              Icons.chevron_right,
+            ),
     );
   }
 }

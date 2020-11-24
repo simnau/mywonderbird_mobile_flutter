@@ -1,12 +1,12 @@
-import 'dart:async';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
+import 'package:mywonderbird/components/small-icon-button.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
-import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
@@ -18,10 +18,13 @@ import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
-import 'package:mywonderbird/util/geo.dart';
-import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
-import 'package:transparent_image/transparent_image.dart';
+
+import 'components/locations-tab.dart';
+import 'components/map-tab.dart';
+
+const LOCATIONS_TAB_INDEX = 0;
+const MAP_TAB_INDEX = 1;
 
 class SuggestedTrip extends StatefulWidget {
   final SuggestedJourney suggestedJourney;
@@ -46,6 +49,16 @@ class _SuggestedTripState extends State<SuggestedTrip>
     _tabController = TabController(length: 2, vsync: this);
   }
 
+  bool get _isComplete {
+    final questionnaireProvider = locator<QuestionnaireProvider>();
+
+    final duration = questionnaireProvider.qValues['duration'];
+    final locationCount = questionnaireProvider.qValues['locationCount'];
+    final expectedCount = duration * locationCount;
+
+    return _locations.length >= expectedCount;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,7 +67,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     _locations = List.from(widget.suggestedJourney.locations);
     _suggestedLocationParts = partition<SuggestedLocation>(
-            _locations, questionnaireProvider.qValues["locationCount"])
+            _locations, questionnaireProvider.qValues['locationCount'])
         .toList();
   }
 
@@ -88,6 +101,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
     return Column(
       children: [
         H5('Your trip is ready!'),
+        if (!_isComplete) _incompleteNotification(),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
         ),
@@ -96,6 +110,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
           controller: _tabController,
           labelColor: theme.accentColor,
           unselectedLabelColor: Colors.black45,
+          onTap: _onTabTap,
           tabs: [
             Tab(
               child: Text(
@@ -119,17 +134,84 @@ class _SuggestedTripState extends State<SuggestedTrip>
             controller: _tabController,
             physics: NeverScrollableScrollPhysics(),
             children: [
-              _LocationsTab(
+              LocationsTab(
                 locations: _suggestedLocationParts,
                 onRemoveLocation: _onRemoveLocation,
               ),
-              _MapTab(
+              MapTab(
                 locations: _locations,
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _incompleteNotification() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue[300], width: 1),
+      ),
+      child: Material(
+        color: Colors.blue[100],
+        child: InkWell(
+          onTap: _showIncompleteAlert,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: 24.0,
+                ),
+                Expanded(
+                  child: BodyText1(
+                    'We could not fill your trip',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SmallIconButton(
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.black87,
+                    size: 24.0,
+                  ),
+                  padding: const EdgeInsets.all(6.0),
+                  borderRadius: BorderRadius.circular(24.0),
+                  onTap: _showIncompleteAlert,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _showIncompleteAlert() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Subtitle1('We could not fill your trip'),
+          content: SingleChildScrollView(
+            child: BodyText1(
+              'We were unable to fill your trip as we do not have enough locations that suit you. Try selecting more locations',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Got it!'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -164,6 +246,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
     final savedTrip = await savedTripService.saveTrip(
         _createSavedTrip(title), stepValues(questionnaireProvider.qValues));
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: SAVE_SUGGESTED, parameters: {
+      'saved_trip_id': savedTrip.id,
+    });
+
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushNamed(Profile.PATH);
     navigationService.push(MaterialPageRoute(
@@ -190,211 +277,14 @@ class _SuggestedTripState extends State<SuggestedTrip>
       savedTripLocations: savedTripLocations,
     );
   }
-}
 
-class _LocationsTab extends StatelessWidget {
-  final List<List<SuggestedLocation>> locations;
-  final Function(int) onRemoveLocation;
+  _onTabTap(value) {
+    final analytics = locator<FirebaseAnalytics>();
 
-  const _LocationsTab({
-    Key key,
-    this.locations,
-    this.onRemoveLocation,
-  }) : super(key: key);
-
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemBuilder: _day,
-      itemCount: locations.length,
-      separatorBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-      ),
-    );
-  }
-
-  Widget _day(context, dayIndex) {
-    final day = locations[dayIndex];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24.0),
-          child: H6(
-            "Day ${dayIndex + 1}",
-          ),
-        ),
-        _locations(day),
-      ],
-    );
-  }
-
-  Widget _locations(List<SuggestedLocation> locations) {
-    return Column(
-      children: locations.map(_location).toList(),
-    );
-  }
-
-  Widget _location(location) {
-    final imageUrl = location.coverImage?.url;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 8.0,
-        ),
-        title: Subtitle1(
-          location.name,
-          overflow: TextOverflow.ellipsis,
-        ),
-        leading: AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              color: Colors.grey,
-            ),
-            child: imageUrl != null
-                ? FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-        ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.delete_forever,
-            color: Colors.red,
-          ),
-          onPressed: () {},
-        ),
-      ),
-    );
-  }
-}
-
-class _MapTab extends StatefulWidget {
-  final List<SuggestedLocation> locations;
-
-  const _MapTab({
-    Key key,
-    this.locations,
-  }) : super(key: key);
-
-  @override
-  _MapTabState createState() => _MapTabState();
-}
-
-class _MapTabState extends State<_MapTab>
-    with AutomaticKeepAliveClientMixin<_MapTab> {
-  static const _INITIAL_ZOOM = 11.0;
-  static const _INITIAL_CAMERA_POSITION = CameraPosition(
-    target: LatLng(
-      63.791580,
-      -17.352658,
-    ),
-    zoom: _INITIAL_ZOOM,
-  );
-
-  Completer<GoogleMapController> _mapController = Completer();
-  LatLngBounds _tripBounds;
-
-  @override
-  void initState() {
-    super.initState();
-    _tripBounds = boundsFromLatLngList(
-      widget.locations.map((location) => location.latLng).toList(),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-
-    return GoogleMap(
-      markers: _markers(),
-      polylines: _lines(),
-      mapType: MapType.hybrid,
-      initialCameraPosition: _INITIAL_CAMERA_POSITION,
-      onMapCreated: _onMapCreated,
-      mapToolbarEnabled: false,
-      rotateGesturesEnabled: false,
-      zoomControlsEnabled: false,
-    );
-  }
-
-  Set<Marker> _markers() {
-    Set<Marker> markers = Set();
-
-    for (var i = 0; i < widget.locations.length; i++) {
-      markers.add(Marker(
-        markerId: MarkerId("Marker-$i"),
-        position: widget.locations[i].latLng,
-        icon: BitmapDescriptor.defaultMarker,
-        consumeTapEvents: true,
-      ));
+    if (value == LOCATIONS_TAB_INDEX) {
+      analytics.logEvent(name: LOCATIONS_SUGGESTED);
+    } else if (value == MAP_TAB_INDEX) {
+      analytics.logEvent(name: MAP_SUGGESTED);
     }
-
-    return markers;
   }
-
-  Set<Polyline> _lines() {
-    final questionnaireProvider = Provider.of<QuestionnaireProvider>(
-      context,
-      listen: false,
-    );
-    Set<Polyline> polylines = Set();
-
-    final locationCountPerDay =
-        questionnaireProvider.qValues['locationCount'] - 1;
-    var locationIndex = 0;
-
-    for (var i = 0; i < widget.locations.length - 1; i++) {
-      final point1 = widget.locations[i];
-      final point2 = widget.locations[i + 1];
-
-      if (locationIndex >= locationCountPerDay) {
-        locationIndex = 0;
-        continue;
-      }
-
-      locationIndex++;
-
-      polylines.add(Polyline(
-        polylineId: PolylineId("Polyline-$i"),
-        width: 1,
-        visible: true,
-        color: Colors.white,
-        jointType: JointType.bevel,
-        patterns: [PatternItem.dash(12), PatternItem.gap(12)],
-        points: [point1.latLng, point2.latLng],
-      ));
-    }
-
-    return polylines;
-  }
-
-  _onMapCreated(GoogleMapController controller) {
-    _mapController.complete(controller);
-    final center = boundsCenter(_tripBounds);
-
-    Future.delayed(
-      Duration(milliseconds: 200),
-      () {
-        if (center != null) {
-          controller.moveCamera(
-            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
-          );
-        }
-      },
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }

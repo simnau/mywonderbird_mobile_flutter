@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -40,21 +41,43 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
       );
     }
 
+    if (journeys.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Subtitle1('You have no saved trips'),
+              Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+              Subtitle2(
+                'Once you save a trip it will appear here',
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      itemBuilder: (context, index) =>
-          _buildJourneyListItem(journeys[index], context),
+      itemBuilder: (context, index) => _buildJourneyListItem(index, context),
       itemCount: journeys.length,
     );
   }
 
-  Widget _buildJourneyListItem(Journey journey, BuildContext context) {
+  Widget _buildJourneyListItem(int index, BuildContext context) {
+    final journey = journeys[index];
+
     return Container(
       child: ListTile(
-        onTap: () => _viewSavedJourney(journey),
+        onTap: () =>
+            journey.finishDate != null ? null : _viewSavedJourney(journey),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 32.0,
-          vertical: 8.0,
         ),
         leading: Container(
           width: 64,
@@ -75,7 +98,15 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
                 ),
         ),
         title: Subtitle1(journey.name ?? '-'),
-        subtitle: Subtitle2(journey.country),
+        subtitle: Wrap(
+          direction: Axis.vertical,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          spacing: 4.0,
+          children: [
+            Subtitle2(journey.country),
+            _progressIndicator(journey),
+          ],
+        ),
         trailing: IconButton(
           icon: Icon(
             Icons.delete_forever,
@@ -83,6 +114,7 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
           ),
           onPressed: () => _onDeleteSavedTrip(journey, context),
         ),
+        isThreeLine: true,
       ),
     );
   }
@@ -137,5 +169,26 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
 
       Scaffold.of(context).showSnackBar(snackBar);
     }
+  }
+
+  Widget _progressIndicator(Journey journey) {
+    if (journey.finishDate != null) {
+      return Subtitle2(
+        'Finished',
+        color: Colors.green[900],
+      );
+    }
+
+    if (journey.startDate != null) {
+      return Subtitle2(
+        'In progress',
+        color: Colors.orange[900],
+      );
+    }
+
+    return Subtitle2(
+      'Ready to start',
+      color: Colors.blue[900],
+    );
   }
 }

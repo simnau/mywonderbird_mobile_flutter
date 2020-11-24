@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
@@ -30,6 +31,8 @@ Future main({String env = 'dev'}) async {
   } on UnauthorizedException {
     initialRoute = SplashScreen.PATH;
   }
+
+  await Firebase.initializeApp();
 
   runZonedGuarded<Future<void>>(() async {
     runApp(_app(initialRoute));

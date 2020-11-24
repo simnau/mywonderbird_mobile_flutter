@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/locator.dart';
@@ -42,6 +43,8 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsObserver = locator<FirebaseAnalyticsObserver>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MyWonderbird',
@@ -49,6 +52,9 @@ class _AppState extends State<App> {
       navigatorKey: locator<NavigationService>().navigatorKey,
       theme: appTheme,
       onGenerateRoute: generateRoute,
+      navigatorObservers: [
+        analyticsObserver,
+      ],
     );
   }
 

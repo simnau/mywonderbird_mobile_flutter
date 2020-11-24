@@ -1,8 +1,14 @@
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
@@ -40,23 +46,17 @@ class _SavedTripState extends State<SavedTripOverview> {
     return _currentLocationIndex == _journey.locations.length - 1;
   }
 
-  int get _currentNonSkippedIndex {
-    if (_journey == null || _currentPage == 0) {
-      return 0;
-    }
-
-    int skippedLocationCount = _journey.locations
-        .getRange(0, _currentLocationIndex)
-        .where((element) => element.skipped != null && element.skipped)
-        .length;
-
-    return _currentLocationIndex - skippedLocationCount;
-  }
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadJourney());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadJourney();
+
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logEvent(name: OPEN_SAVED, parameters: {
+        'saved_trip_id': widget.id,
+      });
+    });
   }
 
   @override
@@ -88,7 +88,7 @@ class _SavedTripState extends State<SavedTripOverview> {
               locations: _journey?.locations,
               onMapCreated: _onMapCreated,
               onCameraMove: _onCameraMove,
-              currentLocationIndex: _currentNonSkippedIndex,
+              currentLocationIndex: _currentLocationIndex,
             ),
           ),
           Expanded(
@@ -131,7 +131,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       if (savedJourney.finishDate != null) {
         navigationService.pushReplacement(
           MaterialPageRoute(
-            builder: (context) => SavedTripFinished(),
+            builder: (context) => SavedTripFinished(id: widget.id),
           ),
         );
       } else {
@@ -245,6 +245,11 @@ class _SavedTripState extends State<SavedTripOverview> {
   _onStart() async {
     final savedTripService = locator<SavedTripService>();
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: START_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+    });
+
     await savedTripService.startTrip(_journey.id);
     _goToPage(1);
   }
@@ -253,10 +258,15 @@ class _SavedTripState extends State<SavedTripOverview> {
     final savedTripService = locator<SavedTripService>();
     final navigationService = locator<NavigationService>();
 
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: FINISH_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+    });
+
     await savedTripService.endTrip(_journey.id);
     navigationService.pushReplacement(
       MaterialPageRoute(
-        builder: (context) => SavedTripFinished(),
+        builder: (context) => SavedTripFinished(id: widget.id),
       ),
     );
   }
@@ -264,6 +274,13 @@ class _SavedTripState extends State<SavedTripOverview> {
   _onSkip(LocationModel location, BuildContext context) async {
     final savedTripService = locator<SavedTripService>();
     await savedTripService.skipLocation(_journey.id, location.id);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: SKIP_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
 
     if (_isLastLocation) {
       _onEnd();
@@ -276,12 +293,46 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _onUploadPhoto(LocationModel location, BuildContext context) async {
-    print('upload photo');
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Subtitle1('Coming soon!'),
+          content: SingleChildScrollView(
+            child: BodyText1(
+              'You will be able to upload photos from your trip soon. Stay tuned!',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Got it!'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _onVisited(LocationModel location, BuildContext context) async {
     final savedTripService = locator<SavedTripService>();
     await savedTripService.visitLocation(_journey.id, location.id);
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: VISIT_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
 
     if (_isLastLocation) {
       _onEnd();
@@ -295,6 +346,13 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _onNavigate(LocationModel location, BuildContext context) async {
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: NAVIGATE_TO_LOCATION_SAVED, parameters: {
+      'saved_trip_id': widget.id,
+      'saved_location_id': location.id,
+      'saved_location_name': location.name,
+    });
+
     await MapsLauncher.launchCoordinates(
       location.latLng.latitude,
       location.latLng.longitude,
@@ -310,20 +368,24 @@ class _SavedTripState extends State<SavedTripOverview> {
     );
   }
 
-  _showUploadPhotoSnackbar(BuildContext context) async {
-    final snackBar = SnackBar(
-      content: Text('You visited this location! Upload a photo?'),
-      action: SnackBarAction(
-        label: 'Upload photo',
-        textColor: Colors.green,
-        onPressed: _uploadPhoto,
-      ),
-    );
+  // TODO: either makes this work or remove it if we deem it unnecessary
+  // _showUploadPhotoSnackbar(BuildContext context) async {
+  //   final snackBar = SnackBar(
+  //     content: Text('You visited this location! Upload a photo?'),
+  //     action: SnackBarAction(
+  //       label: 'Upload photo',
+  //       textColor: Colors.green,
+  //       onPressed: _uploadPhoto,
+  //     ),
+  //   );
 
-    Scaffold.of(context).showSnackBar(snackBar);
-  }
+  //   Scaffold.of(context).showSnackBar(snackBar);
+  // }
 
-  _uploadPhoto() async {
-    print('upload photo');
-  }
+  // _uploadPhoto() async {
+  //   final analytics = locator<FirebaseAnalytics>();
+  //   analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
+  //     'saved_trip_id': widget.id,
+  //   });
+  // }
 }
