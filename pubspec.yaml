@@ -104,6 +104,7 @@ flutter:
     - images/logo@025x.png
     - images/logo-inverse.png
     - images/logo-inverse@025x.png
+    - images/coming-soon.png
     - images/onboarding/
     - images/filters/
     - env/

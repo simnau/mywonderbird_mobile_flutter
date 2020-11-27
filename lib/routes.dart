@@ -15,6 +15,7 @@ import 'routes/select-picture/main.dart';
 import 'routes/settings/main.dart';
 import 'routes/share-picture/main.dart';
 import 'routes/splash/main.dart';
+import 'routes/functionality-coming-soon/main.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -78,6 +79,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case Notifications.PATH:
       return MaterialPageRoute(
         builder: (_) => Notifications(),
+        settings: settings,
+      );
+    case ComingSoonScreen.PATH:
+      return MaterialPageRoute(
+        builder: (_) => ComingSoonScreen(),
         settings: settings,
       );
     default:

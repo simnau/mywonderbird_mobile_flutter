@@ -4,6 +4,7 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class SavedTripFinished extends StatefulWidget {
@@ -55,6 +56,7 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
     analytics.logEvent(name: SHARE_SAVED, parameters: {
       'saved_trip_id': widget.id,
     });
+    locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 
   _onClose() {
