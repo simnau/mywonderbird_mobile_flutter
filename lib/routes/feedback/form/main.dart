@@ -36,6 +36,9 @@ class _FeedbackFormState extends State<FeedbackForm> {
   bool _stepPrevious = false;
   int _currentStep = 0;
 
+  bool get _isLastStep => _currentStep == feedbackSteps.length - 1;
+  bool get _isFirstPageSelected => _currentStep == 0;
+
   Widget _buildTextField(
       TextEditingController controller, FocusNode focusNode) {
     return TextField(
@@ -67,6 +70,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
+        leading: _isFirstPageSelected
+            ? null
+            : IconButton(
+                icon: BackButtonIcon(),
+                onPressed: _onNavigateBack,
+              ),
         actions: <Widget>[
           new IconButton(
             icon: new Icon(Icons.close),
@@ -84,47 +93,50 @@ class _FeedbackFormState extends State<FeedbackForm> {
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                physics: NeverScrollableScrollPhysics(),
-                onPageChanged: _onPageChanged,
-                itemCount: feedbackSteps.length,
-                itemBuilder: (context, index) {
-                  final step = feedbackSteps[index];
-                  final contr = _controllers[feedbackSteps[_currentStep].key];
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Subtitle1(
-                        step.title,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 50),
-                      Expanded(
-                        child: _buildTextField(contr, _focusNodes[step.key]),
-                      ),
-                      if (_currentStep == feedbackSteps.length - 1)
-                        RaisedButton(
-                          child: BodyText1.light('Submit'),
-                          onPressed: () => _onSubmit(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  physics: NeverScrollableScrollPhysics(),
+                  onPageChanged: _onPageChanged,
+                  itemCount: feedbackSteps.length,
+                  itemBuilder: (context, index) {
+                    final step = feedbackSteps[index];
+                    final contr = _controllers[feedbackSteps[_currentStep].key];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (_error != null)
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.only(bottom: 16.0),
+                            alignment: Alignment.center,
+                            color: Colors.red,
+                            child: BodyText1.light(_error),
+                          ),
+                        Subtitle1(
+                          step.title,
+                          textAlign: TextAlign.center,
                         ),
-                      if (_error != null)
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          alignment: Alignment.center,
-                          color: Colors.red,
-                          child: BodyText1.light(_error),
+                        SizedBox(height: 48.0),
+                        Expanded(
+                          child: _buildTextField(contr, _focusNodes[step.key]),
                         ),
-                      SizedBox(height: 30),
-                    ],
-                  );
-                },
+                        SizedBox(height: 32.0),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-            _buildStepper(),
-          ]),
+              _buildStepper(),
+              RaisedButton(
+                child: BodyText1.light(_isLastStep ? 'Submit' : 'Continue'),
+                onPressed: _isLastStep ? _onSubmit : _onNavigateForward,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -177,13 +189,13 @@ class _FeedbackFormState extends State<FeedbackForm> {
     final feedbackService = locator<FeedbackService>();
 
     try {
+      setState(() {
+        _error = null;
+      });
       await feedbackService.submit(
           _controllers['like'].text,
           _controllers['improvements'].text,
           _controllers['newFunctionalities'].text);
-      setState(() {
-        _error = null;
-      });
 
       await showDialog(
         context: context,
@@ -200,13 +212,11 @@ class _FeedbackFormState extends State<FeedbackForm> {
         ),
         barrierDismissible: true,
       );
+      navigationService.pop();
     } catch (e) {
-      print(e);
       setState(() {
         _error = e.message;
       });
-    } finally {
-      navigationService.pop();
     }
   }
 }
