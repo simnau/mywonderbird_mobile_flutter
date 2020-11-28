@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/services/saved-trip.dart';
+import 'package:provider/provider.dart';
 
 class SavedTripsTab extends StatefulWidget {
   @override
@@ -14,9 +14,6 @@ class SavedTripsTab extends StatefulWidget {
 }
 
 class _SavedTripsTabState extends State<SavedTripsTab> {
-  bool _isLoading = false;
-  List<Journey> journeys = [];
-
   @override
   void initState() {
     super.initState();
@@ -31,7 +28,11 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
   }
 
   Widget _buildList() {
-    if (_isLoading) {
+    final savedTripsProvider = Provider.of<SavedTripsProvider>(
+      context,
+    );
+
+    if (savedTripsProvider.loading) {
       return Center(
         child: SizedBox(
           height: 24,
@@ -41,7 +42,7 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
       );
     }
 
-    if (journeys.isEmpty) {
+    if (savedTripsProvider.savedTrips.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -64,18 +65,21 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      itemBuilder: (context, index) => _buildJourneyListItem(index, context),
-      itemCount: journeys.length,
+      itemBuilder: (context, index) => _buildTripListItem(index, context),
+      itemCount: savedTripsProvider.savedTrips.length,
     );
   }
 
-  Widget _buildJourneyListItem(int index, BuildContext context) {
-    final journey = journeys[index];
+  Widget _buildTripListItem(int index, BuildContext context) {
+    final savedTripsProvider = Provider.of<SavedTripsProvider>(
+      context,
+    );
+
+    final trip = savedTripsProvider.savedTrips[index];
 
     return Container(
       child: ListTile(
-        onTap: () =>
-            journey.finishDate != null ? null : _viewSavedJourney(journey),
+        onTap: () => trip.finishDate != null ? null : _viewSavedTrip(trip),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 32.0,
         ),
@@ -86,25 +90,25 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
             borderRadius: BorderRadius.circular(8.0),
           ),
           clipBehavior: Clip.antiAlias,
-          child: journey.imageUrl != null
+          child: trip.imageUrl != null
               ? Image(
                   fit: BoxFit.cover,
                   image: NetworkImage(
-                    journey.imageUrl,
+                    trip.imageUrl,
                   ),
                 )
               : Container(
                   color: Colors.black26,
                 ),
         ),
-        title: Subtitle1(journey.name ?? '-'),
+        title: Subtitle1(trip.name ?? '-'),
         subtitle: Wrap(
           direction: Axis.vertical,
           crossAxisAlignment: WrapCrossAlignment.start,
           spacing: 4.0,
           children: [
-            Subtitle2(journey.country),
-            _progressIndicator(journey),
+            Subtitle2(trip.country),
+            _progressIndicator(trip),
           ],
         ),
         trailing: IconButton(
@@ -112,53 +116,36 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
             Icons.delete_forever,
             color: Colors.red,
           ),
-          onPressed: () => _onDeleteSavedTrip(journey, context),
+          onPressed: () => _onDeleteSavedTrip(trip, context),
         ),
         isThreeLine: true,
       ),
     );
   }
 
-  _viewSavedJourney(Journey journey) {
+  _viewSavedTrip(Journey trip) async {
     final navigationService = locator<NavigationService>();
 
-    navigationService.push(
+    await navigationService.push(
       MaterialPageRoute(
         builder: (context) => SavedTripOverview(
-          id: journey.id,
+          id: trip.id,
         ),
       ),
     );
+
+    _fetchSavedTrips();
   }
 
   _fetchSavedTrips() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      final savedTripService = locator<SavedTripService>();
-
-      final savedJourneys = await savedTripService.fetchAll();
-      setState(() {
-        _isLoading = false;
-        journeys = savedJourneys;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    final savedTripsProvider = locator<SavedTripsProvider>();
+    await savedTripsProvider.loadUserSavedTrips();
   }
 
-  _onDeleteSavedTrip(Journey journey, BuildContext context) async {
+  _onDeleteSavedTrip(Journey trip, BuildContext context) async {
     try {
-      final savedTripService = locator<SavedTripService>();
-
-      await savedTripService.deleteTrip(journey.id);
-      setState(() {
-        journeys.remove(journey);
-      });
+      final savedTripsProvider = locator<SavedTripsProvider>();
+      await savedTripsProvider.deleteTrip(trip);
     } catch (e) {
       final snackBar = SnackBar(
         content: Text(
@@ -171,15 +158,15 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
     }
   }
 
-  Widget _progressIndicator(Journey journey) {
-    if (journey.finishDate != null) {
+  Widget _progressIndicator(Journey trip) {
+    if (trip.finishDate != null) {
       return Subtitle2(
         'Finished',
         color: Colors.green[900],
       );
     }
 
-    if (journey.startDate != null) {
+    if (trip.startDate != null) {
       return Subtitle2(
         'In progress',
         color: Colors.orange[900],

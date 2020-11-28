@@ -5,6 +5,7 @@ import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
+import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:quiver/iterables.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
@@ -253,11 +254,14 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushNamed(Profile.PATH);
-    navigationService.push(MaterialPageRoute(
+    await navigationService.push(MaterialPageRoute(
       builder: (context) => SavedTripOverview(
         id: savedTrip.id,
       ),
     ));
+
+    final savedTripsProvider = locator<SavedTripsProvider>();
+    await savedTripsProvider.loadUserSavedTrips();
   }
 
   _createSavedTrip(String title) {
