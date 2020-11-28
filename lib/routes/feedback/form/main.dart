@@ -42,7 +42,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
   Widget _buildTextField(
       TextEditingController controller, FocusNode focusNode) {
     return TextField(
-      decoration: InputDecoration(border: OutlineInputBorder()),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        hintText: 'Enter feedback',
+      ),
       maxLines: 7,
       controller: controller,
       focusNode: focusNode,
@@ -65,6 +70,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -77,72 +84,70 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 onPressed: _onNavigateBack,
               ),
         actions: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.close),
-            onPressed: () => navigationService.pop(),
+          FlatButton(
+            onPressed: _isLastStep ? _onSubmit : _onNavigateForward,
+            child: Text(
+              _isLastStep ? 'SUBMIT' : 'NEXT',
+              style: TextStyle(color: theme.primaryColor),
+            ),
+            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),
-      body: GestureDetector(
-        onHorizontalDragEnd: (dragEndDetails) {
-          if (dragEndDetails.primaryVelocity < 0) {
-            _onNavigateForward();
-          } else if (dragEndDetails.primaryVelocity > 0) {
-            _onNavigateBack();
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  physics: NeverScrollableScrollPhysics(),
-                  onPageChanged: _onPageChanged,
-                  itemCount: feedbackSteps.length,
-                  itemBuilder: (context, index) {
-                    final step = feedbackSteps[index];
-                    final contr = _controllers[feedbackSteps[_currentStep].key];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (_error != null)
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            margin: const EdgeInsets.only(bottom: 16.0),
-                            alignment: Alignment.center,
-                            color: Colors.red,
-                            child: BodyText1.light(_error),
-                          ),
-                        Subtitle1(
-                          step.title,
-                          textAlign: TextAlign.center,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                itemCount: feedbackSteps.length,
+                itemBuilder: (context, index) {
+                  final step = feedbackSteps[index];
+                  final contr = _controllers[feedbackSteps[_currentStep].key];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_error != null)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.only(bottom: 16.0),
+                          alignment: Alignment.center,
+                          color: Colors.red,
+                          child: BodyText1.light(_error),
                         ),
-                        SizedBox(height: 48.0),
-                        Expanded(
-                          child: _buildTextField(contr, _focusNodes[step.key]),
-                        ),
-                        SizedBox(height: 32.0),
-                      ],
-                    );
-                  },
-                ),
+                      Subtitle1(
+                        step.title,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 48.0),
+                      Expanded(
+                        child: _buildTextField(contr, _focusNodes[step.key]),
+                      ),
+                      SizedBox(height: 32.0),
+                    ],
+                  );
+                },
               ),
-              _buildStepper(),
-              RaisedButton(
-                child: BodyText1.light(_isLastStep ? 'Submit' : 'Continue'),
-                onPressed: _isLastStep ? _onSubmit : _onNavigateForward,
+            ),
+            _buildStepper(),
+            FlatButton(
+              child: BodyText1(
+                'Cancel',
+                color: theme.errorColor,
               ),
-            ],
-          ),
+              onPressed: _onCancel,
+            ),
+          ],
         ),
       ),
     );
   }
 
   _onPageChanged(int page) {
+    _focusNodes[feedbackSteps[_currentStep].key]?.unfocus();
     if (_currentStep < page) {
       setState(() {
         _stepNext = true;
@@ -183,6 +188,10 @@ class _FeedbackFormState extends State<FeedbackForm> {
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  _onCancel() {
+    navigationService.pop();
   }
 
   _onSubmit() async {

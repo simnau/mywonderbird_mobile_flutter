@@ -43,7 +43,7 @@ class FeedbackScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Subtitle1(
-            'Feedback!',
+            'Help us improve!',
             textAlign: TextAlign.center,
           ),
           Padding(
