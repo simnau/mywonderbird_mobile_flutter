@@ -212,11 +212,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
           title: Text("Feedback"),
           content: Text("Was successfully sent!"),
           actions: <Widget>[
-            MaterialButton(
-                onPressed: () {
-                  navigationService.pop();
-                },
-                child: Text('Close')),
+            FlatButton(
+              onPressed: () {
+                navigationService.pop();
+              },
+              child: Text('Close'),
+            ),
           ],
         ),
         barrierDismissible: true,

@@ -5,6 +5,7 @@ import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:story_view/story_view.dart';
 
 class LocationDetails extends StatefulWidget {
   final SuggestedLocation location;
@@ -19,6 +20,8 @@ class LocationDetails extends StatefulWidget {
 }
 
 class _LocationDetailsState extends State<LocationDetails> {
+  final storyController = StoryController();
+
   bool get hasImage =>
       widget.location.images.isNotEmpty &&
       widget.location.images.first?.url != null;
@@ -60,12 +63,7 @@ class _LocationDetailsState extends State<LocationDetails> {
           padding: const EdgeInsets.only(bottom: 24.0),
           child: AspectRatio(
             aspectRatio: 4 / 3,
-            child: hasImage
-                ? Image.network(
-                    widget.location.images.first?.url,
-                    fit: BoxFit.cover,
-                  )
-                : Container(color: Colors.grey),
+            child: _imageContent(),
           ),
         ),
         Positioned(
@@ -91,6 +89,30 @@ class _LocationDetailsState extends State<LocationDetails> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _imageContent() {
+    if (!hasImage) {
+      return Container(color: Colors.grey);
+    }
+
+    if (widget.location.images.length == 1) {
+      return Image.network(
+        widget.location.images.first?.url,
+        fit: BoxFit.cover,
+      );
+    }
+
+    return StoryView(
+      controller: storyController,
+      repeat: true,
+      inline: true,
+      storyItems: widget.location.images.map((image) {
+        return StoryItem.inlineProviderImage(
+          NetworkImage(image.url),
+        );
+      }).toList(),
     );
   }
 
