@@ -109,4 +109,5 @@ flutter:
     - images/onboarding/
     - images/feedback/
     - images/filters/
+    - images/questionnaire/
     - env/

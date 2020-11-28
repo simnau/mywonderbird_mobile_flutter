@@ -65,46 +65,63 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
         backgroundColor: Colors.transparent,
       ),
       body: _body(),
+      backgroundColor: Colors.white,
     );
   }
 
   Widget _body() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: _onPageChanged,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: questionnaireSteps.length,
-              itemBuilder: (context, index) {
-                final step = questionnaireSteps[index];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Subtitle1(
-                      step.title,
-                      textAlign: TextAlign.center,
+    return Column(
+      children: [
+        Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: questionnaireSteps.length,
+            itemBuilder: (context, index) {
+              final step = questionnaireSteps[index];
+
+              return Stack(
+                children: [
+                  if (step.backgroundImage != null)
+                    Align(
+                      child: Opacity(
+                        child: Image(
+                          image: step.backgroundImage,
+                          fit: BoxFit.cover,
+                        ),
+                        opacity: 0.1,
+                      ),
+                      alignment: Alignment.center,
                     ),
-                    Expanded(
-                      child: step.builder(BuilderArguments(
-                        focusNode: _focusNodes[step.key],
-                        onValueChanged: (value) =>
-                            _onFieldValueChanged(step.key, value),
-                        value: _values[step.key],
-                        onComplete: _onComplete,
-                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Subtitle1(
+                          step.title,
+                          textAlign: TextAlign.center,
+                        ),
+                        Expanded(
+                          child: step.builder(BuilderArguments(
+                            focusNode: _focusNodes[step.key],
+                            onValueChanged: (value) =>
+                                _onFieldValueChanged(step.key, value),
+                            value: _values[step.key],
+                            onComplete: _onComplete,
+                          )),
+                        ),
+                      ],
                     ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                ],
+              );
+            },
           ),
-          _bottomContent(),
-        ],
-      ),
+        ),
+        _bottomContent(),
+      ],
     );
   }
 
@@ -118,8 +135,9 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
       onPressed = isLastPageSelected ? _onComplete : _onNext;
     }
 
-    return SizedBox(
+    return Container(
       width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       child: RaisedButton(
         onPressed: onPressed,
         child: _isLoading
