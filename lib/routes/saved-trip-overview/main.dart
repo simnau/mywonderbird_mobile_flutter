@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
-import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
-import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
@@ -16,6 +14,7 @@ import 'package:mywonderbird/routes/saved-trip-finished/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'components/trip-map.dart';
 import 'components/trip-slides.dart';
@@ -49,7 +48,8 @@ class _SavedTripState extends State<SavedTripOverview> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Permission.location.request();
       _loadJourney();
 
       final analytics = locator<FirebaseAnalytics>();

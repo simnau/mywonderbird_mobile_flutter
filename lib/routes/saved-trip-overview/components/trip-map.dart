@@ -43,33 +43,37 @@ class TripMap extends StatelessWidget {
       mapToolbarEnabled: false,
       rotateGesturesEnabled: false,
       zoomControlsEnabled: false,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
     );
   }
 
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
-    const hueMap = {
-      0: BitmapDescriptor.hueBlue,
-      1: BitmapDescriptor.hueViolet,
-      2: BitmapDescriptor.hueAzure,
-      3: BitmapDescriptor.hueOrange,
-      4: BitmapDescriptor.hueRose,
-      5: BitmapDescriptor.hueAzure
-    };
+    const hueMap = [
+      BitmapDescriptor.hueBlue,
+      BitmapDescriptor.hueViolet,
+      BitmapDescriptor.hueAzure,
+      BitmapDescriptor.hueOrange,
+      BitmapDescriptor.hueRose,
+      BitmapDescriptor.hueAzure,
+    ];
 
     for (var i = 0; i < locations.length; i++) {
       final location = locations[i];
       var icon;
 
       if (currentLocationIndex == i) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
       } else if (location.visitedAt != null) {
         icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
       } else if (location.skipped != null && location.skipped) {
         icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
       } else {
-        icon = BitmapDescriptor.defaultMarkerWithHue(hueMap[location.dayIndex]);
+        icon = BitmapDescriptor.defaultMarkerWithHue(
+          hueMap[location.dayIndex % hueMap.length],
+        );
       }
 
       markers.add(Marker(

@@ -27,28 +27,42 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Subtitle1(
-              'Congratulations! You finished your trip!',
-              textAlign: TextAlign.center,
+            Image.asset(
+              'images/congratulations.png',
+              fit: BoxFit.cover,
             ),
-            RaisedButton(
-              child: BodyText1.light('Share it with friends'),
-              onPressed: _onShareTrip,
-            ),
-            FlatButton(
-              child: BodyText1('Close'),
-              onPressed: () {
-                locator<NavigationService>().pushReplacement(
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Subtitle1(
+                    'Congratulations! You finished your trip!',
+                    textAlign: TextAlign.center,
+                  ),
+                  RaisedButton(
+                    child: BodyText1.light('Share it with friends'),
+                    onPressed: _onShareTrip,
+                  ),
+                  FlatButton(
+                    child: BodyText1('Close'),
+                    onPressed: () {
+                      locator<NavigationService>().pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => FeedbackScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
