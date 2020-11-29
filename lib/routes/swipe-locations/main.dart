@@ -7,6 +7,7 @@ import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/suggested-location-image.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/routes/location-details/main.dart';
@@ -14,6 +15,7 @@ import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:story_view/story_view.dart';
 
 import 'components/animated-card.dart';
 
@@ -33,6 +35,7 @@ class SwipeLocations extends StatefulWidget {
 
 class _SwipeLocationsState extends State<SwipeLocations> {
   final _animatedCardController = AnimatedCardController();
+  final _storyController = StoryController();
   List<SuggestedLocation> _locations;
   List<SuggestedLocation> _selectedLocations = [];
   int _currentLocationIndex = 0;
@@ -107,7 +110,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
             dismissLeft: _dismissLeft,
             dismissRight: _dismissRight,
             width: width,
-            child: _card(context, i),
+            child: _card(context, i, storyView: true),
           ),
         );
       } else {
@@ -148,25 +151,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
                 ),
               ),
             ),
-            // Align(
-            //   alignment: Alignment.center,
-            //   child: FloatingActionButton(
-            //     onPressed: _onBookmark,
-            //     foregroundColor: Colors.black87,
-            //     backgroundColor: Colors.white,
-            //     heroTag: null,
-            //     mini: true,
-            //     child: GradientIcon(
-            //       Icons.turned_in,
-            //       24,
-            //       LinearGradient(
-            //         begin: Alignment.topLeft,
-            //         end: Alignment.bottomRight,
-            //         colors: [Colors.blue[100], Colors.blue],
-            //       ),
-            //     ),
-            //   ),
-            // ),
             Align(
               alignment: Alignment.center,
               child: FloatingActionButton(
@@ -197,7 +181,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     );
   }
 
-  Widget _card(BuildContext context, int index) {
+  Widget _card(BuildContext context, int index, {bool storyView = false}) {
     final item = _locations[index];
 
     return Card(
@@ -205,7 +189,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (item.images.isNotEmpty && item.images.first.url != null)
+          if (storyView && item.images.length > 1)
+            _FirstCard(
+              images: item.images,
+              storyController: _storyController,
+            )
+          else if (item.images.isNotEmpty && item.images.first.url != null)
             Image.network(
               item.images.first.url,
               fit: BoxFit.cover,
@@ -327,6 +316,29 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   _next() async {
+    if (_selectedLocations.isEmpty) {
+      await showDialog(
+        context: context,
+        child: AlertDialog(
+          content: Text(
+            'We cannot suggest a trip. Please select some locations that you like!',
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                final navigationService = locator<NavigationService>();
+                navigationService.pop();
+              },
+              child: Text('OK!'),
+            ),
+          ],
+        ),
+      );
+
+      _onReset();
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -395,5 +407,29 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       'location_name': _currentLocation.name,
       'location_country_code': _currentLocation.countryCode,
     });
+  }
+}
+
+class _FirstCard extends StatelessWidget {
+  final StoryController storyController;
+  final List<SuggestedLocationImage> images;
+
+  _FirstCard({
+    Key key,
+    this.images,
+    this.storyController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StoryView(
+      controller: storyController,
+      repeat: true,
+      storyItems: images.map((image) {
+        return StoryItem.inlineProviderImage(
+          NetworkImage(image.url),
+        );
+      }).toList(),
+    );
   }
 }

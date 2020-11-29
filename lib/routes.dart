@@ -3,19 +3,18 @@ import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/notifications/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/terms/main.dart';
-import 'package:mywonderbird/types/share-screen-arguments.dart';
 import 'package:mywonderbird/types/terms-arguments.dart';
 
 import 'routes/authentication/main.dart';
 import 'routes/authentication/select-auth-option.dart';
 import 'routes/home/main.dart';
 import 'routes/profile/main.dart';
-import 'routes/select-destination/main.dart';
 import 'routes/select-picture/main.dart';
 import 'routes/settings/main.dart';
 import 'routes/share-picture/main.dart';
 import 'routes/splash/main.dart';
 import 'routes/functionality-coming-soon/main.dart';
+import 'routes/feedback/form/main.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -48,17 +47,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: (_) => SelectPicture(),
         settings: settings,
       );
-    case SelectDestination.PATH:
-      return MaterialPageRoute(
-        builder: (_) => SelectDestination(),
-        settings: settings,
-      );
     case ShareScreen.PATH:
-      final ShareScreenArguments arguments = settings.arguments;
       return MaterialPageRoute(
-        builder: (_) => ShareScreen(
-          selectedJourney: arguments?.selectedJourney,
-        ),
+        builder: (_) => ShareScreen(),
         settings: settings,
       );
     case Profile.PATH:
@@ -86,6 +77,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: (_) => ComingSoonScreen(),
         settings: settings,
       );
+    case FeedbackForm.PATH:
+      return MaterialPageRoute(
+          builder: (_) => FeedbackForm(), settings: settings);
     default:
       return MaterialPageRoute(
         builder: (_) => Scaffold(

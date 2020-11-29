@@ -38,7 +38,7 @@ class CropImage extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         controller: _controller,
-        shape: CropShape.oval,
+        shape: BoxShape.circle,
       ),
     );
   }

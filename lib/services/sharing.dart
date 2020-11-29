@@ -43,6 +43,7 @@ class SharingService {
 
   sharePicture(
     String title,
+    String description,
     PictureData pictureData,
     LocationModel locationModel,
     String journeyId,
@@ -57,6 +58,7 @@ class SharingService {
       {
         'imageUrl': imageUrl,
         'title': title,
+        'description': description,
         'creationDate': pictureDataJson['creationDate'],
         'location': locationJson,
       },

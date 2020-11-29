@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 
-import 'components/bool-picker.dart';
 import 'components/count-picker.dart';
-import 'components/trip-country.dart';
-import 'components/trip-end.dart';
-import 'components/trip-start.dart';
 import 'wizard-step.dart';
 import 'components/trip-places-picker.dart';
 
@@ -53,6 +49,7 @@ final questionnaireSteps = [
       postfix: Subtitle1('day(s)'),
     ),
     validator: (value) => value != null && value > 0,
+    backgroundImage: AssetImage('images/questionnaire/duration.png'),
   ),
   WizardStep(
     key: 'locationCount',
@@ -65,6 +62,7 @@ final questionnaireSteps = [
       postfix: Subtitle1('location(s)'),
     ),
     validator: (value) => value != null && value > 0,
+    backgroundImage: AssetImage('images/questionnaire/locations.png'),
   ),
   WizardStep(
     key: 'travelerCount',
@@ -77,6 +75,7 @@ final questionnaireSteps = [
       postfix: Subtitle1('traveler(s)'),
     ),
     validator: (value) => value != null && value >= 0,
+    backgroundImage: AssetImage('images/questionnaire/travelers.png'),
   ),
   // WizardStep(
   //   key: 'travelingWithChildren',

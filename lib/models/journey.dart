@@ -16,7 +16,7 @@ class Journey extends NamedItem {
     this.country,
     @required this.startDate,
     this.finishDate,
-    @required this.imageUrl,
+    this.imageUrl,
   }) : super(name: name);
 
   factory Journey.fromJson(Map<String, dynamic> json) {
@@ -34,13 +34,23 @@ class Journey extends NamedItem {
     final startDate = json['startDate'];
     final finishDate = json['finishDate'];
 
+    var imageUrl;
+
+    if (json['imageUrl'] != null) {
+      imageUrl = json['imageUrl'];
+    } else if ((json['images'] ?? []).isNotEmpty) {
+      imageUrl = json['images'][0];
+    } else {
+      imageUrl = null;
+    }
+
     return Journey(
       id: json['id'],
       name: json['title'],
       startDate: startDate != null ? DateTime.parse(json['startDate']) : null,
       finishDate:
           finishDate != null ? DateTime.parse(json['finishDate']) : null,
-      imageUrl: (json['images'] ?? []).isNotEmpty ? json['images'][0] : null,
+      imageUrl: imageUrl,
       country: json['country'],
     );
   }

@@ -79,7 +79,10 @@ class LocationSlide extends StatelessWidget {
             onPressed: _onSkip,
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
-            child: Icon(Icons.close),
+            child: Icon(
+              MaterialCommunityIcons.debug_step_over,
+              size: 28.0,
+            ),
             heroTag: null,
             mini: true,
           ),

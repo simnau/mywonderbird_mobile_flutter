@@ -6,6 +6,7 @@ import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/routes/feedback/main.dart';
 
 class SavedTripFinished extends StatefulWidget {
   final String id;
@@ -26,24 +27,42 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Subtitle1(
-              'Congratulations! You finished your trip!',
-              textAlign: TextAlign.center,
+            Image.asset(
+              'images/congratulations.png',
+              fit: BoxFit.cover,
             ),
-            RaisedButton(
-              child: BodyText1.light('Share it with friends'),
-              onPressed: _onShareTrip,
-            ),
-            FlatButton(
-              child: BodyText1('Close'),
-              onPressed: _onClose,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Subtitle1(
+                    'Congratulations! You finished your trip!',
+                    textAlign: TextAlign.center,
+                  ),
+                  RaisedButton(
+                    child: BodyText1.light('Share it with friends'),
+                    onPressed: _onShareTrip,
+                  ),
+                  FlatButton(
+                    child: BodyText1('Close'),
+                    onPressed: () {
+                      locator<NavigationService>().pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => FeedbackScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -57,11 +76,5 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
       'saved_trip_id': widget.id,
     });
     locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
-  }
-
-  _onClose() {
-    final navigationService = locator<NavigationService>();
-
-    navigationService.pop();
   }
 }

@@ -7,6 +7,7 @@ class WizardStep {
   final Widget Function(BuilderArguments) builder;
   final bool Function(dynamic) validator;
   final String Function(dynamic) stringValue;
+  final ImageProvider backgroundImage;
 
   const WizardStep({
     @required this.key,
@@ -14,5 +15,6 @@ class WizardStep {
     @required this.builder,
     @required this.validator,
     this.stringValue,
+    this.backgroundImage,
   });
 }

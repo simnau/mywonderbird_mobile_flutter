@@ -19,10 +19,6 @@ class TripMap extends StatelessWidget {
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
 
-  List<LocationModel> get nonSkippedLocations => locations
-      .where((element) => element.skipped == null || !element.skipped)
-      .toList();
-
   const TripMap({
     Key key,
     @required this.locations,
@@ -47,31 +43,37 @@ class TripMap extends StatelessWidget {
       mapToolbarEnabled: false,
       rotateGesturesEnabled: false,
       zoomControlsEnabled: false,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
     );
   }
 
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
-    const hueMap = {
-      0: BitmapDescriptor.hueBlue,
-      1: BitmapDescriptor.hueViolet,
-      2: BitmapDescriptor.hueAzure,
-      3: BitmapDescriptor.hueOrange,
-      4: BitmapDescriptor.hueRose,
-      5: BitmapDescriptor.hueAzure
-    };
+    const hueMap = [
+      BitmapDescriptor.hueBlue,
+      BitmapDescriptor.hueViolet,
+      BitmapDescriptor.hueAzure,
+      BitmapDescriptor.hueOrange,
+      BitmapDescriptor.hueRose,
+      BitmapDescriptor.hueAzure,
+    ];
 
-    for (var i = 0; i < nonSkippedLocations.length; i++) {
-      final location = nonSkippedLocations[i];
+    for (var i = 0; i < locations.length; i++) {
+      final location = locations[i];
       var icon;
 
       if (currentLocationIndex == i) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
       } else if (location.visitedAt != null) {
         icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      } else if (location.skipped != null && location.skipped) {
+        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
       } else {
-        icon = BitmapDescriptor.defaultMarkerWithHue(hueMap[location.dayIndex]);
+        icon = BitmapDescriptor.defaultMarkerWithHue(
+          hueMap[location.dayIndex % hueMap.length],
+        );
       }
 
       markers.add(Marker(
@@ -88,11 +90,11 @@ class TripMap extends StatelessWidget {
   Set<Polyline> _lines() {
     Set<Polyline> polylines = Set();
 
-    for (var i = 0; i < nonSkippedLocations.length - 1; i++) {
-      final point1 = nonSkippedLocations[i];
-      final point2 = nonSkippedLocations[i + 1];
+    for (var i = 0; i < locations.length - 1; i++) {
+      final point1 = locations[i];
+      final point2 = locations[i + 1];
 
-      if(point1.dayIndex != point2.dayIndex) {
+      if (point1.dayIndex != point2.dayIndex) {
         continue;
       }
       polylines.add(Polyline(
