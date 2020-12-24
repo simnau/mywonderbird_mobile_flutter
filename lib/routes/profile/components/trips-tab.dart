@@ -107,6 +107,10 @@ class _MyTripsTabState extends State<MyTripsTab> {
     final journeyService = locator<JourneyService>();
     final journey = await journeyService.getJourney(item.id);
 
+    if (journey.locations.isEmpty) {
+      return;
+    }
+
     locator<NavigationService>().push(
       MaterialPageRoute(
         builder: (context) => TripOverview(

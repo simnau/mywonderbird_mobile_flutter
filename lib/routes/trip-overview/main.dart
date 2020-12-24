@@ -39,9 +39,11 @@ class _TripOverviewState extends State<TripOverview> {
   @override
   void initState() {
     super.initState();
-    _tripBounds = boundsFromLatLngList(
-      widget.journey.locations.map((location) => location.latLng).toList(),
-    );
+    if (widget.journey.locations.isNotEmpty) {
+      _tripBounds = boundsFromLatLngList(
+        widget.journey.locations.map((location) => location.latLng).toList(),
+      );
+    }
   }
 
   @override
@@ -226,7 +228,7 @@ class _TripOverviewState extends State<TripOverview> {
       final point1 = widget.journey.locations[i];
       final point2 = widget.journey.locations[i + 1];
 
-      if(point1.dayIndex != point2.dayIndex) {
+      if (point1.dayIndex != point2.dayIndex) {
         continue;
       }
       polylines.add(Polyline(
