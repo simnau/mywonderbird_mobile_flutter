@@ -29,3 +29,7 @@ const VISIT_LOCATION_SAVED = 'visit_location_saved';
 const NAVIGATE_TO_LOCATION_SAVED = 'navigate_to_location_saved';
 const FINISH_SAVED = 'finish_saved';
 const SHARE_SAVED = 'share_saved';
+
+// Feed
+const FEED_FILTER = 'feed_filter';
+const FEED_SEARCH = 'feed_search';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
@@ -76,27 +77,9 @@ class _BookmarkedLocationsState extends State<BookmarkedLocations> {
     }
 
     if (_items.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Subtitle1(
-                'This bookmark group is empty',
-                textAlign: TextAlign.center,
-                softWrap: true,
-              ),
-              Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-              Subtitle2(
-                'Locations bookmarked to this group will appear here',
-                textAlign: TextAlign.center,
-                softWrap: true,
-              ),
-            ],
-          ),
-        ),
+      return EmptyListPlaceholder(
+        title: 'This bookmark group is empty',
+        subtitle: 'Locations bookmarked to this group will appear here',
       );
     }
 

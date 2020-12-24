@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -43,23 +44,9 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
     }
 
     if (savedTripsProvider.savedTrips.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Subtitle1('You have no saved trips'),
-              Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-              Subtitle2(
-                'Once you save a trip it will appear here',
-                textAlign: TextAlign.center,
-                softWrap: true,
-              ),
-            ],
-          ),
-        ),
+      return EmptyListPlaceholder(
+        title: 'You have no saved trips',
+        subtitle: 'Once you save a trip it will appear here',
       );
     }
 

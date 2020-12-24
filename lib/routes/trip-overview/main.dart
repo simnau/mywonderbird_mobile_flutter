@@ -2,21 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/routes/trip-details/main.dart';
+import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TripOverview extends StatefulWidget {
-  final FullJourney journey;
+  final String id;
 
   const TripOverview({
     Key key,
-    this.journey,
+    @required this.id,
   }) : super(key: key);
 
   @override
@@ -33,61 +35,83 @@ class _TripOverviewState extends State<TripOverview> {
     zoom: _INITIAL_ZOOM,
   );
 
+  bool _isLoading = true;
+  FullJourney _journey;
   Completer<GoogleMapController> _mapController = Completer();
   LatLngBounds _tripBounds;
 
   @override
   void initState() {
     super.initState();
-    if (widget.journey.locations.isNotEmpty) {
-      _tripBounds = boundsFromLatLngList(
-        widget.journey.locations.map((location) => location.latLng).toList(),
-      );
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _loadJourney();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final iconTheme = _isLoading || _journey.locations.isEmpty
+        ? null
+        : IconThemeData(color: Colors.white);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: iconTheme,
       ),
       extendBodyBehindAppBar: true,
-      body: Container(
+      body: _body(),
+    );
+  }
+
+  Widget _body() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (_journey.locations.isEmpty) {
+      return EmptyListPlaceholder(
+        title: 'This trip has no locations',
+        subtitle: 'Share locations to this trip to view them',
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        image: _journey.imageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(_journey.imageUrl),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: Container(
         decoration: BoxDecoration(
-          image: widget.journey.imageUrl != null
-              ? DecorationImage(
-                  image: NetworkImage(widget.journey.imageUrl),
-                  fit: BoxFit.cover,
-                )
-              : null,
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.transparent,
-                Colors.black54,
-              ],
-              stops: [0, 0.6],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+          gradient: LinearGradient(
+            colors: [
+              Colors.transparent,
+              Colors.black54,
+            ],
+            stops: [0, 0.6],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ..._journeyName(),
-                ..._journeyCountry(),
-                _map(),
-                Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-                _picturePreview(),
-              ],
-            ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(36.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ..._journeyName(),
+              ..._journeyCountry(),
+              _map(),
+              Padding(padding: const EdgeInsets.only(bottom: 16.0)),
+              _picturePreview(),
+            ],
           ),
         ),
       ),
@@ -121,7 +145,7 @@ class _TripOverviewState extends State<TripOverview> {
   }
 
   Widget _picturePreview() {
-    final locations = widget.journey.showCaseLocations;
+    final locations = _journey.showCaseLocations;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +153,7 @@ class _TripOverviewState extends State<TripOverview> {
         ...locations
             .map<Widget>((location) => _pictureThumbnail(location.imageUrl))
             .toList(),
-        if (widget.journey.hasMorePictures) _morePictures(),
+        if (_journey.hasMorePictures) _morePictures(),
       ],
     );
   }
@@ -160,7 +184,7 @@ class _TripOverviewState extends State<TripOverview> {
       height: 72,
       alignment: Alignment.center,
       child: Text(
-        "+${widget.journey.morePictureCount}",
+        "+${_journey.morePictureCount}",
         style: TextStyle(
           color: Colors.black87,
           fontWeight: FontWeight.w600,
@@ -170,7 +194,7 @@ class _TripOverviewState extends State<TripOverview> {
   }
 
   List<Widget> _journeyName() {
-    if (widget.journey.name == null) {
+    if (_journey.name == null) {
       return [];
     }
 
@@ -179,7 +203,7 @@ class _TripOverviewState extends State<TripOverview> {
         onTap: _tripDetails,
         child: Row(
           children: [
-            Expanded(child: H6.light(widget.journey.name)),
+            Expanded(child: H6.light(_journey.name)),
             Icon(
               Icons.chevron_right,
               color: Colors.white,
@@ -193,26 +217,54 @@ class _TripOverviewState extends State<TripOverview> {
   }
 
   List<Widget> _journeyCountry() {
-    if (widget.journey.countryDescription == null) {
+    if (_journey.countryDescription == null) {
       return [];
     }
 
     return [
       Subtitle2.light(
-        widget.journey.countryDescription,
+        _journey.countryDescription,
         softWrap: true,
       ),
       Padding(padding: const EdgeInsets.only(bottom: 16.0)),
     ];
   }
 
+  _loadJourney() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final journeyService = locator<JourneyService>();
+      final journey = await journeyService.getJourney(widget.id);
+
+      final tripBounds = journey.locations.isEmpty
+          ? null
+          : boundsFromLatLngList(
+              journey.locations.map((location) => location.latLng).toList(),
+            );
+
+      setState(() {
+        _isLoading = false;
+        _journey = journey;
+        _tripBounds = tripBounds;
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
-    for (var i = 0; i < widget.journey.locations.length; i++) {
+    for (var i = 0; i < _journey.locations.length; i++) {
       markers.add(Marker(
         markerId: MarkerId("Marker-$i"),
-        position: widget.journey.locations[i].latLng,
+        position: _journey.locations[i].latLng,
         icon: BitmapDescriptor.defaultMarker,
         consumeTapEvents: true,
       ));
@@ -224,9 +276,9 @@ class _TripOverviewState extends State<TripOverview> {
   Set<Polyline> _lines() {
     Set<Polyline> polylines = Set();
 
-    for (var i = 0; i < widget.journey.locations.length - 1; i++) {
-      final point1 = widget.journey.locations[i];
-      final point2 = widget.journey.locations[i + 1];
+    for (var i = 0; i < _journey.locations.length - 1; i++) {
+      final point1 = _journey.locations[i];
+      final point2 = _journey.locations[i + 1];
 
       if (point1.dayIndex != point2.dayIndex) {
         continue;
@@ -250,7 +302,7 @@ class _TripOverviewState extends State<TripOverview> {
 
     navigationService.push(MaterialPageRoute(
       builder: (context) => TripDetails(
-        journey: widget.journey,
+        journey: _journey,
         bounds: _tripBounds,
       ),
     ));

@@ -4,6 +4,7 @@ import 'package:mywonderbird/components/bottom-nav-bar.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
@@ -136,14 +137,28 @@ class _HomePageState extends State<HomePage> {
       IconButton(
         key: UniqueKey(),
         icon: Icon(Icons.filter_list),
-        onPressed: _filterFromFeed,
+        // onPressed: _filterFromFeed, TODO: add this back once it's implemented properly
+        onPressed: _showComingSoonFilter,
       ),
       IconButton(
         key: UniqueKey(),
         icon: Icon(Icons.search),
-        onPressed: _onSearch,
+        // onPressed: _onSearch, TODO: add this back once it's implemented properly
+        onPressed: _showComingSoonSearch,
       ),
     ];
+  }
+
+  _showComingSoonFilter() {
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: FEED_FILTER);
+    locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
+  }
+
+  _showComingSoonSearch() {
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: FEED_SEARCH);
+    locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 
   _onRefresh() {
