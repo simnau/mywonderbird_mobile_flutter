@@ -78,6 +78,10 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: BackButtonIcon(),
+          onPressed: _onBack,
+        ),
         backgroundColor: Colors.transparent,
         actions: [
           FlatButton(
@@ -214,6 +218,43 @@ class _SuggestedTripState extends State<SuggestedTrip>
         );
       },
     );
+  }
+
+  _onBack() async {
+    final navigationService = locator<NavigationService>();
+    final theme = Theme.of(context);
+
+    final onYes = () => navigationService.pop(true);
+    final onNo = () => navigationService.pop(false);
+
+    final shouldNavigate = await showDialog(
+      context: context,
+      child: AlertDialog(
+        content: Text(
+          'You will lose your trip if you go back. Do you want to continue?',
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: onYes,
+            child: Text(
+              'YES',
+              style: TextStyle(
+                color: theme.errorColor,
+              ),
+            ),
+            splashColor: theme.errorColor.withOpacity(0.2),
+          ),
+          FlatButton(
+            onPressed: onNo,
+            child: Text('NO'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldNavigate != null && shouldNavigate) {
+      navigationService.pop();
+    }
   }
 
   _onRemoveLocation(int index) {

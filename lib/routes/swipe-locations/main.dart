@@ -309,7 +309,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     final locationCount =
         (questionnaireProvider.qValues['locationCount']) as int;
 
-    if (_selectedLocations.length == duration * locationCount ||
+    if (_selectedLocations.length >= duration * locationCount ||
         _currentLocationIndex >= widget.initialLocations.length) {
       _next();
     }
@@ -343,10 +343,17 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _isLoading = true;
     });
 
+    final questionnaireProvider = locator<QuestionnaireProvider>();
     final navigationService = locator<NavigationService>();
     final suggestionService = locator<SuggestionService>();
-    final locationIds =
-        _selectedLocations.map((location) => location.id).toList();
+
+    final duration = (questionnaireProvider.qValues['duration']) as int;
+    final locationCount =
+        (questionnaireProvider.qValues['locationCount']) as int;
+    final locationIds = _selectedLocations
+        .sublist(0, duration * locationCount)
+        .map((location) => location.id)
+        .toList();
     final suggestedJourney =
         await suggestionService.suggestJourneyFromLocations(locationIds);
 
