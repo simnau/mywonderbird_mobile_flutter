@@ -3,13 +3,18 @@ import 'package:mywonderbird/components/feed-item.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/feed-location.dart';
+import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
+import 'package:mywonderbird/routes/other-user/main.dart';
+import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
 import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/types/other-user-arguments.dart';
+import 'package:provider/provider.dart';
 
 Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
   final feedService = locator<FeedService>();
@@ -86,6 +91,8 @@ class _FeedState extends State<Feed> {
   }
 
   Widget _feedItem(FeedLocation item) {
+    final user = Provider.of<User>(context);
+
     return FeedItem(
       key: Key(item.id),
       imageUrl: item.imageUrl,
@@ -99,6 +106,8 @@ class _FeedState extends State<Feed> {
           item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
       onTap: () => _onFeedItemTap(item),
       onViewJourney: () => _onViewJourney(item),
+      onViewUser: () => _onViewUser(item, context, user),
+      userAvatarUrl: item.userAvatarUrl,
     );
   }
 
@@ -249,6 +258,21 @@ class _FeedState extends State<Feed> {
 
   _controllerChange() {
     _refresh();
+  }
+}
+
+_onViewUser(FeedLocation item, BuildContext context, User user) async {
+  final navigationService = locator<NavigationService>();
+
+  if (item.userId == user.id) {
+    navigationService.pushNamed(Profile.PATH);
+  } else {
+    navigationService.pushNamed(
+      OtherUser.PATH,
+      arguments: OtherUserArguments(
+        id: item.userId,
+      ),
+    );
   }
 }
 

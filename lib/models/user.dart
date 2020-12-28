@@ -9,8 +9,8 @@ class User {
 
   User({
     @required this.id,
-    @required this.role,
-    @required this.provider,
+    this.role,
+    this.provider,
     this.profile,
   });
 

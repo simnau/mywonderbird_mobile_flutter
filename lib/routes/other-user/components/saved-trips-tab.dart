@@ -3,17 +3,26 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/saved-trips-list.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
-import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:provider/provider.dart';
+import 'package:mywonderbird/services/saved-trip.dart';
 
 class SavedTripsTab extends StatefulWidget {
+  final String userId;
+
+  const SavedTripsTab({
+    Key key,
+    this.userId,
+  }) : super(key: key);
+
   @override
   _SavedTripsTabState createState() => _SavedTripsTabState();
 }
 
 class _SavedTripsTabState extends State<SavedTripsTab> {
+  bool _isLoading = true;
+  List<Journey> _savedTrips = [];
+
   @override
   void initState() {
     super.initState();
@@ -28,11 +37,7 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
   }
 
   Widget _buildList() {
-    final savedTripsProvider = Provider.of<SavedTripsProvider>(
-      context,
-    );
-
-    if (savedTripsProvider.loading) {
+    if (_isLoading) {
       return Center(
         child: SizedBox(
           height: 24,
@@ -42,17 +47,15 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
       );
     }
 
-    if (savedTripsProvider.savedTrips.isEmpty) {
+    if (_savedTrips.isEmpty) {
       return EmptyListPlaceholder(
-        title: 'You have no saved trips',
-        subtitle: 'Once you save a trip it will appear here',
+        title: 'This user has no saved trips',
       );
     }
 
     return SavedTripsList(
-      savedTrips: savedTripsProvider.savedTrips,
+      savedTrips: _savedTrips,
       onView: _viewSavedTrip,
-      onDelete: _onDeleteSavedTrip,
     );
   }
 
@@ -66,28 +69,25 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
         ),
       ),
     );
-
-    _fetchSavedTrips();
   }
 
   _fetchSavedTrips() async {
-    final savedTripsProvider = locator<SavedTripsProvider>();
-    await savedTripsProvider.loadUserSavedTrips();
-  }
-
-  _onDeleteSavedTrip(Journey trip, BuildContext context) async {
     try {
-      final savedTripsProvider = locator<SavedTripsProvider>();
-      await savedTripsProvider.deleteTrip(trip);
-    } catch (e) {
-      final snackBar = SnackBar(
-        content: Text(
-          e.message,
-          style: TextStyle(color: Colors.red),
-        ),
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
-      Scaffold.of(context).showSnackBar(snackBar);
+      final savedTripService = locator<SavedTripService>();
+      final savedTrips = await savedTripService.fetchByUserId(widget.userId);
+
+      setState(() {
+        _isLoading = false;
+        _savedTrips = savedTrips;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

@@ -10,6 +10,7 @@ const CREATE_JOURNEY_PATH = '/api/journeys';
 const MY_JOURNEYS_PATH = '/api/journeys/v2/my';
 const LAST_JOURNEY_PATH = '/api/journeys/last';
 final getJourneyPath = (journeyId) => "/api/journeys/v2/$journeyId";
+final journeysByUserIdPath = (userId) => "/api/journeys/users/$userId";
 
 class JourneyService {
   final API api;
@@ -18,6 +19,17 @@ class JourneyService {
 
   Future<List<Journey>> allForUser() async {
     final response = await api.get(MY_JOURNEYS_PATH);
+    final journeysRaw = response['body']['journeys'];
+
+    final journeys = journeysRaw
+        .map<Journey>((journey) => Journey.fromRequestJson(journey))
+        .toList();
+
+    return journeys;
+  }
+
+  Future<List<Journey>> fetchByUserId(userId) async {
+    final response = await api.get(journeysByUserIdPath(userId));
     final journeysRaw = response['body']['journeys'];
 
     final journeys = journeysRaw

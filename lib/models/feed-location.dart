@@ -7,6 +7,8 @@ class FeedLocation {
   final String title;
   final String country;
   final DateTime updatedAt;
+  final String userId;
+  final String userAvatarUrl;
   int likeCount;
   bool isLiked;
   bool isBookmarked;
@@ -21,6 +23,8 @@ class FeedLocation {
     @required this.likeCount,
     @required this.isLiked,
     @required this.isBookmarked,
+    @required this.userId,
+    @required this.userAvatarUrl,
   });
 
   factory FeedLocation.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,8 @@ class FeedLocation {
       likeCount: json['likeCount'],
       isLiked: json['isLiked'],
       isBookmarked: json['isBookmarked'],
+      userId: json['userId'],
+      userAvatarUrl: json['userAvatarUrl'],
     );
   }
 }

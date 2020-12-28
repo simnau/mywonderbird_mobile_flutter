@@ -9,6 +9,7 @@ import 'package:mywonderbird/services/api.dart';
 const ROOT_PATH = '/api/saved-trips';
 const SAVED_TRIPS_PATH = ROOT_PATH;
 const SAVE_TRIP_PATH = ROOT_PATH;
+final savedTripsByUserIdPath = (userId) => "$ROOT_PATH/users/$userId";
 final savedTripByIdPath = (id) => "$ROOT_PATH/$id";
 final deleteSavedTripPath = (id) => "$ROOT_PATH/$id";
 final startTripPath = (id) => "$ROOT_PATH/$id/started";
@@ -34,10 +35,25 @@ class SavedTripService {
     }
 
     final tripsRaw = response['body']['trips'];
-    final journeys =
+    final trips =
         tripsRaw.map<Journey>((trip) => Journey.fromRequestJson(trip)).toList();
 
-    return journeys;
+    return trips;
+  }
+
+  Future<List<Journey>> fetchByUserId(userId) async {
+    final response = await api.get(savedTripsByUserIdPath(userId));
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error fetching trips');
+    }
+
+    final tripsRaw = response['body']['trips'];
+    final trips =
+        tripsRaw.map<Journey>((trip) => Journey.fromRequestJson(trip)).toList();
+
+    return trips;
   }
 
   Future<FullJourney> fetch(String id) async {
@@ -49,9 +65,9 @@ class SavedTripService {
     }
 
     final tripRaw = response['body']['trip'];
-    final journey = FullJourney.fromJson(tripRaw);
+    final trip = FullJourney.fromJson(tripRaw);
 
-    return journey;
+    return trip;
   }
 
   Future<Journey> saveTrip(SavedTrip trip, Map<String, String> qValues) async {
@@ -66,9 +82,9 @@ class SavedTripService {
     }
 
     final tripRaw = response['body']['trip'];
-    final journey = FullJourney.fromJson(tripRaw);
+    final savedTrip = FullJourney.fromJson(tripRaw);
 
-    return journey;
+    return savedTrip;
   }
 
   deleteTrip(String id) async {

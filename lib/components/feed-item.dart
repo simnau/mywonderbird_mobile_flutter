@@ -16,7 +16,9 @@ class FeedItem extends StatefulWidget {
   final void Function() onBookmark;
   final void Function() onTap;
   final void Function() onViewJourney;
+  final void Function() onViewUser;
   final String imageUrl;
+  final String userAvatarUrl;
 
   const FeedItem({
     Key key,
@@ -29,7 +31,9 @@ class FeedItem extends StatefulWidget {
     @required this.onBookmark,
     @required this.onTap,
     @required this.onViewJourney,
+    @required this.onViewUser,
     @required this.imageUrl,
+    @required this.userAvatarUrl,
   }) : super(key: key);
 
   @override
@@ -87,10 +91,10 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                   left: Radius.circular(16.0),
                 ),
                 child: Container(
-                  width: 200,
+                  width: 300,
                   height: 90,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
+                    horizontal: 8.0,
                     vertical: 8.0,
                   ),
                   child: _details(context),
@@ -106,56 +110,110 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
   }
 
   Widget _details(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Subtitle2(
-              widget.title ?? '',
-              overflow: TextOverflow.ellipsis,
-            ),
-            BodyText2(
-              widget.country ?? '',
-            ),
-          ],
-        ),
-        Row(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                SmallIconButton(
-                  icon: Icon(
-                    widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 24.0,
-                  ),
-                  onTap: _onLike,
-                  padding: const EdgeInsets.all(6.0),
-                  borderRadius: BorderRadius.circular(24.0),
+    return Row(
+      children: [
+        Align(
+          alignment: Alignment.center,
+          child: Container(
+            width: 60,
+            height: 60,
+            margin: const EdgeInsets.only(left: 8.0, right: 16.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(60),
+              border: Border.all(width: 2, color: Colors.white),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(0, 4),
+                  blurRadius: 4,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                ),
-                BodyText1(widget.likeCount.toString()),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: widget.userAvatarUrl != null
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage(widget.userAvatarUrl),
+                        )
+                      : Icon(
+                          Icons.person,
+                          size: 40,
+                          color: Colors.black38,
+                        ),
+                ),
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(60),
+                      onTap: widget.onViewUser,
+                    ),
+                  ),
+                )
+              ],
             ),
-            SmallIconButton(
-              icon: Icon(
-                widget.isBookmarked ? Icons.turned_in : Icons.turned_in_not,
-                color: Colors.black87,
-                size: 24.0,
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Subtitle2(
+                    widget.title ?? '',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  BodyText2(
+                    widget.country ?? '',
+                  ),
+                ],
               ),
-              onTap: widget.onBookmark,
-              padding: const EdgeInsets.all(6.0),
-              borderRadius: BorderRadius.circular(24.0),
-            ),
-          ],
+              Row(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      SmallIconButton(
+                        icon: Icon(
+                          widget.isLiked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: Colors.black87,
+                          size: 24.0,
+                        ),
+                        onTap: _onLike,
+                        padding: const EdgeInsets.all(6.0),
+                        borderRadius: BorderRadius.circular(24.0),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                      ),
+                      BodyText1(widget.likeCount.toString()),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                  ),
+                  SmallIconButton(
+                    icon: Icon(
+                      widget.isBookmarked
+                          ? Icons.turned_in
+                          : Icons.turned_in_not,
+                      color: Colors.black87,
+                      size: 24.0,
+                    ),
+                    onTap: widget.onBookmark,
+                    padding: const EdgeInsets.all(6.0),
+                    borderRadius: BorderRadius.circular(24.0),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );

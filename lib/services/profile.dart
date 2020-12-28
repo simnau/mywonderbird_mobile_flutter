@@ -2,11 +2,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/user-profile.dart';
+import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/token.dart';
 
 const PROFILE_PATH = '/api/profile';
 const PROFILE_V2_PATH = "$PROFILE_PATH/v2";
+final profileByIdPath = (id) => "$PROFILE_PATH/$id";
 const UPDATE_COMMUNICATIONS_PATH = "$PROFILE_PATH/communication";
 const UPDATE_AVATAR_PATH = "$PROFILE_PATH/avatar";
 
@@ -25,6 +27,18 @@ class ProfileService {
     );
     final profile = UserProfile.fromJson(response['body']);
     return profile;
+  }
+
+  Future<User> getUserById(String id) async {
+    final response = await api.get(
+      profileByIdPath(id),
+    );
+    final profile = UserProfile.fromJson(response['body']);
+
+    return User(
+      id: id,
+      profile: profile,
+    );
   }
 
   Future<UserProfile> updateUserProfile(

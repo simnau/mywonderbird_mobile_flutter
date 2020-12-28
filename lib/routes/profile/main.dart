@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/profile-app-bar.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
-import 'package:mywonderbird/routes/profile/components/profile-app-bar.dart';
 import 'package:mywonderbird/routes/profile/components/saved-trips-tab.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
+import 'package:provider/provider.dart';
 
 import 'components/trips-tab.dart';
 
@@ -43,6 +45,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final user = Provider.of<User>(context);
 
     return Scaffold(
       backgroundColor: Color(0xFFF2F3F7),
@@ -55,6 +58,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                 collapsedHeight: kToolbarHeight + 72,
                 expandedHeight: 250,
                 onSettings: _onSettings,
+                user: user,
                 tabBar: TabBar(
                   key: _tabBarKey,
                   controller: _tabController,

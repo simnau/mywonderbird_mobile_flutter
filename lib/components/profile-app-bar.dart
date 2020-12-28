@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/typography/body-text2.dart';
-import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/user.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-import 'package:provider/provider.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+
+import 'typography/subtitle1.dart';
 
 const double AVATAR_RADIUS = 50;
 const double PROGRESS_WIDTH = 8;
@@ -13,10 +12,12 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
   final double collapsedHeight;
   final Function() onSettings;
   final Widget tabBar;
+  final User user;
 
   const ProfileAppBar({
     @required this.expandedHeight,
     @required this.collapsedHeight,
+    @required this.user,
     this.onSettings,
     this.tabBar,
   });
@@ -27,8 +28,6 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    final user = Provider.of<User>(context);
-
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -56,19 +55,21 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
                         child: BackButton(),
                       ),
                     ),
-                    trailing: Align(
-                      alignment: Alignment.topRight,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints.tightFor(
-                          width: kToolbarHeight,
-                          height: kToolbarHeight,
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.settings),
-                          onPressed: onSettings,
-                        ),
-                      ),
-                    ),
+                    trailing: onSettings == null
+                        ? null
+                        : Align(
+                            alignment: Alignment.topRight,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints.tightFor(
+                                width: kToolbarHeight,
+                                height: kToolbarHeight,
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.settings),
+                                onPressed: onSettings,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -88,7 +89,7 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
                 children: [
                   _avatar(user),
                   Subtitle1(user?.username ?? 'Anonymous'),
-                  BodyText2(user?.level ?? 'Beginner'),
+                  // BodyText2(user?.level ?? 'Beginner'), TODO Implement user levels later
                 ],
               ),
             ),
@@ -109,7 +110,7 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
     return true;
   }
 
-  Widget _avatar(user) {
+  Widget _avatar(User user) {
     return Material(
       shape: CircleBorder(),
       elevation: 8,
@@ -118,7 +119,7 @@ class ProfileAppBar extends SliverPersistentHeaderDelegate {
         backgroundColor: Colors.transparent,
         radius: AVATAR_RADIUS * 2, // This is actually the diameter...
         lineWidth: PROGRESS_WIDTH,
-        percent: 0.4,
+        percent: 0, // TODO: Change this once we have progress/levels
         center: CircleAvatar(
           backgroundImage: user?.profile?.avatarUrl != null
               ? NetworkImage(user.profile.avatarUrl)

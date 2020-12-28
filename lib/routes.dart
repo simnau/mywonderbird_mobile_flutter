@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/notifications/main.dart';
+import 'package:mywonderbird/routes/other-user/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/terms/main.dart';
+import 'package:mywonderbird/types/other-user-arguments.dart';
 import 'package:mywonderbird/types/terms-arguments.dart';
 
 import 'routes/authentication/main.dart';
@@ -79,7 +81,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case FeedbackForm.PATH:
       return MaterialPageRoute(
-          builder: (_) => FeedbackForm(), settings: settings);
+        builder: (_) => FeedbackForm(),
+        settings: settings,
+      );
+    case OtherUser.PATH:
+      OtherUserArguments arguments = settings.arguments;
+
+      return MaterialPageRoute(
+        builder: (_) => OtherUser(
+          id: arguments.id,
+        ),
+        settings: settings,
+      );
     default:
       return MaterialPageRoute(
         builder: (_) => Scaffold(

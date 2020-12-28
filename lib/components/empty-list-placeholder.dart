@@ -28,11 +28,12 @@ class EmptyListPlaceholder extends StatelessWidget {
               softWrap: true,
             ),
             Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-            Subtitle2(
-              subtitle,
-              textAlign: TextAlign.center,
-              softWrap: true,
-            ),
+            if (subtitle != null)
+              Subtitle2(
+                subtitle,
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
           ],
         ),
       ),
