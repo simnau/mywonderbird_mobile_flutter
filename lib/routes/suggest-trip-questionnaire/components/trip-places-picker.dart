@@ -19,7 +19,7 @@ class TypesOfPlacePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -33,16 +33,20 @@ class TypesOfPlacePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _types(context),
+        Expanded(child: _types(context)),
       ],
     );
   }
 
   Widget _types(BuildContext context) {
-    return Wrap(
-      children: _typeFilters(context),
-      runSpacing: 16.0,
-      alignment: WrapAlignment.spaceAround,
+    return SingleChildScrollView(
+      clipBehavior: Clip.antiAlias,
+      child: Wrap(
+        clipBehavior: Clip.antiAlias,
+        children: _typeFilters(context),
+        runSpacing: 16.0,
+        alignment: WrapAlignment.spaceAround,
+      ),
     );
   }
 
@@ -67,23 +71,32 @@ class TypesOfPlacePicker extends StatelessWidget {
         children: [
           SizedBox(
             height: 96,
-            child: Ink(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(tags.imageUrl),
-                  fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(tags.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: selected
+                        ? Border.all(
+                            color: theme.primaryColor,
+                            width: 4.0,
+                          )
+                        : null,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(8.0),
-                border: selected
-                    ? Border.all(
-                        color: theme.primaryColor,
-                        width: 4.0,
-                      )
-                    : null,
-              ),
-              child: InkWell(
-                onTap: () => _toggleFilter(tags.code),
-              ),
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _toggleFilter(tags.code),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           BodyText1(
