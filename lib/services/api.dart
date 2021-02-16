@@ -12,7 +12,7 @@ import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/token.dart';
 
-final apiBase = DotEnv().env['API_BASE'];
+final apiBase = 'https://api.mywonderbird.com';
 
 class API {
   TokenService tokenService;

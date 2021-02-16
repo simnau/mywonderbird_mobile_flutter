@@ -35,7 +35,7 @@ Future main({String env = 'dev'}) async {
   } on UnauthorizedException {
     initialRoute = SplashScreen.PATH;
   }
-
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   runZonedGuarded<Future<void>>(() async {
