@@ -97,12 +97,14 @@ class _ForgotDetailsState extends State<ForgotDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: _onResetPassword,
           child: BodyText1.light('REMIND PASSWORD'),
-          color: theme.accentColor,
+          style: ElevatedButton.styleFrom(
+            primary: theme.accentColor,
+          ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: _onHasCode,
           child: BodyText1('I HAVE A CODE'),
         ),

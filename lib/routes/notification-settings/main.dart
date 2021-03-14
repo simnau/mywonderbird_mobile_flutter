@@ -31,13 +31,12 @@ class _NotificationSettingsState extends State<NotificationSettings> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: _onSave,
             child: Text(
               'SAVE',
               style: TextStyle(color: theme.primaryColor),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),

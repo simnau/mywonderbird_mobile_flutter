@@ -84,7 +84,7 @@ class TripSlides extends StatelessWidget {
           children: [
             ..._journeyName(),
             ..._journeyCountry(),
-            RaisedButton(
+            ElevatedButton(
               child: BodyText1.light('Start trip'),
               onPressed: onStart,
             )

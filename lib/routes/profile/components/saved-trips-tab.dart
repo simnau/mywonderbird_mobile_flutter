@@ -87,7 +87,7 @@ class _SavedTripsTabState extends State<SavedTripsTab> {
         ),
       );
 
-      Scaffold.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

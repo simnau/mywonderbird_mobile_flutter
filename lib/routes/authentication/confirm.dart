@@ -108,12 +108,14 @@ class _ConfirmState extends State<Confirm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: _onConfirm,
           child: BodyText1.light('CONFIRM ACCOUNT'),
-          color: theme.accentColor,
+          style: ElevatedButton.styleFrom(
+            primary: theme.accentColor,
+          ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: _sendCode,
           child: BodyText1('RESEND CODE'),
         ),

@@ -10,12 +10,15 @@ import 'package:mywonderbird/providers/oauth.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/providers/swipe-filters.dart';
+import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
 import 'package:mywonderbird/util/sentry.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry/sentry.dart' as sentry;
 
 import 'locator.dart';
 import 'app.dart';
@@ -36,6 +39,16 @@ Future main({String env = 'dev'}) async {
   await Firebase.initializeApp();
 
   runZonedGuarded<Future<void>>(() async {
+    final sentryDSN = DotEnv().env['SENTRY_DSN'];
+
+    if (env == 'prod') {
+      await sentry.Sentry.init(
+        (options) {
+          options.dsn = sentryDSN;
+        },
+      );
+    }
+
     runApp(_app(initialRoute));
   }, (Object error, StackTrace stackTrace) {
     reportError(error, stackTrace);
@@ -70,6 +83,12 @@ Widget _app(initialRoute) {
       ),
       ChangeNotifierProvider<QuestionnaireProvider>(
         create: (_) => questionnaireProvider,
+      ),
+      ChangeNotifierProvider<SwipeFiltersProvider>(
+        create: (_) => locator<SwipeFiltersProvider>(),
+      ),
+      ChangeNotifierProvider<SwipeProvider>(
+        create: (_) => locator<SwipeProvider>(),
       ),
     ],
     child: App(initialRoute: initialRoute),

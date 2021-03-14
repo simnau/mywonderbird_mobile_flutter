@@ -62,22 +62,23 @@ class _ShareScreenState extends State<ShareScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         actions: [
-          Builder(builder: (context) {
-            return FlatButton(
-              onPressed: _isSharing ? null : () => _sharePicture(context),
-              child: _isSharing
-                  ? SizedBox(
-                      height: 16,
-                      width: 16,
-                      child: CircularProgressIndicator(),
-                    )
-                  : Text(
-                      'SHARE',
-                      style: TextStyle(color: theme.primaryColor),
-                    ),
-              shape: ContinuousRectangleBorder(),
-            );
-          }),
+          Builder(
+            builder: (context) {
+              return TextButton(
+                onPressed: _isSharing ? null : () => _sharePicture(context),
+                child: _isSharing
+                    ? SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(),
+                      )
+                    : Text(
+                        'SHARE',
+                        style: TextStyle(color: theme.primaryColor),
+                      ),
+              );
+            },
+          ),
         ],
       ),
       body: _content(),
@@ -153,7 +154,7 @@ class _ShareScreenState extends State<ShareScreen> {
         ),
       );
 
-      Scaffold.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } finally {
       setState(() {
         _isSharing = false;
@@ -181,7 +182,7 @@ class _ShareScreenState extends State<ShareScreen> {
   Future<Journey> _createTrip() async {
     final title = await showDialog(
       context: context,
-      child: Dialog(
+      builder: (context) => Dialog(
         child: InputTitleDialog(
           title: 'Create a trip',
           hint: 'Trip title',

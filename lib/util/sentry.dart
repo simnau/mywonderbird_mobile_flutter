@@ -1,4 +1,3 @@
-import 'package:mywonderbird/locator.dart';
 import 'package:sentry/sentry.dart';
 
 bool get isInDebugMode {
@@ -20,13 +19,6 @@ Future<void> reportError(dynamic error, dynamic stackTrace) async {
     // Print the full stacktrace in debug mode.
     print(stackTrace);
   } else {
-    final sentryClient = locator<SentryClient>();
-    // Send the Exception and Stacktrace to Sentry in Production mode.
-    if (sentryClient != null) {
-      sentryClient.captureException(
-        exception: error,
-        stackTrace: stackTrace,
-      );
-    }
+    await Sentry.captureException(error, stackTrace: stackTrace);
   }
 }

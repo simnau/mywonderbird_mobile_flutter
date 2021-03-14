@@ -32,7 +32,7 @@ class ComingSoonScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: RaisedButton(
+            child: ElevatedButton(
               onPressed: _onBack,
               child: BodyText1.light('Back'),
             ),

@@ -86,7 +86,7 @@ class _SelectPictureState extends State<SelectPicture> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: _selectedPhoto != null ? _onNext : null,
             child: Text(
               'NEXT',
@@ -96,7 +96,6 @@ class _SelectPictureState extends State<SelectPicture> {
                     : theme.disabledColor,
               ),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),

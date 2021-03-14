@@ -48,14 +48,14 @@ class _InputTitleDialogState extends State<InputTitleDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              FlatButton(
+              TextButton(
                 onPressed: _onCancel,
                 child: Text(
                   widget.cancelLabel,
                   style: TextStyle(color: Colors.redAccent),
                 ),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: _onCreate,
                 child: BodyText1.light(widget.saveLabel),
               ),

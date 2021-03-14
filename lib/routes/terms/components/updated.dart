@@ -147,10 +147,12 @@ class UpdatedTerms extends StatelessWidget {
     final theme = Theme.of(context);
 
     return [
-      RaisedButton(
+      ElevatedButton(
         onPressed: termsAccepted ? onContinue : null,
         child: BodyText1.light('CONTINUE'),
-        color: theme.accentColor,
+        style: ElevatedButton.styleFrom(
+          primary: theme.accentColor,
+        ),
       ),
     ];
   }

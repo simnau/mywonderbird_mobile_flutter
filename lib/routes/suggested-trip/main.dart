@@ -84,7 +84,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
         ),
         backgroundColor: Colors.transparent,
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: _onSaveTrip,
             child: Text(
               'SAVE TRIP',
@@ -92,7 +92,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
                 color: theme.primaryColor,
               ),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),
@@ -229,12 +228,12 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     final shouldNavigate = await showDialog(
       context: context,
-      child: AlertDialog(
+      builder: (context) => AlertDialog(
         content: Text(
           'You will lose your trip if you go back. Do you want to continue?',
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: onYes,
             child: Text(
               'YES',
@@ -242,9 +241,15 @@ class _SuggestedTripState extends State<SuggestedTrip>
                 color: theme.errorColor,
               ),
             ),
-            splashColor: theme.errorColor.withOpacity(0.2),
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  return theme.errorColor.withOpacity(0.2);
+                },
+              ),
+            ),
           ),
-          FlatButton(
+          TextButton(
             onPressed: onNo,
             child: Text('NO'),
           ),
@@ -266,7 +271,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
   _onSaveTrip() async {
     final title = await showDialog(
       context: context,
-      child: Dialog(
+      builder: (context) => Dialog(
         child: InputTitleDialog(
           title: 'Give a name to your trip',
           hint: 'Trip name',

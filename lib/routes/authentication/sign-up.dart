@@ -107,10 +107,12 @@ class _SignUpState extends State<SignUp> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: _onSignUp,
           child: BodyText1.light('SIGN UP'),
-          color: theme.accentColor,
+          style: ElevatedButton.styleFrom(
+            primary: theme.accentColor,
+          ),
         ),
       ],
     );

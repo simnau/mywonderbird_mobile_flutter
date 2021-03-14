@@ -74,13 +74,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         backgroundColor: Colors.transparent,
         title: Subtitle1('Account details'),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: _onSave,
             child: Text(
               'SAVE',
               style: TextStyle(color: theme.primaryColor),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),
@@ -104,10 +103,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                       ),
-                      RaisedButton(
-                        color: Colors.black54,
+                      ElevatedButton(
                         child: BodyText1.light('Change avatar'),
                         onPressed: _onChangeAvatar,
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.black54,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),

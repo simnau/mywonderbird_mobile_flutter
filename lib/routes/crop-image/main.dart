@@ -22,13 +22,12 @@ class CropImage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () => _onSelect(context),
             child: Text(
               'SELECT',
               style: TextStyle(color: theme.primaryColor),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),

@@ -132,12 +132,14 @@ class _SignInState extends State<SignIn> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: _onSignIn,
           child: BodyText1.light('SIGN IN'),
-          color: theme.accentColor,
+          style: ElevatedButton.styleFrom(
+            primary: theme.accentColor,
+          ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: _onForgotDetails,
           child: BodyText1('FORGOT DETAILS?'),
         ),

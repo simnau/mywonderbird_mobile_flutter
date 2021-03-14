@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/search-input.dart';
-import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
@@ -188,11 +187,23 @@ class _SelectLocationState extends State<SelectLocation> {
               bottom: 32,
               left: 32,
               right: 32,
-              child: RaisedButton(
-                color: theme.primaryColor,
-                child: BodyText1.light('Select location'),
+              child: ElevatedButton(
                 onPressed: _selectedLocation != null ? _selectPlace : null,
-                disabledColor: Colors.grey,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.disabled))
+                      return Colors.grey;
+                    return theme.primaryColor; // Defer to the widget's default.
+                  }),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.disabled))
+                      return Colors.grey;
+                    return null; // Defer to the widget's default.
+                  }),
+                ),
+                child: null,
               ),
             )
           ],

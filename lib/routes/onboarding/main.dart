@@ -101,7 +101,7 @@ class _OnboardingState extends State<Onboarding> {
               textAlign: TextAlign.center,
             ),
             Padding(padding: const EdgeInsets.only(bottom: 16.0)),
-            RaisedButton(
+            ElevatedButton(
               child: BodyText1.light(isLastPageSelected ? "Let's go" : 'Next'),
               onPressed: isLastPageSelected ? _onComplete : _onNext,
             ),

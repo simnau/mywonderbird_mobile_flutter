@@ -6,7 +6,7 @@ import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
-import 'package:mywonderbird/routes/suggest-trip/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -84,7 +84,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   _onSuggestTrip() {
     locator<NavigationService>().push(
-      MaterialPageRoute(builder: (context) => SuggestTrip()),
+      MaterialPageRoute(builder: (context) => SwipeLocations()),
     );
 
     final analytics = locator<FirebaseAnalytics>();

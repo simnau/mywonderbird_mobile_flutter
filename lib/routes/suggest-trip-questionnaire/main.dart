@@ -34,7 +34,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
     'locationCount': 3,
     'travelerCount': 0,
     'travelingWithChildren': null,
-    'types': List<String>(),
+    'types': [],
   };
   int _currentPage = 0;
   bool _isLoading = false;
@@ -53,13 +53,12 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
           onPressed: isFirstPageSelected ? _onBack : _onPrevious,
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: _onCancel,
             child: Text(
               'CANCEL',
               style: TextStyle(color: Colors.red),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -138,7 +137,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      child: RaisedButton(
+      child: ElevatedButton(
         onPressed: onPressed,
         child: _isLoading
             ? SizedBox(
@@ -228,7 +227,7 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
 
       navigationService.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => SwipeLocations(initialLocations: locations),
+          builder: (context) => SwipeLocations(),
         ),
       );
     } catch (e) {

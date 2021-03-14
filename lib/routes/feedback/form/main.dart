@@ -84,13 +84,12 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 onPressed: _onNavigateBack,
               ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: _isLastStep ? _onSubmit : _onNavigateForward,
             child: Text(
               _isLastStep ? 'SUBMIT' : 'NEXT',
               style: TextStyle(color: theme.primaryColor),
             ),
-            shape: ContinuousRectangleBorder(),
           ),
         ],
       ),
@@ -133,7 +132,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
               ),
             ),
             _buildStepper(),
-            FlatButton(
+            TextButton(
               child: BodyText1(
                 'Cancel',
                 color: theme.errorColor,
@@ -208,11 +207,11 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
       await showDialog(
         context: context,
-        child: AlertDialog(
+        builder: (context) => AlertDialog(
           title: Text("Feedback"),
           content: Text("Was successfully sent!"),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () {
                 navigationService.pop();
               },

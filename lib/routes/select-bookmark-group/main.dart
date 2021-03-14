@@ -157,7 +157,7 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
   _onOpenCreateBookmarkGroup() async {
     final title = await showDialog(
       context: context,
-      child: Dialog(
+      builder: (context) => Dialog(
         child: InputTitleDialog(
           title: 'Create a bookmark group',
           hint: 'Bookmark group title',

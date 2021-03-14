@@ -123,12 +123,14 @@ class _ResetPasswordState extends State<ResetPassword> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           onPressed: _onResetPassword,
           child: BodyText1.light('RESET PASSWORD'),
-          color: theme.accentColor,
+          style: ElevatedButton.styleFrom(
+            primary: theme.accentColor,
+          ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: _onResendCode,
           child: BodyText1('RESEND CODE'),
         ),

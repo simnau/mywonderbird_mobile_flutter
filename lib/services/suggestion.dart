@@ -4,6 +4,7 @@ import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/services/api.dart';
 
 const SUGGESTED_LOCATIONS_PATH = '/api/suggestions/locations';
+const SUGGEST_LOCATIONS_PAGINATED_PATH = '/api/suggestions/locations/paginated';
 const SUGGEST_JOURNEY_FROM_LOCATIONS_PATH = '/api/suggestions/locations';
 final suggestJourneyPath =
     (bookmarkGroupId) => "/api/suggestions/$bookmarkGroupId";
@@ -42,6 +43,28 @@ class SuggestionService {
 
     final response =
         await api.get(SUGGESTED_LOCATIONS_PATH, params: questionnaireValues);
+    final suggestionsRaw = response['body']['locations'];
+    final suggestions = suggestionsRaw
+        .map<SuggestedLocation>(
+            (suggestion) => SuggestedLocation.fromJson(suggestion))
+        .toList();
+
+    return suggestions;
+  }
+
+  Future<List<SuggestedLocation>> suggestLocations({
+    int page,
+    int pageSize,
+    List<String> tags = const [],
+  }) async {
+    Map<String, dynamic> params = {
+      "page": page?.toString(),
+      "pageSize": pageSize?.toString(),
+      "tags": tags,
+    };
+    final response =
+        await api.get(SUGGEST_LOCATIONS_PAGINATED_PATH, params: params);
+
     final suggestionsRaw = response['body']['locations'];
     final suggestions = suggestionsRaw
         .map<SuggestedLocation>(

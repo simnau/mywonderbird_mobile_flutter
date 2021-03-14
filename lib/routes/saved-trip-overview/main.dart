@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
@@ -353,11 +352,12 @@ class _SavedTripState extends State<SavedTripOverview> {
       'saved_location_name': location.name,
     });
 
-    await MapsLauncher.launchCoordinates(
-      location.latLng.latitude,
-      location.latLng.longitude,
-      location.name,
-    );
+    // await MapLauncher.showDirections(mapType: mapType, destination: destination)
+    // // .launchCoordinates(
+    // //   location.latLng.latitude,
+    // //   location.latLng.longitude,
+    // //   location.name,
+    // // );
   }
 
   _goToPage(int page) {

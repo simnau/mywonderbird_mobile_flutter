@@ -9,7 +9,6 @@ import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
-import 'package:mywonderbird/http/authentication.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -26,27 +25,39 @@ class API {
   API({
     @required TokenService tokenService,
     @required NavigationService navigationService,
-    @required AuthenticationInterceptor authenticationInterceptor,
     @required RefreshTokenRetryPolicy retryPolicy,
   }) {
     this.tokenService = tokenService;
     this.navigationService = navigationService;
     this.retryPolicy = retryPolicy;
     client = HttpClientWithInterceptor.build(
-      interceptors: [
-        authenticationInterceptor,
-      ],
+      interceptors: [],
       retryPolicy: retryPolicy,
     );
   }
 
+  Future<Map<String, String>> get authenticationHeaders async {
+    final accessToken = await tokenService.getAccessToken();
+
+    if (accessToken == null) {
+      return {};
+    }
+
+    return {
+      HttpHeaders.authorizationHeader: accessToken,
+    };
+  }
+
   Future<Map<String, dynamic>> get(
     String path, {
-    Map<String, String> params,
-    Map<String, String> headers,
+    Map<String, dynamic> params,
+    Map<String, String> headers = const {},
   }) async {
     final uri = _createUri(apiBase, path, params);
-    final response = await client.get(uri, headers: headers);
+    final response = await client.get(uri, headers: {
+      ...headers,
+      ...await authenticationHeaders,
+    });
 
     return _handleResponse(response);
   }
@@ -54,10 +65,13 @@ class API {
   Future<Map<String, dynamic>> delete(
     String path, {
     Map<String, String> params,
-    Map<String, String> headers,
+    Map<String, String> headers = const {},
   }) async {
     final uri = _createUri(apiBase, path, params);
-    final response = await client.delete(uri, headers: headers);
+    final response = await client.delete(uri, headers: {
+      ...headers,
+      ...await authenticationHeaders,
+    });
 
     return _handleResponse(response);
   }
@@ -66,14 +80,17 @@ class API {
     String path,
     Map<String, dynamic> body, {
     Map<String, dynamic> params,
-    Map<String, String> headers,
+    Map<String, String> headers = const {},
   }) async {
     final uri = _createUri(apiBase, path, params);
     final fullHeaders = _jsonHeaders(headers);
 
     final response = await client.post(
       uri,
-      headers: fullHeaders,
+      headers: {
+        ...fullHeaders,
+        ...await authenticationHeaders,
+      },
       body: json.encode(body),
     );
 
@@ -86,7 +103,7 @@ class API {
     List<MultipartFile> files, {
     Map<String, String> fields,
     Map<String, dynamic> params,
-    Map<String, String> headers,
+    Map<String, String> headers = const {},
     int retryCount = 0,
   }) async {
     final uri = _createUri(apiBase, path, params);
@@ -117,7 +134,10 @@ class API {
         path,
         files,
         params: params,
-        headers: headers,
+        headers: {
+          ...headers,
+          ...await authenticationHeaders,
+        },
         retryCount: retryCount + 1,
       );
     }
@@ -125,15 +145,18 @@ class API {
     return _handleResponse(response);
   }
 
-  Uri _createUri(String base, String path, Map<String, String> params) {
+  Uri _createUri(String base, String path, Map<String, dynamic> params) {
     final parsedUri = Uri.parse(base);
-    if (parsedUri.scheme == 'http') {
-      return Uri.http(parsedUri.authority, path, params);
-    } else if (parsedUri.scheme == 'https') {
-      return Uri.https(parsedUri.authority, path, params);
-    }
 
-    return null;
+    final uri = Uri(
+      scheme: parsedUri.scheme,
+      host: parsedUri.host,
+      port: parsedUri.port,
+      path: path,
+      queryParameters: params,
+    );
+
+    return uri;
   }
 
   Map<String, String> _jsonHeaders(

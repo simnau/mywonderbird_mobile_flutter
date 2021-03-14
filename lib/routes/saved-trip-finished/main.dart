@@ -48,11 +48,11 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
                     'Congratulations! You finished your trip!',
                     textAlign: TextAlign.center,
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     child: BodyText1.light('Share it with friends'),
                     onPressed: _onShareTrip,
                   ),
-                  FlatButton(
+                  TextButton(
                     child: BodyText1('Close'),
                     onPressed: () {
                       locator<NavigationService>().pushReplacement(

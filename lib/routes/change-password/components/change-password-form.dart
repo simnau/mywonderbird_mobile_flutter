@@ -60,6 +60,5 @@ class ChangePasswordForm extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }

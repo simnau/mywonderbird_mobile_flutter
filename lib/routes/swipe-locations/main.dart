@@ -7,28 +7,28 @@ import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/suggested-location-image.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
-import 'package:mywonderbird/routes/location-details/main.dart';
+import 'package:mywonderbird/providers/swipe-filters.dart';
+import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
+import 'package:mywonderbird/routes/swipe-locations/models/filters.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/filters/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/location-list/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:provider/provider.dart';
 import 'package:story_view/story_view.dart';
 
 import 'components/animated-card.dart';
+import 'components/first-card.dart';
+import 'pages/location-details/main.dart';
 
 const LOCATIONS_LOADED = 3;
+const DEFAULT_PAGE_SIZE = 5;
 
 class SwipeLocations extends StatefulWidget {
-  final List<SuggestedLocation> initialLocations;
-
-  const SwipeLocations({
-    Key key,
-    @required this.initialLocations,
-  }) : super(key: key);
-
   @override
   _SwipeLocationsState createState() => _SwipeLocationsState();
 }
@@ -36,32 +36,96 @@ class SwipeLocations extends StatefulWidget {
 class _SwipeLocationsState extends State<SwipeLocations> {
   final _animatedCardController = AnimatedCardController();
   final _storyController = StoryController();
+  List<SuggestedLocation> _allLocations;
   List<SuggestedLocation> _locations;
-  List<SuggestedLocation> _selectedLocations = [];
-  int _currentLocationIndex = 0;
-  bool _isLoading = false;
+  var _currentLocationIndex = 0;
+  var _isLoading = true;
+
+  var _hasMore = true;
+  var _page = 0;
 
   SuggestedLocation get _currentLocation =>
       _locations.isNotEmpty ? _locations[_locations.length - 1] : null;
 
   List<SuggestedLocation> get _locationSublist {
-    return widget.initialLocations
+    return _allLocations
         .sublist(
           _currentLocationIndex,
           min(
             _currentLocationIndex + LOCATIONS_LOADED,
-            widget.initialLocations.length,
+            _allLocations.length,
           ),
         )
         .reversed
         .toList();
   }
 
+  _fetchInitial() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final suggestionService = locator<SuggestionService>();
+    final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+    final locations = await suggestionService.suggestLocations(
+      page: 0,
+      pageSize: DEFAULT_PAGE_SIZE,
+      tags: swipeFiltersProvider.selectedTags,
+    );
+
+    setState(() {
+      _page = 1;
+      _currentLocationIndex = 0;
+      _hasMore = locations.length >= DEFAULT_PAGE_SIZE;
+      _isLoading = false;
+      _allLocations = locations;
+      _locations = _locationSublist;
+    });
+  }
+
+  _fetchMore() async {
+    final suggestionService = locator<SuggestionService>();
+    final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+    final locations = await suggestionService.suggestLocations(
+      page: _page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      tags: swipeFiltersProvider.selectedTags,
+    );
+
+    setState(() {
+      _page++;
+      _hasMore = locations.length >= DEFAULT_PAGE_SIZE;
+      _allLocations = [
+        ..._allLocations,
+        ...locations,
+      ];
+      _locations = _locationSublist;
+    });
+  }
+
+  _onFilterChange() async {
+    await _fetchInitial();
+  }
+
   @override
   void initState() {
     super.initState();
 
-    _locations = _locationSublist;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final swipeProvider = locator<SwipeFiltersProvider>();
+      swipeProvider.addListener(_onFilterChange);
+
+      await _fetchInitial();
+      _locations = _locationSublist;
+    });
+  }
+
+  @override
+  void dispose() {
+    final swipeProvider = locator<SwipeFiltersProvider>();
+    swipeProvider.removeListener(_onFilterChange);
+
+    super.dispose();
   }
 
   @override
@@ -81,16 +145,21 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       );
     }
 
+    final swipeProvider = Provider.of<SwipeProvider>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SelectedLocations(selectedLocations: _selectedLocations),
+        SelectedLocations(
+          selectedLocations: swipeProvider.selectedLocations,
+          viewLocations: _onViewLocations,
+          filterLocations: _onFilterLocations,
+          selectTerritory: () {},
+        ),
         Expanded(
           child: Stack(
             fit: StackFit.expand,
-            children: [
-              ..._cards(),
-            ],
+            children: _cards(),
           ),
         ),
         _actions(),
@@ -99,12 +168,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   List<Widget> _cards() {
-    final cards = List<Widget>();
+    final List<Widget> cardWidgets = [];
     final width = MediaQuery.of(context).size.width;
 
     for (var i = 0; i < _locations.length; i++) {
       if (i == _locations.length - 1) {
-        cards.add(
+        cardWidgets.add(
           AnimatedCard(
             controller: _animatedCardController,
             dismissLeft: _dismissLeft,
@@ -114,11 +183,11 @@ class _SwipeLocationsState extends State<SwipeLocations> {
           ),
         );
       } else {
-        cards.add(_card(context, i));
+        cardWidgets.add(_card(context, i));
       }
     }
 
-    return cards;
+    return cardWidgets;
   }
 
   Widget _actions() {
@@ -190,7 +259,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         fit: StackFit.expand,
         children: [
           if (storyView && item.images.length > 1)
-            _FirstCard(
+            FirstCard(
               images: item.images,
               storyController: _storyController,
             )
@@ -282,6 +351,44 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     });
   }
 
+  _onViewLocations() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => LocationList(
+        removeLocation: _onRemoveLocation,
+        clearLocations: _onClearLocations,
+      ),
+    ));
+  }
+
+  _onFilterLocations() async {
+    final navigationService = locator<NavigationService>();
+    final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+
+    final FiltersModel newFilters = await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SwipeFilters(),
+      ),
+    );
+
+    if (newFilters != null) {
+      swipeFiltersProvider.selectedTags = newFilters.tags;
+    }
+  }
+
+  _onRemoveLocation(int index) {
+    final swipeProvider = locator<SwipeProvider>();
+
+    swipeProvider.removeLocation(index);
+  }
+
+  _onClearLocations() {
+    final swipeProvider = locator<SwipeProvider>();
+
+    swipeProvider.clearLocations();
+  }
+
   _dismissLeft() {
     _logSwipeEvent(DISLIKE_SWIPING);
     setState(() {
@@ -289,13 +396,19 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _locations = _locationSublist;
     });
 
-    if (_currentLocationIndex >= widget.initialLocations.length) {
-      _next();
+    if (_hasMore) {
+      if (_currentLocationIndex + LOCATIONS_LOADED >= _allLocations.length) {
+        _fetchMore();
+      }
+    } else if (_currentLocationIndex >= _allLocations.length) {
+      print('Finished');
     }
   }
 
   _dismissRight() {
-    _selectedLocations.add(_currentLocation);
+    final swipeProvider = locator<SwipeProvider>();
+
+    swipeProvider.selectLocation(_currentLocation);
     _logSwipeEvent(LIKE_SWIPING);
 
     setState(() {
@@ -303,28 +416,34 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _locations = _locationSublist;
     });
 
-    final questionnaireProvider = locator<QuestionnaireProvider>();
+    // final questionnaireProvider = locator<QuestionnaireProvider>();
 
-    final duration = (questionnaireProvider.qValues['duration']) as int;
-    final locationCount =
-        (questionnaireProvider.qValues['locationCount']) as int;
+    // final duration = (questionnaireProvider.qValues['duration']) as int;
+    // final locationCount =
+    //     (questionnaireProvider.qValues['locationCount']) as int;
 
-    if (_selectedLocations.length >= duration * locationCount ||
-        _currentLocationIndex >= widget.initialLocations.length) {
-      _next();
+    if (_hasMore) {
+      if (_currentLocationIndex + LOCATIONS_LOADED >= _allLocations.length) {
+        _fetchMore();
+      }
+    } else if (_currentLocationIndex >= _allLocations.length) {
+      print('Finished');
     }
   }
 
   _next() async {
-    if (_selectedLocations.isEmpty) {
+    final swipeProvider = locator<SwipeProvider>();
+    final locations = swipeProvider.selectedLocations;
+
+    if (locations.isEmpty) {
       await showDialog(
         context: context,
-        child: AlertDialog(
+        builder: (context) => AlertDialog(
           content: Text(
             'We cannot suggest a trip. Please select some locations that you like!',
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () {
                 final navigationService = locator<NavigationService>();
                 navigationService.pop();
@@ -350,7 +469,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     final duration = (questionnaireProvider.qValues['duration']) as int;
     final locationCount =
         (questionnaireProvider.qValues['locationCount']) as int;
-    final locationIds = _selectedLocations
+    final locationIds = locations
         .sublist(0, duration * locationCount)
         .map((location) => location.id)
         .toList();
@@ -394,10 +513,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   _onReset({logEvent: true}) {
+    final swipeProvider = locator<SwipeProvider>();
+
+    swipeProvider.clearLocations();
     setState(() {
       _currentLocationIndex = 0;
       _locations = _locationSublist;
-      _selectedLocations = [];
       _isLoading = false;
     });
 
@@ -414,29 +535,5 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       'location_name': _currentLocation.name,
       'location_country_code': _currentLocation.countryCode,
     });
-  }
-}
-
-class _FirstCard extends StatelessWidget {
-  final StoryController storyController;
-  final List<SuggestedLocationImage> images;
-
-  _FirstCard({
-    Key key,
-    this.images,
-    this.storyController,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StoryView(
-      controller: storyController,
-      repeat: true,
-      storyItems: images.map((image) {
-        return StoryItem.inlineProviderImage(
-          NetworkImage(image.url),
-        );
-      }).toList(),
-    );
   }
 }

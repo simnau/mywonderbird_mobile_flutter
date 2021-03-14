@@ -49,13 +49,12 @@ class _ChangePasswordState extends State<ChangePassword> {
           actions: [
             Builder(
               builder: (context) {
-                return FlatButton(
+                return TextButton(
                   onPressed: () => _onChangePassword(context),
                   child: Text(
                     'SAVE',
                     style: TextStyle(color: theme.primaryColor),
                   ),
-                  shape: ContinuousRectangleBorder(),
                 );
               },
             ),
@@ -121,7 +120,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           ),
         );
 
-        Scaffold.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {

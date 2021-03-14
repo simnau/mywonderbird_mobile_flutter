@@ -49,11 +49,11 @@ class FeedbackScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: _onStart,
             child: BodyText1.light('Write feedback'),
           ),
-          FlatButton(
+          TextButton(
             child: BodyText1('Skip'),
             onPressed: () {
               final navigationService = locator<NavigationService>();

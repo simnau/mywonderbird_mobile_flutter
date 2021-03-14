@@ -65,32 +65,40 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: _signIn,
             child: BodyText1('SIGN IN'),
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-              side: BorderSide(color: theme.accentColor),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: theme.accentColor),
+              ),
             ),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: _signUp,
             child: BodyText1.light('SIGN UP'),
-            color: theme.accentColor,
+            style: ElevatedButton.styleFrom(
+              primary: theme.accentColor,
+            ),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: _onFacebookFlow,
             child: BodyText1.light('CONTINUE WITH FACEBOOK'),
-            color: Color(0xFF3B5798),
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFF3B5798),
+            ),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: _onGoogleFlow,
             child: BodyText1(
               'CONTINUE WITH GOOGLE',
               color: Color(0xFF757575),
             ),
-            color: Colors.white,
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+            ),
           ),
         ],
       ),

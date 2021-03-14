@@ -86,12 +86,11 @@ class _FiltersState extends State<Filters> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        RaisedButton(
-          colorBrightness: Brightness.dark,
-          child: Text('Apply filters'),
+        ElevatedButton(
+          child: BodyText1('Apply filters'),
           onPressed: _apply,
         ),
-        FlatButton(
+        TextButton(
           child: Text('Close'),
           onPressed: _close,
         ),

@@ -1,9 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mywonderbird/deep-links.dart';
-import 'package:mywonderbird/http/authentication.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
@@ -11,6 +9,8 @@ import 'package:mywonderbird/providers/oauth.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/providers/swipe-filters.dart';
+import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/services/api.dart';
@@ -38,25 +38,18 @@ import 'package:mywonderbird/services/tag.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/sharing-intent.dart';
-import 'package:sentry/sentry.dart';
 
 GetIt locator = GetIt.instance;
-
-final sentryDSN = DotEnv().env['SENTRY_DSN'];
 
 setupLocator({String env}) {
   final storageService = StorageService();
   final termsProvider = TermsProvider();
   final tokenService = TokenService(storageService: storageService);
   final navigationService = NavigationService();
-  final authenticationInterceptor = AuthenticationInterceptor(
-    tokenService: tokenService,
-  );
   final retryPolicy = RefreshTokenRetryPolicy();
   final api = API(
     tokenService: tokenService,
     navigationService: navigationService,
-    authenticationInterceptor: authenticationInterceptor,
     retryPolicy: retryPolicy,
   );
   final termsService = TermsService(api: api);
@@ -128,16 +121,13 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => QuestionnaireProvider());
   locator.registerLazySingleton(() => SavedTripsProvider());
   locator.registerLazySingleton(() => termsProvider);
+  locator.registerLazySingleton(() => SwipeProvider());
+  locator.registerLazySingleton(() => SwipeFiltersProvider());
 
   // Other
   locator.registerLazySingleton(() => DeepLinks());
   locator.registerLazySingleton(() => SharingIntent());
-  locator.registerLazySingleton(() => authenticationInterceptor);
   locator.registerLazySingleton(() => retryPolicy);
   locator.registerLazySingleton(() => analytics);
   locator.registerLazySingleton(() => analyticsObserver);
-
-  SentryClient sentryClient =
-      env == 'prod' ? SentryClient(dsn: sentryDSN) : null;
-  locator.registerLazySingleton(() => sentryClient);
 }

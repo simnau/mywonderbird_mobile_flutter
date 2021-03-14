@@ -37,43 +37,47 @@ class BoolPicker extends StatelessWidget {
 
   Widget _noButton() {
     if (value == false) {
-      return RaisedButton(
+      return ElevatedButton(
         child: H5.light('No'),
         onPressed: _onNo,
-        color: Colors.red,
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+        ),
       );
     }
 
-    return OutlineButton(
+    return OutlinedButton(
       child: H5(
         'No',
         color: Colors.red,
       ),
       onPressed: _onNo,
-      color: Colors.red,
-      borderSide: BorderSide(color: Colors.red),
-      highlightedBorderColor: Colors.red,
+      // color: Colors.red,
+      // borderSide: BorderSide(color: Colors.red),
+      // highlightedBorderColor: Colors.red,
     );
   }
 
   Widget _yesButton() {
     if (value == true) {
-      return RaisedButton(
+      return ElevatedButton(
         child: H5.light('Yes'),
         onPressed: _onYes,
-        color: Colors.green,
+        style: ElevatedButton.styleFrom(
+          primary: Colors.green,
+        ),
       );
     }
 
-    return OutlineButton(
+    return OutlinedButton(
       child: H5(
         'Yes',
         color: Colors.green,
       ),
       onPressed: _onYes,
-      color: Colors.green,
-      borderSide: BorderSide(color: Colors.green),
-      highlightedBorderColor: Colors.green,
+      // color: Colors.green,
+      // borderSide: BorderSide(color: Colors.green),
+      // highlightedBorderColor: Colors.green,
     );
   }
 
