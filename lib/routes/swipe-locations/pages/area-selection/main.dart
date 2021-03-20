@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/area-selection-actions.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/suggestion.dart';
+import 'package:mywonderbird/util/debouncer.dart';
 import 'package:mywonderbird/util/location.dart';
 
 import '../../main.dart';
@@ -15,6 +18,46 @@ class AreaSelection extends StatefulWidget {
 
 class _AreaSelectionState extends State<AreaSelection> {
   GoogleMapController mapController;
+  List<SuggestedLocation> locations;
+  bool isLoading = true;
+  LatLngBounds bounds;
+  final _searchDebouncer = Debouncer(milliseconds: 50);
+
+  fetchLocations({
+    LatLng southWest,
+    LatLng northEast,
+  }) {
+    _searchDebouncer.run(() async {
+      setState(() {
+        isLoading = true;
+      });
+
+      final suggestionService = locator<SuggestionService>();
+      final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+
+      final suggestedLocations = await suggestionService.suggestLocations(
+        page: 0,
+        pageSize: 15,
+        tags: swipeFiltersProvider.selectedTags,
+        northEast: northEast ?? swipeFiltersProvider.northEast,
+        southWest: southWest ?? swipeFiltersProvider.southWest,
+      );
+
+      setState(() {
+        isLoading = false;
+        locations = suggestedLocations;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchLocations();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +86,9 @@ class _AreaSelectionState extends State<AreaSelection> {
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
           onMapCreated: _onMapCreated,
+          onCameraMove: _onCameraMove,
+          onCameraIdle: _onCameraIdle,
+          markers: _markers(),
         ),
         Positioned(
           bottom: 32.0,
@@ -55,6 +101,22 @@ class _AreaSelectionState extends State<AreaSelection> {
         ),
       ],
     );
+  }
+
+  Set<Marker> _markers() {
+    if (locations == null) {
+      return Set.identity();
+    }
+
+    return locations
+        .map(
+          (location) => Marker(
+            markerId: MarkerId(location.id),
+            position: location.latLng,
+            icon: BitmapDescriptor.defaultMarker,
+          ),
+        )
+        .toSet();
   }
 
   _onMapCreated(GoogleMapController controller) async {
@@ -95,5 +157,17 @@ class _AreaSelectionState extends State<AreaSelection> {
     if (mapController != null) {
       mapController.animateCamera(CameraUpdate.newLatLng(newLatLng));
     }
+  }
+
+  _onCameraIdle() {
+    fetchLocations(
+      southWest: bounds?.southwest,
+      northEast: bounds?.northeast,
+    );
+  }
+
+  _onCameraMove(CameraPosition position) async {
+    _searchDebouncer.cancel();
+    bounds = await mapController.getVisibleRegion();
   }
 }
