@@ -6,7 +6,9 @@ final flatButtonStyle = TextButton.styleFrom(
   minimumSize: Size(88, 36),
   padding: EdgeInsets.symmetric(horizontal: 16.0),
   shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(2.0)),
+    borderRadius: BorderRadius.all(
+      Radius.circular(0.0),
+    ),
   ),
 );
 
@@ -17,7 +19,9 @@ final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
   minimumSize: Size(88, 36),
   padding: EdgeInsets.symmetric(horizontal: 16),
   shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(2)),
+    borderRadius: BorderRadius.all(
+      Radius.circular(40.0),
+    ),
   ),
 );
 
@@ -32,13 +36,6 @@ final ThemeData appTheme = ThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(16),
-      ),
-    ),
-  ),
-  buttonTheme: ButtonThemeData(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(40.0),
       ),
     ),
   ),

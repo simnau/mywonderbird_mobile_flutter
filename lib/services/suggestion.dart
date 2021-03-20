@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
@@ -56,11 +57,17 @@ class SuggestionService {
     int page,
     int pageSize,
     List<String> tags = const [],
+    LatLng southWest,
+    LatLng northEast,
   }) async {
     Map<String, dynamic> params = {
       "page": page?.toString(),
       "pageSize": pageSize?.toString(),
       "tags": tags,
+      "latMin": southWest?.latitude?.toString(),
+      "latMax": northEast?.latitude?.toString(),
+      "lngMin": southWest?.longitude?.toString(),
+      "lngMax": northEast?.longitude?.toString(),
     };
     final response =
         await api.get(SUGGEST_LOCATIONS_PAGINATED_PATH, params: params);

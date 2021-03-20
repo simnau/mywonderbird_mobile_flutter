@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:exif/exif.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -69,4 +71,25 @@ LatLng boundsCenter(LatLngBounds bounds) {
       (bounds.southwest.longitude + bounds.northeast.longitude) / 2;
 
   return LatLng(latCenter, lngCenter);
+}
+
+LatLngBounds getBounds(
+  LatLng center,
+  double zoom,
+  double width,
+  double height,
+) {
+  var _correctZoom = math.pow(2, zoom) * 2;
+  var _width = width.toInt() / _correctZoom;
+  var _height = height.toInt() / _correctZoom;
+
+  double latSouth = center.latitude - _height;
+  double latNorth = center.latitude + _height;
+  double lngWest = center.longitude - _width;
+  double lngEast = center.longitude + _width;
+
+  return LatLngBounds(
+    southwest: LatLng(latSouth, lngWest),
+    northeast: LatLng(latNorth, lngEast),
+  );
 }

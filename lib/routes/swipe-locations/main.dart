@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/small-icon-button.dart';
-import 'package:mywonderbird/components/typography/h6.dart';
-import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
@@ -13,20 +12,29 @@ import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
+import 'package:mywonderbird/routes/swipe-locations/components/swipe-actions.dart';
 import 'package:mywonderbird/routes/swipe-locations/models/filters.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/area-selection/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/pages/filters/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/pages/location-list/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/location.dart';
 import 'package:provider/provider.dart';
 import 'package:story_view/story_view.dart';
 
 import 'components/animated-card.dart';
-import 'components/first-card.dart';
+import 'components/location-card.dart';
 import 'pages/location-details/main.dart';
 
 const LOCATIONS_LOADED = 3;
 const DEFAULT_PAGE_SIZE = 5;
+const INITIAL_ZOOM = 15.0;
+const DEFAULT_CAMERA_POSITION = LatLng(
+  63.791580,
+  -17.352658,
+);
 
 class SwipeLocations extends StatefulWidget {
   @override
@@ -67,10 +75,38 @@ class _SwipeLocationsState extends State<SwipeLocations> {
 
     final suggestionService = locator<SuggestionService>();
     final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+
+    if (swipeFiltersProvider.northEast == null ||
+        swipeFiltersProvider.southWest == null) {
+      final screenSize = MediaQuery.of(context).size;
+      final currentLocation = await getCurrentLocation();
+      final center = currentLocation != null
+          ? LatLng(
+              currentLocation.latitude,
+              currentLocation.longitude,
+            )
+          : DEFAULT_CAMERA_POSITION;
+
+      final bounds = getBounds(
+        center,
+        INITIAL_ZOOM,
+        screenSize.width,
+        screenSize.height,
+      );
+
+      swipeFiltersProvider.setBounds(
+        bounds.southwest,
+        bounds.northeast,
+        notify: false,
+      );
+    }
+
     final locations = await suggestionService.suggestLocations(
       page: 0,
       pageSize: DEFAULT_PAGE_SIZE,
       tags: swipeFiltersProvider.selectedTags,
+      southWest: swipeFiltersProvider.southWest,
+      northEast: swipeFiltersProvider.northEast,
     );
 
     setState(() {
@@ -90,6 +126,8 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       page: _page,
       pageSize: DEFAULT_PAGE_SIZE,
       tags: swipeFiltersProvider.selectedTags,
+      southWest: swipeFiltersProvider.southWest,
+      northEast: swipeFiltersProvider.northEast,
     );
 
     setState(() {
@@ -154,16 +192,39 @@ class _SwipeLocationsState extends State<SwipeLocations> {
           selectedLocations: swipeProvider.selectedLocations,
           viewLocations: _onViewLocations,
           filterLocations: _onFilterLocations,
-          selectTerritory: () {},
+          selectArea: _onSelectArea,
         ),
-        Expanded(
-          child: Stack(
-            fit: StackFit.expand,
-            children: _cards(),
-          ),
+        Expanded(child: _mainContent()),
+        SwipeActions(
+          onBack: _onBack,
+          onDismiss: _onDismiss,
+          onSelect: _onSelect,
+          onReset: _onReset,
         ),
-        _actions(),
       ],
+    );
+  }
+
+  Widget _mainContent() {
+    if (_locations.isEmpty && _allLocations.isNotEmpty) {
+      return EmptyListPlaceholder(
+        title: 'No more locations left',
+        subtitle:
+            'Try searching in a different area or try using different filters',
+      );
+    }
+
+    if (_allLocations.isEmpty) {
+      return EmptyListPlaceholder(
+        title: 'No locations found',
+        subtitle:
+            'Try searching in a different area or try using different filters',
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: _cards(),
     );
   }
 
@@ -172,6 +233,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     final width = MediaQuery.of(context).size.width;
 
     for (var i = 0; i < _locations.length; i++) {
+      final item = _locations[i];
       if (i == _locations.length - 1) {
         cardWidgets.add(
           AnimatedCard(
@@ -179,161 +241,27 @@ class _SwipeLocationsState extends State<SwipeLocations> {
             dismissLeft: _dismissLeft,
             dismissRight: _dismissRight,
             width: width,
-            child: _card(context, i, storyView: true),
+            child: LocationCard(
+              isStoryView: true,
+              item: item,
+              storyController: _storyController,
+              onViewDetails: _onViewDetails,
+            ),
           ),
         );
       } else {
-        cardWidgets.add(_card(context, i));
+        cardWidgets.add(
+          LocationCard(
+            isStoryView: false,
+            item: item,
+            storyController: _storyController,
+            onViewDetails: _onViewDetails,
+          ),
+        );
       }
     }
 
     return cardWidgets;
-  }
-
-  Widget _actions() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
-      child: SizedBox(
-        height: 68,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FloatingActionButton(
-              onPressed: _onBack,
-              backgroundColor: Colors.black87,
-              foregroundColor: Colors.white,
-              child: BackButtonIcon(),
-              heroTag: null,
-              mini: true,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: FloatingActionButton(
-                onPressed: _onDismiss,
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                heroTag: null,
-                child: Icon(
-                  Icons.close,
-                  size: 32,
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: FloatingActionButton(
-                onPressed: _onSelect,
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                heroTag: null,
-                child: Icon(
-                  Icons.check,
-                  size: 32,
-                ),
-              ),
-            ),
-            FloatingActionButton(
-              onPressed: _onReset,
-              backgroundColor: Colors.purple,
-              foregroundColor: Colors.white,
-              heroTag: null,
-              mini: true,
-              child: Icon(
-                Icons.refresh,
-                size: 24,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _card(BuildContext context, int index, {bool storyView = false}) {
-    final item = _locations[index];
-
-    return Card(
-      margin: const EdgeInsets.all(16.0),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (storyView && item.images.length > 1)
-            FirstCard(
-              images: item.images,
-              storyController: _storyController,
-            )
-          else if (item.images.isNotEmpty && item.images.first.url != null)
-            Image.network(
-              item.images.first.url,
-              fit: BoxFit.cover,
-            )
-          else
-            Container(
-              color: Colors.grey,
-            ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.transparent, Colors.black38],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _locationDetails(item),
-          ),
-        ],
-      ),
-      elevation: 8,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-    );
-  }
-
-  Widget _locationDetails(SuggestedLocation item) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                H6.light(
-                  item.name,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
-                ),
-                Subtitle2.light(
-                  item.country,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          SmallIconButton(
-            icon: Icon(
-              Icons.info_outline,
-              color: Colors.white,
-              size: 32.0,
-            ),
-            onTap: _onViewDetails,
-            borderRadius: BorderRadius.circular(24),
-            padding: const EdgeInsets.all(8.0),
-          ),
-        ],
-      ),
-    );
   }
 
   _onViewDetails() {
@@ -374,6 +302,25 @@ class _SwipeLocationsState extends State<SwipeLocations> {
 
     if (newFilters != null) {
       swipeFiltersProvider.selectedTags = newFilters.tags;
+    }
+  }
+
+  _onSelectArea() async {
+    final navigationService = locator<NavigationService>();
+    final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+
+    final LatLngBounds selectedArea = await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => AreaSelection(),
+      ),
+    );
+
+    if (selectedArea != null) {
+      swipeFiltersProvider.setBounds(
+        selectedArea.southwest,
+        selectedArea.northeast,
+        notify: true,
+      );
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 
@@ -9,14 +10,14 @@ class SelectedLocations extends StatelessWidget {
   final List<SuggestedLocation> selectedLocations;
   final void Function() filterLocations;
   final void Function() viewLocations;
-  final void Function() selectTerritory;
+  final void Function() selectArea;
 
   const SelectedLocations({
     Key key,
     @required this.selectedLocations,
     @required this.filterLocations,
     @required this.viewLocations,
-    @required this.selectTerritory,
+    @required this.selectArea,
   }) : super(key: key);
 
   @override
@@ -53,40 +54,18 @@ class SelectedLocations extends StatelessWidget {
           ),
         ),
         SizedBox(width: 16.0),
-        SizedBox(
-          height: HEIGHT,
-          width: HEIGHT,
-          child: FloatingActionButton(
-            heroTag: null,
-            backgroundColor: theme.primaryColor,
-            child: Icon(
-              FontAwesome.sliders,
-            ),
-            onPressed: filterLocations,
-            elevation: 0,
-            highlightElevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
+        SquareIconButton(
+          size: HEIGHT,
+          icon: Icon(FontAwesome.sliders),
+          onPressed: filterLocations,
+          backgroundColor: theme.primaryColor,
         ),
         SizedBox(width: 8.0),
-        SizedBox(
-          height: HEIGHT,
-          width: HEIGHT,
-          child: FloatingActionButton(
-            heroTag: null,
-            backgroundColor: theme.primaryColor,
-            child: Icon(
-              MaterialCommunityIcons.map_marker,
-            ),
-            onPressed: selectTerritory,
-            elevation: 0,
-            highlightElevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
+        SquareIconButton(
+          size: HEIGHT,
+          icon: Icon(MaterialCommunityIcons.map_marker),
+          onPressed: selectArea,
+          backgroundColor: theme.primaryColor,
         ),
       ],
     );

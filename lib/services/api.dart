@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:http_interceptor/http_client_with_interceptor.dart';
-import 'package:http_interceptor/http_interceptor.dart';
 import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
@@ -30,10 +28,7 @@ class API {
     this.tokenService = tokenService;
     this.navigationService = navigationService;
     this.retryPolicy = retryPolicy;
-    client = HttpClientWithInterceptor.build(
-      interceptors: [],
-      retryPolicy: retryPolicy,
-    );
+    this.client = http.Client();
   }
 
   Future<Map<String, String>> get authenticationHeaders async {
@@ -52,12 +47,31 @@ class API {
     String path, {
     Map<String, dynamic> params,
     Map<String, String> headers = const {},
+    int retryCount = 0,
+    bool noRetry = false,
   }) async {
     final uri = _createUri(apiBase, path, params);
     final response = await client.get(uri, headers: {
       ...headers,
       ...await authenticationHeaders,
     });
+
+    if (!noRetry) {
+      final shouldRetry =
+          await retryPolicy.shouldAttemptRetryOnResponse(response);
+
+      if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+        return get(
+          path,
+          params: params,
+          headers: {
+            ...headers,
+            ...await authenticationHeaders,
+          },
+          retryCount: retryCount + 1,
+        );
+      }
+    }
 
     return _handleResponse(response);
   }
@@ -66,12 +80,31 @@ class API {
     String path, {
     Map<String, String> params,
     Map<String, String> headers = const {},
+    int retryCount = 0,
+    bool noRetry = false,
   }) async {
     final uri = _createUri(apiBase, path, params);
     final response = await client.delete(uri, headers: {
       ...headers,
       ...await authenticationHeaders,
     });
+
+    if (!noRetry) {
+      final shouldRetry =
+          await retryPolicy.shouldAttemptRetryOnResponse(response);
+
+      if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+        return delete(
+          path,
+          params: params,
+          headers: {
+            ...headers,
+            ...await authenticationHeaders,
+          },
+          retryCount: retryCount + 1,
+        );
+      }
+    }
 
     return _handleResponse(response);
   }
@@ -81,6 +114,8 @@ class API {
     Map<String, dynamic> body, {
     Map<String, dynamic> params,
     Map<String, String> headers = const {},
+    int retryCount = 0,
+    bool noRetry = false,
   }) async {
     final uri = _createUri(apiBase, path, params);
     final fullHeaders = _jsonHeaders(headers);
@@ -94,10 +129,27 @@ class API {
       body: json.encode(body),
     );
 
+    if (!noRetry) {
+      final shouldRetry =
+          await retryPolicy.shouldAttemptRetryOnResponse(response);
+
+      if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+        return post(
+          path,
+          body,
+          params: params,
+          headers: {
+            ...headers,
+            ...await authenticationHeaders,
+          },
+          retryCount: retryCount + 1,
+        );
+      }
+    }
+
     return _handleResponse(response);
   }
 
-  // TODO: Handle token expiration!!!
   Future<Map<String, dynamic>> postMultipartFiles(
     String path,
     List<MultipartFile> files, {
@@ -105,6 +157,7 @@ class API {
     Map<String, dynamic> params,
     Map<String, String> headers = const {},
     int retryCount = 0,
+    bool noRetry = false,
   }) async {
     final uri = _createUri(apiBase, path, params);
     final request = http.MultipartRequest(
@@ -125,21 +178,23 @@ class API {
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
-    final shouldRetry = await retryPolicy.shouldAttemptRetryOnResponse(
-      ResponseData.fromHttpResponse(response),
-    );
 
-    if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
-      return postMultipartFiles(
-        path,
-        files,
-        params: params,
-        headers: {
-          ...headers,
-          ...await authenticationHeaders,
-        },
-        retryCount: retryCount + 1,
-      );
+    if (!noRetry) {
+      final shouldRetry =
+          await retryPolicy.shouldAttemptRetryOnResponse(response);
+
+      if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+        return postMultipartFiles(
+          path,
+          files,
+          params: params,
+          headers: {
+            ...headers,
+            ...await authenticationHeaders,
+          },
+          retryCount: retryCount + 1,
+        );
+      }
     }
 
     return _handleResponse(response);

@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:http_interceptor/http_interceptor.dart';
+import 'package:http/http.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/token.dart';
 
 const REFRESH_TOKEN_PATH = '/api/auth/refresh';
 
-class RefreshTokenRetryPolicy extends RetryPolicy {
+class RefreshTokenRetryPolicy {
   final maxRetryAttempts = 1;
 
-  @override
-  Future<bool> shouldAttemptRetryOnResponse(ResponseData response) async {
+  Future<bool> shouldAttemptRetryOnResponse(Response response) async {
     if (response.statusCode == HttpStatus.unauthorized) {
       final api = locator<API>();
       final tokenService = locator<TokenService>();
@@ -22,9 +21,13 @@ class RefreshTokenRetryPolicy extends RetryPolicy {
         return false;
       }
 
-      final refreshResponse = await api.post(REFRESH_TOKEN_PATH, {
-        'refreshToken': refreshToken,
-      });
+      final refreshResponse = await api.post(
+        REFRESH_TOKEN_PATH,
+        {
+          'refreshToken': refreshToken,
+        },
+        noRetry: true,
+      );
       final rawResponse = refreshResponse['response'];
 
       if (rawResponse.statusCode != HttpStatus.ok) {
