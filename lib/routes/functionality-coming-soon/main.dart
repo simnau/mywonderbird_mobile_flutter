@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/navigation.dart';
-
-import '../../locator.dart';
 
 class ComingSoonScreen extends StatelessWidget {
   static const RELATIVE_PATH = 'comming_soon';

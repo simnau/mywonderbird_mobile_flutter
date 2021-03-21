@@ -50,26 +50,15 @@ class _SuggestedTripState extends State<SuggestedTrip>
     _tabController = TabController(length: 2, vsync: this);
   }
 
-  bool get _isComplete {
-    final questionnaireProvider = locator<QuestionnaireProvider>();
-
-    final duration = questionnaireProvider.qValues['duration'];
-    final locationCount = questionnaireProvider.qValues['locationCount'];
-    final expectedCount = duration * locationCount;
-
-    return _locations.length >= expectedCount;
-  }
-
   @override
   void initState() {
     super.initState();
 
-    final questionnaireProvider = locator<QuestionnaireProvider>();
-
     _locations = List.from(widget.suggestedJourney.locations);
     _suggestedLocationParts = partition<SuggestedLocation>(
-            _locations, questionnaireProvider.qValues['locationCount'])
-        .toList();
+      _locations,
+      _locations.length,
+    ).toList();
   }
 
   @override
@@ -105,7 +94,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
     return Column(
       children: [
         H5('Your trip is ready!'),
-        if (!_isComplete) _incompleteNotification(),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
         ),
@@ -149,73 +137,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
           ),
         ),
       ],
-    );
-  }
-
-  Widget _incompleteNotification() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue[300], width: 1),
-      ),
-      child: Material(
-        color: Colors.blue[100],
-        child: InkWell(
-          onTap: _showIncompleteAlert,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: 24.0,
-                ),
-                Expanded(
-                  child: BodyText1(
-                    'We could not fill your trip',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SmallIconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: Colors.black87,
-                    size: 24.0,
-                  ),
-                  padding: const EdgeInsets.all(6.0),
-                  borderRadius: BorderRadius.circular(24.0),
-                  onTap: _showIncompleteAlert,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _showIncompleteAlert() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Subtitle1('We could not fill your trip'),
-          content: SingleChildScrollView(
-            child: BodyText1(
-              'We were unable to fill your trip as we do not have enough locations that suit you. Try selecting more locations',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Got it!'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 

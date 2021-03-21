@@ -197,10 +197,9 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         ),
         Expanded(child: _mainContent()),
         SwipeActions(
-          onBack: _onBack,
           onDismiss: _onDismiss,
           onSelect: _onSelect,
-          onReset: _onReset,
+          onSave: _onSave,
         ),
       ],
     );
@@ -379,7 +378,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     }
   }
 
-  _next() async {
+  _onSave() async {
     final swipeProvider = locator<SwipeProvider>();
     final locations = swipeProvider.selectedLocations;
 
@@ -402,7 +401,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         ),
       );
 
-      _onReset();
       return;
     }
 
@@ -410,17 +408,10 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _isLoading = true;
     });
 
-    final questionnaireProvider = locator<QuestionnaireProvider>();
     final navigationService = locator<NavigationService>();
     final suggestionService = locator<SuggestionService>();
 
-    final duration = (questionnaireProvider.qValues['duration']) as int;
-    final locationCount =
-        (questionnaireProvider.qValues['locationCount']) as int;
-    final locationIds = locations
-        .sublist(0, duration * locationCount)
-        .map((location) => location.id)
-        .toList();
+    final locationIds = locations.map((location) => location.id).toList();
     final suggestedJourney =
         await suggestionService.suggestJourneyFromLocations(locationIds);
 
@@ -436,7 +427,9 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         ),
       );
 
-      _onReset(logEvent: false);
+      setState(() {
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _isLoading = false;

@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
-import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/util/geo.dart';
-import 'package:provider/provider.dart';
 
 class MapTab extends StatefulWidget {
   final List<SuggestedLocation> locations;
@@ -73,21 +71,14 @@ class _MapTabState extends State<MapTab>
   }
 
   Set<Polyline> _lines() {
-    final questionnaireProvider = Provider.of<QuestionnaireProvider>(
-      context,
-      listen: false,
-    );
     Set<Polyline> polylines = Set();
-
-    final locationCountPerDay =
-        questionnaireProvider.qValues['locationCount'] - 1;
     var locationIndex = 0;
 
     for (var i = 0; i < widget.locations.length - 1; i++) {
       final point1 = widget.locations[i];
       final point2 = widget.locations[i + 1];
 
-      if (locationIndex >= locationCountPerDay) {
+      if (locationIndex >= widget.locations.length) {
         locationIndex = 0;
         continue;
       }
@@ -110,14 +101,13 @@ class _MapTabState extends State<MapTab>
 
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
-    final center = boundsCenter(_tripBounds);
 
     Future.delayed(
       Duration(milliseconds: 200),
       () {
-        if (center != null) {
+        if (_tripBounds != null) {
           controller.moveCamera(
-            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
+            CameraUpdate.newLatLngBounds(_tripBounds, 64.0),
           );
         }
       },

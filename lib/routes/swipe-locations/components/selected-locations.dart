@@ -58,14 +58,14 @@ class SelectedLocations extends StatelessWidget {
           size: HEIGHT,
           icon: Icon(FontAwesome.sliders),
           onPressed: filterLocations,
-          backgroundColor: theme.primaryColor,
+          backgroundColor: theme.accentColor,
         ),
         SizedBox(width: 8.0),
         SquareIconButton(
           size: HEIGHT,
           icon: Icon(MaterialCommunityIcons.map_marker),
           onPressed: selectArea,
-          backgroundColor: theme.primaryColor,
+          backgroundColor: theme.accentColor,
         ),
       ],
     );
