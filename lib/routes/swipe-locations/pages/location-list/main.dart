@@ -99,7 +99,7 @@ class LocationList extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(
-            Icons.delete,
+            Icons.delete_forever,
             color: Colors.red,
           ),
           onPressed: onRemove,

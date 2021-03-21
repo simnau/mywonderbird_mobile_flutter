@@ -156,16 +156,15 @@ class _MapTabState extends State<MapTab>
 
   Widget _locationDetails() {
     return Container(
+      margin: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16.0),
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            offset: Offset(0, -4),
-            blurRadius: 4,
+            blurRadius: 4.0,
+            spreadRadius: 4.0,
           ),
         ],
       ),

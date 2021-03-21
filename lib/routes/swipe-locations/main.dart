@@ -7,7 +7,6 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
-import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
@@ -327,7 +326,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   _onRemoveLocation(int index) {
     final swipeProvider = locator<SwipeProvider>();
 
-    swipeProvider.removeLocation(index);
+    swipeProvider.removeLocationAt(index);
   }
 
   _onClearLocations() {

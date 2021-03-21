@@ -26,13 +26,15 @@ class SuggestedTripLocationDetails extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: IntrinsicHeight(
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(0),
+          title: Subtitle1(
+            location.name,
+            overflow: TextOverflow.ellipsis,
+          ),
+          leading: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
@@ -46,30 +48,15 @@ class SuggestedTripLocationDetails extends StatelessWidget {
                     )
                   : null,
             ),
-            SizedBox(width: 8.0),
-            Expanded(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Column(
-                  children: [
-                    Subtitle1(
-                      location.name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  ],
-                ),
-              ),
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.delete_forever,
+              color: isLoading ? theme.disabledColor : Colors.red,
+              size: 32.0,
             ),
-            SizedBox(width: 8.0),
-            IconButton(
-              icon: Icon(
-                Icons.delete_forever,
-                color: isLoading ? theme.disabledColor : Colors.red,
-              ),
-              onPressed: isLoading ? null : _onRemoveLocation,
-            ),
-          ],
+            onPressed: isLoading ? null : _onRemoveLocation,
+          ),
         ),
       ),
     );

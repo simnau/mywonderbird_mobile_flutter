@@ -11,9 +11,18 @@ class SwipeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  removeLocation(int locationIndex) {
+  removeLocationAt(int locationIndex) {
     _selectedLocations.removeAt(locationIndex);
     notifyListeners();
+  }
+
+  removeLocation(SuggestedLocation locationToRemove) {
+    final index = _selectedLocations
+        .indexWhere((location) => locationToRemove.id == location.id);
+
+    if (index >= 0) {
+      removeLocationAt(index);
+    }
   }
 
   clearLocations() {
