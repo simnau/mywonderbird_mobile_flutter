@@ -27,6 +27,8 @@ class _InputTitleDialogState extends State<InputTitleDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -58,6 +60,9 @@ class _InputTitleDialogState extends State<InputTitleDialog> {
               ElevatedButton(
                 onPressed: _onCreate,
                 child: BodyText1.light(widget.saveLabel),
+                style: ElevatedButton.styleFrom(
+                  primary: theme.primaryColor,
+                ),
               ),
             ],
           ),

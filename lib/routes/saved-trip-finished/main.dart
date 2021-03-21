@@ -23,6 +23,8 @@ class SavedTripFinished extends StatefulWidget {
 class _SavedTripFinishedState extends State<SavedTripFinished> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -51,6 +53,9 @@ class _SavedTripFinishedState extends State<SavedTripFinished> {
                   ElevatedButton(
                     child: BodyText1.light('Share it with friends'),
                     onPressed: _onShareTrip,
+                    style: ElevatedButton.styleFrom(
+                      primary: theme.primaryColor,
+                    ),
                   ),
                   TextButton(
                     child: BodyText1('Close'),

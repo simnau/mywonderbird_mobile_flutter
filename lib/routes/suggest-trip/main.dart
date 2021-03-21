@@ -30,13 +30,15 @@ class _SuggestTripState extends State<SuggestTrip> {
               fit: BoxFit.cover,
             ),
           ),
-          _bottomContent(),
+          _bottomContent(context),
         ],
       ),
     );
   }
 
-  Widget _bottomContent() {
+  Widget _bottomContent(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -61,6 +63,9 @@ class _SuggestTripState extends State<SuggestTrip> {
           ElevatedButton(
             onPressed: _onStart,
             child: BodyText1.light('Start'),
+            style: ElevatedButton.styleFrom(
+              primary: theme.primaryColor,
+            ),
           ),
         ],
       ),

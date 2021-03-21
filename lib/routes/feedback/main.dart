@@ -29,12 +29,14 @@ class FeedbackScreen extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            _bottomContent(),
+            _bottomContent(context),
           ],
         ));
   }
 
-  Widget _bottomContent() {
+  Widget _bottomContent(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -52,6 +54,9 @@ class FeedbackScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: _onStart,
             child: BodyText1.light('Write feedback'),
+            style: ElevatedButton.styleFrom(
+              primary: theme.primaryColor,
+            ),
           ),
           TextButton(
             child: BodyText1('Skip'),

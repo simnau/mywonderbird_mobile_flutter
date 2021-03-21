@@ -46,14 +46,16 @@ class TripSlides extends StatelessWidget {
       controller: pageController,
       onPageChanged: onPageChanged,
       children: [
-        _tripDetailSlide(),
+        _tripDetailSlide(context),
         ..._locationSlides(),
       ],
       physics: NeverScrollableScrollPhysics(),
     );
   }
 
-  Widget _tripDetailSlide() {
+  Widget _tripDetailSlide(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
         image: journey?.imageUrl != null
@@ -87,6 +89,9 @@ class TripSlides extends StatelessWidget {
             ElevatedButton(
               child: BodyText1.light('Start trip'),
               onPressed: onStart,
+              style: ElevatedButton.styleFrom(
+                primary: theme.primaryColor,
+              ),
             )
           ],
         ),

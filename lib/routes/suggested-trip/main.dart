@@ -1,15 +1,10 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
-import 'package:mywonderbird/components/small-icon-button.dart';
-import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
-import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
-import 'package:mywonderbird/routes/suggest-trip-questionnaire/steps.dart';
 import 'package:quiver/iterables.dart';
 import 'package:mywonderbird/components/typography/h5.dart';
-import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
@@ -209,10 +204,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
   _saveTrip(String title) async {
     final savedTripService = locator<SavedTripService>();
     final navigationService = locator<NavigationService>();
-    final questionnaireProvider = locator<QuestionnaireProvider>();
 
-    final savedTrip = await savedTripService.saveTrip(
-        _createSavedTrip(title), stepValues(questionnaireProvider.qValues));
+    final savedTrip = await savedTripService.saveTrip(_createSavedTrip(title));
 
     final analytics = locator<FirebaseAnalytics>();
     analytics.logEvent(name: SAVE_SUGGESTED, parameters: {

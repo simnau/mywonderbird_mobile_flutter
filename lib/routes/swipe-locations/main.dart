@@ -208,7 +208,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   Widget _mainContent() {
     if (_locations.isEmpty && _allLocations.isNotEmpty) {
       return EmptyListPlaceholder(
-        title: 'No more locations left',
+        title: 'No more places left',
         subtitle:
             'Try searching in a different area or try using different filters',
       );
@@ -216,7 +216,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
 
     if (_allLocations.isEmpty) {
       return EmptyListPlaceholder(
-        title: 'No locations found',
+        title: 'No places found',
         subtitle:
             'Try searching in a different area or try using different filters',
       );
@@ -347,8 +347,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       if (_currentLocationIndex + LOCATIONS_LOADED >= _allLocations.length) {
         _fetchMore();
       }
-    } else if (_currentLocationIndex >= _allLocations.length) {
-      print('Finished');
     }
   }
 
@@ -363,22 +361,15 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _locations = _locationSublist;
     });
 
-    // final questionnaireProvider = locator<QuestionnaireProvider>();
-
-    // final duration = (questionnaireProvider.qValues['duration']) as int;
-    // final locationCount =
-    //     (questionnaireProvider.qValues['locationCount']) as int;
-
     if (_hasMore) {
       if (_currentLocationIndex + LOCATIONS_LOADED >= _allLocations.length) {
         _fetchMore();
       }
-    } else if (_currentLocationIndex >= _allLocations.length) {
-      print('Finished');
     }
   }
 
   _onSave() async {
+    final theme = Theme.of(context);
     final swipeProvider = locator<SwipeProvider>();
     final locations = swipeProvider.selectedLocations;
 
@@ -395,7 +386,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
                 final navigationService = locator<NavigationService>();
                 navigationService.pop();
               },
-              child: Text('OK!'),
+              child: Text(
+                'OK!',
+                style: TextStyle(
+                  color: theme.primaryColor,
+                ),
+              ),
             ),
           ],
         ),
@@ -437,36 +433,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     }
   }
 
-  _onBack() {
-    final navigationService = locator<NavigationService>();
-    navigationService.pop();
-
-    final analytics = locator<FirebaseAnalytics>();
-    analytics.logEvent(name: CANCEL_SWIPING);
-  }
-
   _onDismiss() {
     _animatedCardController.swipeLeft();
   }
 
   _onSelect() {
     _animatedCardController.swipeRight();
-  }
-
-  _onReset({logEvent: true}) {
-    final swipeProvider = locator<SwipeProvider>();
-
-    swipeProvider.clearLocations();
-    setState(() {
-      _currentLocationIndex = 0;
-      _locations = _locationSublist;
-      _isLoading = false;
-    });
-
-    if (logEvent) {
-      final analytics = locator<FirebaseAnalytics>();
-      analytics.logEvent(name: RESET_SWIPING);
-    }
   }
 
   _logSwipeEvent(eventName) async {

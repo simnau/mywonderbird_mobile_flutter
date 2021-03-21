@@ -10,6 +10,8 @@ class ComingSoonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,6 +36,9 @@ class ComingSoonScreen extends StatelessWidget {
             child: ElevatedButton(
               onPressed: _onBack,
               child: BodyText1.light('Back'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.primaryColor,
+              ),
             ),
           ),
         ],

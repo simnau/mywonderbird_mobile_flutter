@@ -70,10 +70,9 @@ class SavedTripService {
     return trip;
   }
 
-  Future<Journey> saveTrip(SavedTrip trip, Map<String, String> qValues) async {
+  Future<Journey> saveTrip(SavedTrip trip) async {
     final response = await api.post(SAVE_TRIP_PATH, {
       "trip": trip.toJson(),
-      "qValues": qValues,
     });
     final rawResponse = response['response'];
 

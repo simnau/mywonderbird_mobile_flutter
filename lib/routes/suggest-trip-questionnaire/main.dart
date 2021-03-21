@@ -63,12 +63,12 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
         ],
         backgroundColor: Colors.transparent,
       ),
-      body: _body(),
+      body: _body(context),
       backgroundColor: Colors.white,
     );
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
     return Column(
       children: [
         Expanded(
@@ -119,12 +119,13 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
             },
           ),
         ),
-        _bottomContent(),
+        _bottomContent(context),
       ],
     );
   }
 
-  Widget _bottomContent() {
+  Widget _bottomContent(BuildContext context) {
+    final theme = Theme.of(context);
     final value = _values[currentStep.key];
     final isValid = currentStep.validator(value);
 
@@ -146,6 +147,9 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
                 child: CircularProgressIndicator(),
               )
             : BodyText1.light('Continue'),
+        style: ElevatedButton.styleFrom(
+          primary: theme.primaryColor,
+        ),
       ),
     );
   }

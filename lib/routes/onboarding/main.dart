@@ -104,6 +104,9 @@ class _OnboardingState extends State<Onboarding> {
             ElevatedButton(
               child: BodyText1.light(isLastPageSelected ? "Let's go" : 'Next'),
               onPressed: isLastPageSelected ? _onComplete : _onNext,
+              style: ElevatedButton.styleFrom(
+                primary: theme.primaryColor,
+              ),
             ),
           ],
         ),
