@@ -18,7 +18,7 @@ Depending on what IDE you use, you should install the appropriate flutter extens
 
 ## Building for prod
 To build for prod, run
-- App Bundle - `flutter build appbundle -t lib/main_prod.dart`
+- App Bundle - `flutter build appbundle -t lib/main-prod.dart`
 - APK - `flutter build apk -t lib/main-prod.dart`
 
 In order to be able to upload the app to play store, you need play store signing keys.

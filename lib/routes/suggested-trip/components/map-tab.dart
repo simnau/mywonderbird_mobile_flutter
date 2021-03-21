@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/routes/suggested-trip/components/location-details.dart';
 import 'package:mywonderbird/util/geo.dart';
 
 class MapTab extends StatefulWidget {
   final List<SuggestedLocation> locations;
+  final void Function(SuggestedLocation) onRemoveLocation;
 
   const MapTab({
     Key key,
-    this.locations,
+    @required this.locations,
+    @required this.onRemoveLocation,
   }) : super(key: key);
 
   @override
@@ -30,6 +33,10 @@ class _MapTabState extends State<MapTab>
 
   Completer<GoogleMapController> _mapController = Completer();
   LatLngBounds _tripBounds;
+  SuggestedLocation _selectedLocation;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -43,31 +50,43 @@ class _MapTabState extends State<MapTab>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return GoogleMap(
-      markers: _markers(),
-      polylines: _lines(),
-      mapType: MapType.hybrid,
-      initialCameraPosition: _INITIAL_CAMERA_POSITION,
-      onMapCreated: _onMapCreated,
-      mapToolbarEnabled: false,
-      rotateGesturesEnabled: false,
-      zoomControlsEnabled: false,
+    return Stack(
+      children: [
+        GoogleMap(
+          markers: _markers(),
+          polylines: _lines(),
+          mapType: MapType.hybrid,
+          initialCameraPosition: _INITIAL_CAMERA_POSITION,
+          onMapCreated: _onMapCreated,
+          mapToolbarEnabled: false,
+          rotateGesturesEnabled: false,
+          zoomControlsEnabled: false,
+          onTap: _onMapTap,
+        ),
+        if (_selectedLocation != null)
+          Positioned(
+            child: _locationDetails(),
+            bottom: 0,
+            left: 0,
+            right: 0,
+          ),
+      ],
     );
   }
 
   Set<Marker> _markers() {
-    Set<Marker> markers = Set();
-
-    for (var i = 0; i < widget.locations.length; i++) {
-      markers.add(Marker(
-        markerId: MarkerId("Marker-$i"),
-        position: widget.locations[i].latLng,
-        icon: BitmapDescriptor.defaultMarker,
-        consumeTapEvents: true,
-      ));
-    }
-
-    return markers;
+    return widget.locations.map(
+      (location) {
+        return Marker(
+          markerId: MarkerId(location.id),
+          position: location.latLng,
+          icon: _selectedLocation?.id == location.id
+              ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+              : BitmapDescriptor.defaultMarker,
+          onTap: () => _onMarkerTap(location),
+        );
+      },
+    ).toSet();
   }
 
   Set<Polyline> _lines() {
@@ -102,18 +121,59 @@ class _MapTabState extends State<MapTab>
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
 
-    Future.delayed(
-      Duration(milliseconds: 200),
-      () {
-        if (_tripBounds != null) {
+    if (_tripBounds != null) {
+      Future.delayed(
+        Duration(milliseconds: 100),
+        () {
           controller.moveCamera(
             CameraUpdate.newLatLngBounds(_tripBounds, 64.0),
           );
-        }
-      },
-    );
+        },
+      );
+    }
   }
 
-  @override
-  bool get wantKeepAlive => true;
+  _onMapTap(_) async {
+    setState(() {
+      _selectedLocation = null;
+    });
+  }
+
+  _onMarkerTap(SuggestedLocation location) async {
+    setState(() {
+      _selectedLocation = location;
+    });
+  }
+
+  _onRemoveLocation(SuggestedLocation location) {
+    widget.onRemoveLocation(location);
+    setState(() {
+      _selectedLocation = null;
+    });
+  }
+
+  Widget _locationDetails() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16.0),
+        ),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            offset: Offset(0, -4),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: SuggestedTripLocationDetails(
+          location: _selectedLocation,
+          onRemoveLocation: _onRemoveLocation,
+        ),
+      ),
+    );
+  }
 }

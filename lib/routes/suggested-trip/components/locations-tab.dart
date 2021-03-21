@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class LocationsTab extends StatelessWidget {
-  final List<List<SuggestedLocation>> locations;
-  final Function(int) onRemoveLocation;
+  final List<SuggestedLocation> locations;
+  final Function(SuggestedLocation) onRemoveLocation;
 
   const LocationsTab({
     Key key,
-    this.locations,
-    this.onRemoveLocation,
+    @required this.locations,
+    @required this.onRemoveLocation,
   }) : super(key: key);
 
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (locations.isEmpty) {
+      return EmptyListPlaceholder(
+        title: 'Woops!',
+        subtitle:
+            'Looks like you removed all of the locations. No trip to be had here :(',
+        action: ElevatedButton(
+          child: BodyText1.light('Back'),
+          style: ElevatedButton.styleFrom(primary: theme.primaryColor),
+          onPressed: _onBack,
+        ),
+      );
+    }
+
     return ListView.separated(
-      itemBuilder: _day,
+      itemBuilder: _location,
       itemCount: locations.length,
       separatorBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -24,30 +42,8 @@ class LocationsTab extends StatelessWidget {
     );
   }
 
-  Widget _day(context, dayIndex) {
-    final day = locations[dayIndex];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24.0),
-          child: H6(
-            "Day ${dayIndex + 1}",
-          ),
-        ),
-        _locations(day),
-      ],
-    );
-  }
-
-  Widget _locations(List<SuggestedLocation> locations) {
-    return Column(
-      children: locations.map(_location).toList(),
-    );
-  }
-
-  Widget _location(location) {
+  Widget _location(context, locationIndex) {
+    final location = locations[locationIndex];
     final imageUrl = location.coverImage?.url;
 
     return Container(
@@ -78,15 +74,20 @@ class LocationsTab extends StatelessWidget {
                 : null,
           ),
         ),
-        // TODO: Implement this when necessary
-        // trailing: IconButton(
-        //   icon: Icon(
-        //     Icons.delete_forever,
-        //     color: Colors.red,
-        //   ),
-        //   onPressed: () {},
-        // ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.delete_forever,
+            color: Colors.red,
+          ),
+          onPressed: () => onRemoveLocation(location),
+        ),
       ),
     );
+  }
+
+  _onBack() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.pop();
   }
 }

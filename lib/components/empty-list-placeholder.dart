@@ -6,11 +6,13 @@ import 'typography/subtitle2.dart';
 class EmptyListPlaceholder extends StatelessWidget {
   final String title;
   final String subtitle;
+  final Widget action;
 
   const EmptyListPlaceholder({
     Key key,
-    this.title,
+    @required this.title,
     this.subtitle,
+    this.action,
   }) : super(key: key);
 
   @override
@@ -27,16 +29,37 @@ class EmptyListPlaceholder extends StatelessWidget {
               textAlign: TextAlign.center,
               softWrap: true,
             ),
-            Padding(padding: const EdgeInsets.only(bottom: 8.0)),
-            if (subtitle != null)
-              Subtitle2(
-                subtitle,
-                textAlign: TextAlign.center,
-                softWrap: true,
-              ),
+            ..._subtitle(),
+            ..._action(),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _subtitle() {
+    if (subtitle == null) {
+      return [];
+    }
+
+    return [
+      SizedBox(height: 8.0),
+      Subtitle2(
+        subtitle,
+        textAlign: TextAlign.center,
+        softWrap: true,
+      ),
+    ];
+  }
+
+  List<Widget> _action() {
+    if (action == null) {
+      return [];
+    }
+
+    return [
+      SizedBox(height: 8.0),
+      action,
+    ];
   }
 }

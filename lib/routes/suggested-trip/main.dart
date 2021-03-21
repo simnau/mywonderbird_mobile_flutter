@@ -1,10 +1,9 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
-import 'package:quiver/iterables.dart';
-import 'package:mywonderbird/components/typography/h5.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
@@ -39,7 +38,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
   final _tabBarKey = GlobalKey();
   TabController _tabController;
   List<SuggestedLocation> _locations = [];
-  List<List<SuggestedLocation>> _suggestedLocationParts = [];
 
   _SuggestedTripState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -50,10 +48,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
     super.initState();
 
     _locations = List.from(widget.suggestedJourney.locations);
-    _suggestedLocationParts = partition<SuggestedLocation>(
-      _locations,
-      _locations.length,
-    ).toList();
   }
 
   @override
@@ -66,6 +60,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
           icon: BackButtonIcon(),
           onPressed: _onBack,
         ),
+        title: Subtitle1('Your trip is ready!'),
         backgroundColor: Colors.transparent,
         actions: [
           TextButton(
@@ -88,10 +83,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     return Column(
       children: [
-        H5('Your trip is ready!'),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-        ),
         TabBar(
           key: _tabBarKey,
           controller: _tabController,
@@ -122,11 +113,12 @@ class _SuggestedTripState extends State<SuggestedTrip>
             physics: NeverScrollableScrollPhysics(),
             children: [
               LocationsTab(
-                locations: _suggestedLocationParts,
+                locations: _locations,
                 onRemoveLocation: _onRemoveLocation,
               ),
               MapTab(
                 locations: _locations,
+                onRemoveLocation: _onRemoveLocation,
               ),
             ],
           ),
@@ -178,9 +170,9 @@ class _SuggestedTripState extends State<SuggestedTrip>
     }
   }
 
-  _onRemoveLocation(int index) {
+  _onRemoveLocation(SuggestedLocation location) {
     setState(() {
-      _locations.removeAt(index);
+      _locations.remove(location);
     });
   }
 
