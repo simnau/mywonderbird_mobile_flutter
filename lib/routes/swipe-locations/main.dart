@@ -400,37 +400,18 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     final navigationService = locator<NavigationService>();
-    final suggestionService = locator<SuggestionService>();
 
-    final locationIds = locations.map((location) => location.id).toList();
-    final suggestedJourney =
-        await suggestionService.suggestJourneyFromLocations(locationIds);
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: FINISH_SWIPING);
 
-    try {
-      final analytics = locator<FirebaseAnalytics>();
-      analytics.logEvent(name: FINISH_SWIPING);
-
-      await navigationService.push(
-        MaterialPageRoute(
-          builder: (context) => SuggestedTrip(
-            suggestedJourney: suggestedJourney,
-          ),
+    await navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SuggestedTrip(
+          locations: locations,
         ),
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+      ),
+    );
   }
 
   _onDismiss() {

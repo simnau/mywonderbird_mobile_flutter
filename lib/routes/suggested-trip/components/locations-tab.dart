@@ -3,6 +3,7 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -10,15 +11,25 @@ import 'package:transparent_image/transparent_image.dart';
 class LocationsTab extends StatelessWidget {
   final List<SuggestedLocation> locations;
   final Function(SuggestedLocation) onRemoveLocation;
+  final bool isLoading;
+  final SuggestedJourney suggestedTrip;
 
   const LocationsTab({
     Key key,
     @required this.locations,
     @required this.onRemoveLocation,
+    @required this.isLoading,
+    @required this.suggestedTrip,
   }) : super(key: key);
 
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (isLoading && suggestedTrip == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     if (locations.isEmpty) {
       return EmptyListPlaceholder(
@@ -45,6 +56,7 @@ class LocationsTab extends StatelessWidget {
   Widget _location(context, locationIndex) {
     final location = locations[locationIndex];
     final imageUrl = location.coverImage?.url;
+    final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -77,9 +89,9 @@ class LocationsTab extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(
             Icons.delete_forever,
-            color: Colors.red,
+            color: isLoading ? theme.disabledColor : Colors.red,
           ),
-          onPressed: () => onRemoveLocation(location),
+          onPressed: isLoading ? null : () => onRemoveLocation(location),
         ),
       ),
     );

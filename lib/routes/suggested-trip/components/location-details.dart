@@ -6,15 +6,23 @@ import 'package:transparent_image/transparent_image.dart';
 class SuggestedTripLocationDetails extends StatelessWidget {
   final SuggestedLocation location;
   final void Function(SuggestedLocation) onRemoveLocation;
+  final bool isLoading;
 
   const SuggestedTripLocationDetails({
     Key key,
     @required this.location,
     @required this.onRemoveLocation,
+    @required this.isLoading,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return _body(context);
+  }
+
+  Widget _body(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: IntrinsicHeight(
@@ -57,9 +65,9 @@ class SuggestedTripLocationDetails extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.delete_forever,
-                color: Colors.red,
+                color: isLoading ? theme.disabledColor : Colors.red,
               ),
-              onPressed: _onRemoveLocation,
+              onPressed: isLoading ? null : _onRemoveLocation,
             ),
           ],
         ),

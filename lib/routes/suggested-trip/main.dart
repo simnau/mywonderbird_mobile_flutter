@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
+import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
-import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
+import 'package:mywonderbird/services/suggestion.dart';
 
 import 'components/locations-tab.dart';
 import 'components/map-tab.dart';
@@ -22,11 +23,11 @@ const LOCATIONS_TAB_INDEX = 0;
 const MAP_TAB_INDEX = 1;
 
 class SuggestedTrip extends StatefulWidget {
-  final SuggestedJourney suggestedJourney;
+  final List<SuggestedLocation> locations;
 
   const SuggestedTrip({
     Key key,
-    @required this.suggestedJourney,
+    @required this.locations,
   }) : super(key: key);
 
   @override
@@ -38,6 +39,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
   final _tabBarKey = GlobalKey();
   TabController _tabController;
   List<SuggestedLocation> _locations = [];
+  SuggestedJourney _suggestedTrip;
+  bool _isLoading = true;
 
   _SuggestedTripState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -47,7 +50,35 @@ class _SuggestedTripState extends State<SuggestedTrip>
   void initState() {
     super.initState();
 
-    _locations = List.from(widget.suggestedJourney.locations);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getJourneySuggestion(widget.locations);
+    });
+  }
+
+  getJourneySuggestion(List<SuggestedLocation> suggestedLocations) async {
+    if (suggestedLocations.isEmpty) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final suggestionService = locator<SuggestionService>();
+    final locationIds =
+        suggestedLocations.map((location) => location.id).toList();
+
+    final suggestedTrip =
+        await suggestionService.suggestJourneyFromLocations(locationIds);
+
+    setState(() {
+      _suggestedTrip = suggestedTrip;
+      _locations = List.from(suggestedTrip.locations);
+      _isLoading = false;
+    });
   }
 
   @override
@@ -89,6 +120,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
           labelColor: theme.accentColor,
           unselectedLabelColor: Colors.black45,
           onTap: _onTabTap,
+          indicator: BoxDecoration(),
           tabs: [
             Tab(
               child: Text(
@@ -104,9 +136,13 @@ class _SuggestedTripState extends State<SuggestedTrip>
             ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-        ),
+        if (_isLoading && _suggestedTrip != null)
+          LinearProgressIndicator(
+            minHeight: 4,
+            backgroundColor: Colors.transparent,
+          )
+        else
+          SizedBox(height: 4),
         Expanded(
           child: TabBarView(
             controller: _tabController,
@@ -115,10 +151,13 @@ class _SuggestedTripState extends State<SuggestedTrip>
               LocationsTab(
                 locations: _locations,
                 onRemoveLocation: _onRemoveLocation,
+                isLoading: _isLoading,
+                suggestedTrip: _suggestedTrip,
               ),
               MapTab(
                 locations: _locations,
                 onRemoveLocation: _onRemoveLocation,
+                isLoading: _isLoading,
               ),
             ],
           ),
@@ -170,10 +209,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
     }
   }
 
-  _onRemoveLocation(SuggestedLocation location) {
+  _onRemoveLocation(SuggestedLocation location) async {
     setState(() {
       _locations.remove(location);
     });
+    await getJourneySuggestion(_locations);
   }
 
   _onSaveTrip() async {
@@ -219,8 +259,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
   _createSavedTrip(String title) {
     List<SavedTripLocation> savedTripLocations = [];
 
-    for (int i = 0; i < widget.suggestedJourney.locations.length; i++) {
-      final location = widget.suggestedJourney.locations[i];
+    for (int i = 0; i < _locations.length; i++) {
+      final location = _locations[i];
 
       savedTripLocations.add(
         SavedTripLocation(placeId: location.id, sequenceNumber: i),
@@ -229,7 +269,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     return SavedTrip(
       title: title,
-      countryCode: widget.suggestedJourney.countryCode,
+      countryCode: _suggestedTrip.countryCode,
       savedTripLocations: savedTripLocations,
     );
   }
