@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
@@ -29,6 +31,9 @@ const FORGOT_PASSWORD_PATH = '/api/auth/forgot-password';
 const RESET_PASSWORD_PATH = '/api/auth/reset-password';
 const CHANGE_PASSWORD_PATH = '/api/auth/change-password';
 
+const USER_ID_KEY = 'sub';
+const ROLE_KEY = 'custom:role';
+
 class AuthenticationService {
   final StreamController<User> _userController = StreamController<User>();
   final TokenService tokenService;
@@ -49,60 +54,60 @@ class AuthenticationService {
 
   Stream<User> get userStream => _userController.stream;
 
-  Future<User> signIn(String email, String password) async {
-    final response = await api.post(
-      SIGN_IN_PATH,
-      {'email': email, 'password': password},
-    );
-    final rawResponse = response['response'];
+  signIn(String email, String password) async {
+    try {
+      final credentials = await auth.FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-    if (rawResponse.statusCode == HttpStatus.unauthorized) {
-      await tokenService.clearTokens();
-      return signIn(email, password);
-    } else if (rawResponse.statusCode != HttpStatus.ok) {
-      final errorCode = response['body']['code'];
-      throw AuthenticationException(
-        'Incorrect email/password',
-        errorCode: errorCode,
+      final analytics = locator<FirebaseAnalytics>();
+      analytics.logLogin();
+
+      return credentials;
+    } on auth.FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password') {
+        throw new AuthenticationException(
+          'Invalid password / email combination',
+          errorCode: INVALID_CREDENTIALS,
+        );
+      } else if (e.code == 'too-many-requests') {
+        throw new AuthenticationException(
+          'You made too many attempts to sign in. Try again later',
+          errorCode: TOO_MANY_ATTEMPTS,
+        );
+      } else {
+        throw new AuthenticationException(
+          'There was an error signing you in',
+          errorCode: UNKNOWN_ERROR,
+        );
+      }
+    } catch (e) {
+      throw new AuthenticationException(
+        'There was an error signing you in',
+        errorCode: UNKNOWN_ERROR,
       );
     }
-
-    final body = response['body'];
-    final accessToken = body['accessToken'];
-    final refreshToken = body['refreshToken'];
-    final userId = body['userId'];
-    final role = body['role'];
-    final provider = body['provider'];
-
-    await tokenService.setAccessToken(accessToken);
-    await tokenService.setRefreshToken(refreshToken);
-
-    UserProfile profile = await profileService.getUserProfile();
-    final user = User(
-      id: userId,
-      role: role,
-      provider: provider,
-      profile: profile,
-    );
-    _userController.add(user);
-
-    final analytics = locator<FirebaseAnalytics>();
-    analytics.logLogin();
-
-    return user;
   }
 
   signUp(email, password) async {
-    final response = await api.post(
-      SIGN_UP_PATH,
-      {'email': email, 'password': password},
-    );
-    final rawResponse = response['response'];
-
-    if (rawResponse.statusCode != HttpStatus.ok) {
+    try {
+      await auth.FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on auth.FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        throw new AuthenticationException(
+          'The password provided is too weak',
+          errorCode: WEAK_PASSWORD,
+        );
+      } else if (e.code == 'email-already-in-use') {
+        throw new AuthenticationException(
+          'The account already exists for this email',
+          errorCode: USERNAME_EXISTS,
+        );
+      }
+    } catch (e) {
       throw new AuthenticationException(
         'We were unable to sign you up',
-        errorCode: response['body']['code'],
+        errorCode: UNKNOWN_ERROR,
       );
     }
 
@@ -110,16 +115,18 @@ class AuthenticationService {
     analytics.logSignUp(signUpMethod: 'email_password');
   }
 
-  Future<User> signOut() async {
-    await tokenService.clearTokens();
+  signOut() async {
+    GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      await googleSignIn.disconnect();
+    } catch (e) {
+      // TODO: should only disconnect if signed in with google
+    }
 
-    final user = null;
-    _userController.add(user);
+    await auth.FirebaseAuth.instance.signOut();
 
     final analytics = locator<FirebaseAnalytics>();
     analytics.setUserId(null);
-
-    return user;
   }
 
   Future<User> checkAuth() async {
@@ -165,6 +172,10 @@ class AuthenticationService {
     );
   }
 
+  sendPasswordResetEmail(String email) async {
+    return auth.FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
   resetPassword(String email, String code, String password) async {
     final response = await api.post(
       RESET_PASSWORD_PATH,
@@ -200,19 +211,31 @@ class AuthenticationService {
   }
 
   changePassword(String currentPassword, String newPassword) async {
-    final response = await api.post(
-      CHANGE_PASSWORD_PATH,
-      {
-        'currentPassword': currentPassword,
-        'newPassword': newPassword,
-      },
-    );
-    final rawResponse = response['response'];
+    try {
+      final user = auth.FirebaseAuth.instance.currentUser;
 
-    if (rawResponse.statusCode != HttpStatus.ok) {
+      final emailPasswordCredentials = auth.EmailAuthProvider.credential(
+        email: user.email,
+        password: currentPassword,
+      );
+
+      await user.reauthenticateWithCredential(emailPasswordCredentials);
+      await user.updatePassword(newPassword);
+    } catch (e) {
+      String errorCode;
+
+      switch (e.code) {
+        case 'wrong-password':
+          errorCode = NOT_AUTHORIZED;
+          break;
+        default:
+          errorCode = UNKNOWN_ERROR;
+          break;
+      }
+
       throw new AuthenticationException(
         'Unable to change the password',
-        errorCode: response['body']['code'],
+        errorCode: errorCode,
       );
     }
   }

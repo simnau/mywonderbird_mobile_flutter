@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/token.dart';
 
-final apiBase = 'https://api.mywonderbird.com';
+final apiBase = DotEnv.env['API_BASE'];
 
 class API {
   TokenService tokenService;
@@ -32,14 +32,20 @@ class API {
   }
 
   Future<Map<String, String>> get authenticationHeaders async {
-    final accessToken = await tokenService.getAccessToken();
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (accessToken == null) {
+    if (user == null) {
+      return {};
+    }
+
+    final idToken = await user.getIdToken();
+
+    if (idToken == null) {
       return {};
     }
 
     return {
-      HttpHeaders.authorizationHeader: accessToken,
+      HttpHeaders.authorizationHeader: idToken,
     };
   }
 
@@ -170,11 +176,12 @@ class API {
       request.fields.addAll(fields);
     }
 
-    final accessToken = await tokenService.getAccessToken();
+    final fullHeaders = {
+      ...headers,
+      ...await authenticationHeaders,
+    };
 
-    if (accessToken != null) {
-      request.headers[AUTHORIZATION_HEADER] = accessToken;
-    }
+    request.headers.addAll(fullHeaders);
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);

@@ -5,14 +5,12 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
 import 'package:mywonderbird/routes/authentication/confirm.dart';
 import 'package:mywonderbird/routes/authentication/forgot-details.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/confirm-account-arguments.dart';
 import 'package:mywonderbird/types/forgot-details-arguments.dart';
-import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   static const RELATIVE_PATH = 'sign-in';
@@ -41,10 +39,6 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<User>(context, listen: false);
-    final authenticationService = locator<AuthenticationService>();
-
-    authenticationService.afterSignIn(user);
 
     if (widget.email != null) {
       _emailController.text = widget.email;
@@ -175,21 +169,29 @@ class _SignInState extends State<SignIn> {
       if (_formKey.currentState.validate()) {
         final authenticationService = locator<AuthenticationService>();
 
-        final user = await authenticationService.signIn(
+        await authenticationService.signIn(
           _emailController.text,
           _passwordController.text,
         );
-
-        authenticationService.afterSignIn(user);
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
         case USER_NOT_CONFIRMED:
           _navigateToConfirmation();
           break;
+        case INVALID_CREDENTIALS:
+          setState(() {
+            _error = e.cause;
+          });
+          break;
+        case TOO_MANY_ATTEMPTS:
+          setState(() {
+            _error = e.cause;
+          });
+          break;
         default:
           setState(() {
-            _error = 'Invalid password / email combination';
+            _error = 'There was an error signing you in';
           });
           break;
       }

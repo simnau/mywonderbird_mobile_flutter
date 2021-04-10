@@ -8,6 +8,7 @@ class AuthTextField extends StatefulWidget {
   final String labelText;
   final TextInputType keyboardType;
   final bool obscureText;
+  final bool enabled;
 
   const AuthTextField({
     Key key,
@@ -17,6 +18,7 @@ class AuthTextField extends StatefulWidget {
     this.labelText,
     this.keyboardType,
     this.obscureText = false,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -43,6 +45,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
     return Theme(
       data: textFieldTheme,
       child: TextFormField(
+        enabled: widget.enabled,
         controller: widget.controller,
         focusNode: widget.focusNode,
         validator: widget.validator,

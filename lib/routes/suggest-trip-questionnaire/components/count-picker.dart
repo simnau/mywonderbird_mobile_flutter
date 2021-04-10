@@ -32,9 +32,9 @@ class CountPicker extends StatelessWidget {
               child: prefix,
             ),
           ),
-          NumberPicker.integer(
+          NumberPicker(
             haptics: true,
-            initialValue: value,
+            value: value,
             minValue: minValue,
             maxValue: maxValue,
             onChanged: onValueChanged,

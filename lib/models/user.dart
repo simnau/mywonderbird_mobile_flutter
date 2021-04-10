@@ -5,12 +5,14 @@ class User {
   final String id;
   final String role;
   final String provider;
+  final List<String> providers;
   UserProfile profile;
 
   User({
     @required this.id,
     this.role,
     this.provider,
+    this.providers,
     this.profile,
   });
 
@@ -19,6 +21,7 @@ class User {
       id: json['id'],
       role: json['role'],
       provider: json['provider'],
+      providers: json['providers'],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
@@ -104,10 +105,6 @@ class _ForgotDetailsState extends State<ForgotDetails> {
             primary: theme.accentColor,
           ),
         ),
-        TextButton(
-          onPressed: _onHasCode,
-          child: BodyText1('I HAVE A CODE'),
-        ),
       ],
     );
   }
@@ -131,11 +128,20 @@ class _ForgotDetailsState extends State<ForgotDetails> {
       if (_formKey.currentState.validate()) {
         final authenticationService = locator<AuthenticationService>();
 
-        await authenticationService.sendPasswordResetCode(
+        await authenticationService.sendPasswordResetEmail(
           _emailController.text,
         );
 
-        _navigateToResetPassword();
+        Fluttertoast.showToast(
+          msg:
+              'An email with a link to reset your password has been sent to you',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       }
     } catch (e) {
       setState(() {

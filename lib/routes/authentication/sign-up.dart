@@ -1,16 +1,16 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
+import 'package:mywonderbird/components/link-account-dialog.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/confirm-account-arguments.dart';
-import 'package:provider/provider.dart';
 
 import 'confirm.dart';
 
@@ -27,15 +27,6 @@ class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String _error;
-
-  @override
-  void initState() {
-    super.initState();
-    final user = Provider.of<User>(context, listen: false);
-    final authenticationService = locator<AuthenticationService>();
-
-    authenticationService.afterSignIn(user);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +130,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onSignUp() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
     try {
       setState(() {
         _error = null;
@@ -147,14 +141,7 @@ class _SignUpState extends State<SignUp> {
       if (_formKey.currentState.validate()) {
         final authenticationService = locator<AuthenticationService>();
 
-        final email = _emailController.text;
-        final password = _passwordController.text;
-
         await authenticationService.signUp(email, password);
-
-        final user = await authenticationService.signIn(email, password);
-
-        authenticationService.afterSignIn(user);
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
@@ -162,6 +149,27 @@ class _SignUpState extends State<SignUp> {
           _navigateToConfirmation();
           break;
         case USERNAME_EXISTS:
+          final result =
+              await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+
+          final credential = await showDialog(
+            context: context,
+            builder: (context) => LinkAccountDialog(
+              providers: result,
+              email: email,
+            ),
+          );
+
+          if (credential != null) {
+            final emailPasswordCredentials =
+                EmailAuthProvider.credential(email: email, password: password);
+
+            await FirebaseAuth.instance.signInWithCredential(credential);
+            await FirebaseAuth.instance.currentUser
+                .linkWithCredential(emailPasswordCredentials);
+            return;
+          }
+
           setState(() {
             _error = 'The email is already in use';
           });

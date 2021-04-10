@@ -2,6 +2,7 @@ import 'package:mywonderbird/util/json.dart';
 
 class UserProfile {
   final String id;
+  final String role;
   final String username;
   final String bio;
   final bool acceptedNewsletter;
@@ -11,6 +12,7 @@ class UserProfile {
 
   UserProfile({
     this.id,
+    this.role,
     this.username,
     this.bio,
     this.acceptedNewsletter,
@@ -24,6 +26,7 @@ class UserProfile {
 
     return UserProfile(
       id: json['id'],
+      role: json['role'],
       username: json['username'],
       bio: json['bio'],
       avatarUrl: json['avatarUrl'],

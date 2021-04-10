@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
@@ -24,22 +24,22 @@ import 'locator.dart';
 import 'app.dart';
 
 Future main({String env = 'dev'}) async {
-  await DotEnv().load("env/.env-$env");
+  await DotEnv.load(fileName: "env/.env-$env");
   setupLocator(env: env);
 
   var initialRoute;
 
   try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
     await _initOAuthUrl();
     await _initTags();
   } on UnauthorizedException {
     initialRoute = SplashScreen.PATH;
   }
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
   runZonedGuarded<Future<void>>(() async {
-    final sentryDSN = DotEnv().env['SENTRY_DSN'];
+    final sentryDSN = DotEnv.env['SENTRY_DSN'];
 
     if (env == 'prod') {
       await sentry.Sentry.init(

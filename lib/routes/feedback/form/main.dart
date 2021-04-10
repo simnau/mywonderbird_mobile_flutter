@@ -32,8 +32,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
   };
 
   String _error;
-  bool _stepNext = false;
-  bool _stepPrevious = false;
+  bool _changePage = true;
   int _currentStep = 0;
 
   bool get _isLastStep => _currentStep == feedbackSteps.length - 1;
@@ -55,14 +54,19 @@ class _FeedbackFormState extends State<FeedbackForm> {
   }
 
   Widget _buildStepper() {
+    final theme = Theme.of(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         DotStepper(
-          goNext: _stepNext,
-          goPrevious: _stepPrevious,
+          activeStep: _currentStep,
           dotCount: feedbackSteps.length,
-          indicatorEffect: IndicatorEffect.jump,
+          onDotTapped: _onDotTapped,
+          indicator: Indicator.jump,
+          dotRadius: 12.0,
+          spacing: 4.0,
+          indicatorDecoration: IndicatorDecoration(color: theme.accentColor),
         ),
       ],
     );
@@ -146,25 +150,19 @@ class _FeedbackFormState extends State<FeedbackForm> {
   }
 
   _onPageChanged(int page) {
-    _focusNodes[feedbackSteps[_currentStep].key]?.unfocus();
-    if (_currentStep < page) {
+    if (_changePage) {
       setState(() {
-        _stepNext = true;
-        _stepPrevious = false;
         _currentStep = page;
       });
     } else {
-      setState(() {
-        _stepNext = false;
-        _stepPrevious = true;
-        _currentStep = page;
-      });
+      _changePage = true;
     }
   }
 
   _onNavigateForward() {
     if (_currentStep < feedbackSteps.length - 1) {
       _focusNodes[feedbackSteps[_currentStep].key]?.unfocus();
+      _changePage = false;
 
       _pageController.animateToPage(
         _currentStep + 1,
@@ -173,12 +171,17 @@ class _FeedbackFormState extends State<FeedbackForm> {
         ),
         curve: Curves.easeInOut,
       );
+      setState(() {
+        _currentStep = _currentStep + 1;
+      });
     }
   }
 
   _onNavigateBack() {
     if (_currentStep > 0) {
       _focusNodes[feedbackSteps[_currentStep].key]?.unfocus();
+      _changePage = false;
+
       _pageController.animateToPage(
         _currentStep - 1,
         duration: Duration(
@@ -186,7 +189,25 @@ class _FeedbackFormState extends State<FeedbackForm> {
         ),
         curve: Curves.easeInOut,
       );
+      setState(() {
+        _currentStep = _currentStep - 1;
+      });
     }
+  }
+
+  _onDotTapped(tappedDotIndex) {
+    _focusNodes[feedbackSteps[_currentStep].key]?.unfocus();
+    _changePage = false;
+    setState(() {
+      _currentStep = tappedDotIndex;
+    });
+    _pageController.animateToPage(
+      tappedDotIndex,
+      duration: Duration(
+        milliseconds: 400,
+      ),
+      curve: Curves.easeInOut,
+    );
   }
 
   _onCancel() {

@@ -1,10 +1,16 @@
+import 'dart:io' show Platform;
+
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mywonderbird/components/link-account-dialog.dart';
 import 'package:mywonderbird/components/settings-list-header.dart';
 import 'package:mywonderbird/components/settings-list-icon.dart';
 import 'package:mywonderbird/components/settings-list-item.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
-import 'package:mywonderbird/constants/auth.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/terms.dart';
@@ -14,15 +20,25 @@ import 'package:mywonderbird/routes/feedback/form/main.dart';
 import 'package:mywonderbird/routes/notification-settings/main.dart';
 import 'package:mywonderbird/routes/pdf/main.dart';
 import 'package:mywonderbird/routes/profile-settings/main.dart';
+import 'package:mywonderbird/routes/set-password/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+final socialProviders = Platform.isIOS
+    ? [APPLE_PROVIDER, GOOGLE_PROVIDER, FACEBOOK_PROVIDER]
+    : [GOOGLE_PROVIDER, FACEBOOK_PROVIDER];
+
+class Settings extends StatefulWidget {
   static const RELATIVE_PATH = 'settings';
   static const PATH = "/$RELATIVE_PATH";
 
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +70,8 @@ class Settings extends StatelessWidget {
             title: 'Notifications',
           ),
           Divider(),
-          ..._changePasswordItem(context),
+          ..._signInMethods(),
+          ..._passwordItem(context),
           // TODO: add this back once it's relevant to the user
           // Builder(
           //   builder: (context) => SettingsListItem(
@@ -107,11 +124,114 @@ class Settings extends StatelessWidget {
     );
   }
 
-  List<Widget> _changePasswordItem(BuildContext context) {
+  List<Widget> _signInMethods() {
+    final currentUser = auth.FirebaseAuth.instance.currentUser;
+    final user = Provider.of<User>(context);
+    final List<Widget> results = [];
+    final theme = Theme.of(context);
+
+    for (final provider in socialProviders) {
+      final hasProvider = currentUser.providerData
+          .where((p) => p.providerId == provider)
+          .isNotEmpty;
+      // If it's the only login method, we don't allow to unlink
+      final canUnlink = user.providers.length > 1;
+      final onPressed =
+          () => hasProvider ? _onUnlink(provider) : _onLink(provider);
+
+      var color;
+
+      if (hasProvider && canUnlink) {
+        color = theme.errorColor;
+      }
+
+      final conditionalOnPressed = hasProvider && !canUnlink ? null : onPressed;
+      final buttonText = hasProvider ? 'Unlink' : 'Link';
+
+      switch (provider) {
+        case FACEBOOK_PROVIDER:
+          results.add(
+            SettingsListItem(
+              icon: SettingsListIcon(
+                icon: MaterialCommunityIcons.facebook,
+                color: Colors.white,
+                backgroundColor: Color(0xFF3B5798),
+              ),
+              title: 'Facebook',
+              trailing: TextButton(
+                child: Subtitle2(
+                  buttonText,
+                  color: color,
+                ),
+                onPressed: conditionalOnPressed,
+              ),
+            ),
+          );
+          results.add(Divider());
+          break;
+        case GOOGLE_PROVIDER:
+          results.add(
+            SettingsListItem(
+              icon: SettingsListIcon(
+                icon: MaterialCommunityIcons.google,
+                color: Colors.white,
+                backgroundColor: Color(0xFFDB4437),
+              ),
+              title: 'Google',
+              trailing: TextButton(
+                child: Subtitle2(
+                  buttonText,
+                  color: color,
+                ),
+                onPressed: conditionalOnPressed,
+              ),
+            ),
+          );
+          results.add(Divider());
+          break;
+        case APPLE_PROVIDER:
+          results.add(
+            SettingsListItem(
+              icon: SettingsListIcon(
+                icon: MaterialCommunityIcons.apple,
+                color: Colors.white,
+                backgroundColor: Colors.black,
+              ),
+              title: 'Apple',
+              trailing: TextButton(
+                child: Subtitle2(
+                  buttonText,
+                  color: color,
+                ),
+                onPressed: conditionalOnPressed,
+              ),
+            ),
+          );
+          results.add(Divider());
+          break;
+      }
+    }
+
+    return results;
+  }
+
+  List<Widget> _passwordItem(BuildContext context) {
     final user = Provider.of<User>(context);
 
-    if (user?.provider != COGNITO_PROVIDER) {
-      return [];
+    if (user?.providers == null ||
+        !user.providers.contains(PASSWORD_PROVIDER)) {
+      return [
+        SettingsListItem(
+          onTap: _onSetPassword,
+          icon: SettingsListIcon(
+            icon: Icons.vpn_key,
+            color: Colors.white,
+            backgroundColor: Colors.black87,
+          ),
+          title: 'Set password',
+        ),
+        Divider(),
+      ];
     }
 
     return [
@@ -207,6 +327,14 @@ class Settings extends StatelessWidget {
     ));
   }
 
+  _onSetPassword() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => SetPassword(),
+    ));
+  }
+
   _onResetToDefaults(BuildContext context) async {
     final defaultsService = locator<DefaultsService>();
     await defaultsService.reset();
@@ -260,4 +388,136 @@ class Settings extends StatelessWidget {
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushReplacementNamed(SelectAuthOption.PATH);
   }
+
+  _onLink(provider) {
+    switch (provider) {
+      case FACEBOOK_PROVIDER:
+        return _linkFacebook();
+      case GOOGLE_PROVIDER:
+        return _linkGoogle();
+      case APPLE_PROVIDER:
+        return _linkApple();
+    }
+  }
+
+  _onUnlink(provider) async {
+    final currentUser = auth.FirebaseAuth.instance.currentUser;
+    final user = Provider.of<User>(context, listen: false);
+    final authenticationService = locator<AuthenticationService>();
+
+    await currentUser.unlink(provider);
+
+    final newProviders = [...user.providers];
+    newProviders.remove(provider);
+
+    authenticationService.addUser(User(
+      id: user.id,
+      role: user.role,
+      provider: user.provider,
+      providers: newProviders,
+      profile: user.profile,
+    ));
+  }
+
+  _linkFacebook() async {
+    final result = await FacebookAuth.instance.login();
+
+    switch (result.status) {
+      case LoginStatus.cancelled:
+        return;
+      case LoginStatus.failed:
+        return;
+      case LoginStatus.operationInProgress:
+        return;
+      default:
+        final credential =
+            auth.FacebookAuthProvider.credential(result.accessToken.token);
+        final currentUser = auth.FirebaseAuth.instance.currentUser;
+        final user = Provider.of<User>(context, listen: false);
+        final authenticationService = locator<AuthenticationService>();
+
+        final providers = await auth.FirebaseAuth.instance
+            .fetchSignInMethodsForEmail(currentUser.email);
+
+        final oldCredential = await showDialog(
+          context: context,
+          builder: (context) => LinkAccountDialog(
+            providers: providers,
+            email: currentUser.email,
+            message: 'Please re-sign-in to link the account',
+          ),
+        );
+
+        if (credential != null) {
+          await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
+          await auth.FirebaseAuth.instance.currentUser
+              .linkWithCredential(credential);
+
+          final newProviders = [
+            ...user.providers,
+            FACEBOOK_PROVIDER,
+          ];
+
+          authenticationService.addUser(User(
+            id: user.id,
+            role: user.role,
+            provider: user.provider,
+            providers: newProviders,
+            profile: user.profile,
+          ));
+        }
+    }
+  }
+
+  _linkGoogle() async {
+    final googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) {
+      return;
+    }
+
+    final googleAuth = await googleUser.authentication;
+
+    final credential = auth.GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final currentUser = auth.FirebaseAuth.instance.currentUser;
+    final user = Provider.of<User>(context, listen: false);
+    final authenticationService = locator<AuthenticationService>();
+
+    final providers = await auth.FirebaseAuth.instance
+        .fetchSignInMethodsForEmail(currentUser.email);
+
+    final oldCredential = await showDialog(
+      context: context,
+      builder: (context) => LinkAccountDialog(
+        providers: providers,
+        email: googleUser.email,
+        message: 'Please re-sign-in to link the account',
+      ),
+    );
+
+    if (credential != null) {
+      await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
+      await auth.FirebaseAuth.instance.currentUser
+          .linkWithCredential(credential);
+
+      final newProviders = [
+        ...user.providers,
+        GOOGLE_PROVIDER,
+      ];
+
+      authenticationService.addUser(User(
+        id: user.id,
+        role: user.role,
+        provider: user.provider,
+        providers: newProviders,
+        profile: user.profile,
+      ));
+    }
+  }
+
+  _linkApple() {}
 }
