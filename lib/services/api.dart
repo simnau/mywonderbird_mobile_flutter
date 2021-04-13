@@ -45,7 +45,7 @@ class API {
     }
 
     return {
-      HttpHeaders.authorizationHeader: idToken,
+      HttpHeaders.authorizationHeader: "Bearer $idToken",
     };
   }
 
