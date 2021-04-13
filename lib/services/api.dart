@@ -8,7 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/token.dart';
 
@@ -232,7 +234,9 @@ class API {
 
   Future<Map<String, dynamic>> _handleResponse(http.Response response) async {
     if (response.statusCode == HttpStatus.unauthorized) {
-      await tokenService.clearTokens();
+      final authenticationService = locator<AuthenticationService>();
+
+      await authenticationService.signOut();
       _navigateToAuth();
       throw UnauthorizedException('The user is not authorized');
     }
