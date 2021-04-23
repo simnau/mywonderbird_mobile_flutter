@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "874546630664-41q1a1njvf9hi31erprpsvmu5ui2hd1m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mywonderbird",
+            "certificate_hash": "78a4d6f82885d924998193cf5f38c8aef0341d3b"
+          }
+        },
+        {
           "client_id": "874546630664-g2v5plkfqiclh08cbt4o3ersr4lq5ne6.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -30,6 +38,14 @@
             {
               "client_id": "874546630664-g2v5plkfqiclh08cbt4o3ersr4lq5ne6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "874546630664-8sv984k5ddsq67nvrh4ckjqhkk0u7f29.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mywonderbird.mywonderbird",
+                "app_store_id": "962194608"
+              }
             }
           ]
         }

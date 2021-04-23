@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:mywonderbird/components/link-account-dialog.dart';
@@ -119,16 +120,10 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
   }
 
   _signIn() {
-    setState(() {
-      _error = null;
-    });
     Navigator.of(context).pushNamed(SignIn.RELATIVE_PATH);
   }
 
   _signUp() {
-    setState(() {
-      _error = null;
-    });
     Navigator.of(context).pushNamed(SignUp.RELATIVE_PATH);
   }
 
@@ -137,19 +132,37 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
 
     switch (result.status) {
       case LoginStatus.cancelled:
-        setState(() {
-          _error = 'The user has cancelled the operation';
-        });
+        Fluttertoast.showToast(
+          msg: 'The user has cancelled the operation',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         return;
       case LoginStatus.failed:
-        setState(() {
-          _error = 'There was an error signing in';
-        });
+        Fluttertoast.showToast(
+          msg: 'There was an error signing in',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         return;
       case LoginStatus.operationInProgress:
-        setState(() {
-          _error = 'The operation is still in progress';
-        });
+        Fluttertoast.showToast(
+          msg: 'The operation is still in progress',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         return;
       default:
         final credential =
@@ -158,6 +171,16 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
         try {
           return await FirebaseAuth.instance.signInWithCredential(credential);
         } catch (e) {
+          Fluttertoast.showToast(
+            msg: e.toString(),
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+            timeInSecForIosWeb: 2,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+
           final providers =
               await FirebaseAuth.instance.fetchSignInMethodsForEmail(e.email);
 
@@ -180,45 +203,60 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
   }
 
   _onGoogleFlow() async {
-    setState(() {
-      _error = null;
-    });
+    try {
+      final googleUser = await GoogleSignIn().signIn();
 
-    final googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      setState(() {
-        _error = 'The user has cancelled the operation';
-      });
-      return;
-    }
-
-    final googleAuth = await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final providers = await FirebaseAuth.instance
-        .fetchSignInMethodsForEmail(googleUser.email);
-
-    if (providers.isNotEmpty && !providers.contains(GOOGLE_PROVIDER)) {
-      final oldCredential = await showDialog(
-        context: context,
-        builder: (context) => LinkAccountDialog(
-          providers: providers,
-          email: googleUser.email,
-        ),
-      );
-
-      if (credential != null) {
-        await FirebaseAuth.instance.signInWithCredential(oldCredential);
-        await FirebaseAuth.instance.currentUser.linkWithCredential(credential);
+      if (googleUser == null) {
+        Fluttertoast.showToast(
+          msg: 'The user has cancelled the operation',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         return;
       }
-    } else {
-      return FirebaseAuth.instance.signInWithCredential(credential);
+
+      final googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final providers = await FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(googleUser.email);
+
+      if (providers.isNotEmpty && !providers.contains(GOOGLE_PROVIDER)) {
+        final oldCredential = await showDialog(
+          context: context,
+          builder: (context) => LinkAccountDialog(
+            providers: providers,
+            email: googleUser.email,
+          ),
+        );
+
+        if (credential != null) {
+          await FirebaseAuth.instance.signInWithCredential(oldCredential);
+          await FirebaseAuth.instance.currentUser
+              .linkWithCredential(credential);
+          return;
+        }
+      } else {
+        return await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "An unexpected error occurred. Please try again",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 }
