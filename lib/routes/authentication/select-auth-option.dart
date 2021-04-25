@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:mywonderbird/components/link-account-dialog.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/routes/authentication/sign-in.dart';
 import 'package:mywonderbird/routes/authentication/sign-up.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 
 class SelectAuthOption extends StatefulWidget {
   static const RELATIVE_PATH = 'select-auth-option';
@@ -76,47 +76,49 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
   Widget _authOptions() {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 32.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: _signIn,
-            child: BodyText1('SIGN IN'),
-            style: ElevatedButton.styleFrom(
-              primary: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
-                side: BorderSide(color: theme.accentColor),
+    return Builder(builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 32.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: _signIn,
+              child: BodyText1('SIGN IN'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  side: BorderSide(color: theme.accentColor),
+                ),
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: _signUp,
-            child: BodyText1.light('SIGN UP'),
-            style: ElevatedButton.styleFrom(
-              primary: theme.accentColor,
+            ElevatedButton(
+              onPressed: _signUp,
+              child: BodyText1.light('SIGN UP'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.accentColor,
+              ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: _onFacebookFlow,
-            child: BodyText1.light('CONTINUE WITH FACEBOOK'),
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFF3B5798),
+            ElevatedButton(
+              onPressed: () => _onFacebookFlow(context),
+              child: BodyText1.light('CONTINUE WITH FACEBOOK'),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFF3B5798),
+              ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: _onGoogleFlow,
-            child: BodyText1.light('CONTINUE WITH GOOGLE'),
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFFDB4437),
+            ElevatedButton(
+              onPressed: () => _onGoogleFlow(context),
+              child: BodyText1.light('CONTINUE WITH GOOGLE'),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFDB4437),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   _signIn() {
@@ -127,43 +129,21 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
     Navigator.of(context).pushNamed(SignUp.RELATIVE_PATH);
   }
 
-  _onFacebookFlow() async {
+  _onFacebookFlow(BuildContext context) async {
     final result = await FacebookAuth.instance.login();
+
+    var error;
 
     switch (result.status) {
       case LoginStatus.cancelled:
-        Fluttertoast.showToast(
-          msg: 'The user has cancelled the operation',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        return;
+        error = 'Operation cancelled';
+        break;
       case LoginStatus.failed:
-        Fluttertoast.showToast(
-          msg: 'There was an error signing in',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        return;
+        error = 'There was an error signing in';
+        break;
       case LoginStatus.operationInProgress:
-        Fluttertoast.showToast(
-          msg: 'The operation is still in progress',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        return;
+        error = 'The operation is still in progress';
+        break;
       default:
         final credential =
             FacebookAuthProvider.credential(result.accessToken.token);
@@ -171,16 +151,6 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
         try {
           return await FirebaseAuth.instance.signInWithCredential(credential);
         } catch (e) {
-          Fluttertoast.showToast(
-            msg: e.toString(),
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-            timeInSecForIosWeb: 2,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-
           final providers =
               await FirebaseAuth.instance.fetchSignInMethodsForEmail(e.email);
 
@@ -192,30 +162,52 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
             ),
           );
 
+          if (oldCredential == null) {
+            error = 'Unable to retrieve account credentials';
+            break;
+          }
+
           if (credential != null) {
-            await FirebaseAuth.instance.signInWithCredential(oldCredential);
-            await FirebaseAuth.instance.currentUser
-                .linkWithCredential(credential);
-            return;
+            try {
+              await FirebaseAuth.instance.signInWithCredential(oldCredential);
+              await FirebaseAuth.instance.currentUser
+                  .linkWithCredential(credential);
+              return;
+            } on FirebaseAuthException catch (e) {
+              switch (e.code) {
+                case 'wrong-password':
+                  error = 'Invalid password / email combination';
+                  break;
+                case 'too-many-requests':
+                  error =
+                      'You made too many attempts to sign in. Try again later';
+                  break;
+                default:
+                  error = 'There was an error signing you in';
+                  break;
+              }
+            } catch (e) {
+              error = 'There was an error signing you in';
+            }
           }
         }
     }
+
+    if (error != null) {
+      final snackBar = createErrorSnackbar(text: error);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
-  _onGoogleFlow() async {
+  _onGoogleFlow(BuildContext context) async {
+    var error;
+
     try {
       final googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) {
-        Fluttertoast.showToast(
-          msg: 'The user has cancelled the operation',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        final snackBar = createErrorSnackbar(text: 'Operation cancelled');
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       }
 
@@ -247,16 +239,27 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
       } else {
         return await FirebaseAuth.instance.signInWithCredential(credential);
       }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'wrong-password':
+          error = 'Invalid password / email combination';
+          break;
+        case 'too-many-requests':
+          error = 'You made too many attempts to sign in. Try again later';
+          break;
+        default:
+          error = 'There was an error signing you in';
+          break;
+      }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "An unexpected error occurred. Please try again",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      error = 'There was an error signing you in';
+    }
+
+    if (error != null) {
+      final snackBar = createErrorSnackbar(
+        text: error,
       );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

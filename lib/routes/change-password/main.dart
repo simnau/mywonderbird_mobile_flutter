@@ -6,6 +6,7 @@ import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/change-password/components/change-password-form.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 
 class ChangePassword extends StatefulWidget {
   @override
@@ -111,34 +112,30 @@ class _ChangePasswordState extends State<ChangePassword> {
         _currentPasswordFocusNode.unfocus();
         _newPasswordFocusNode.unfocus();
 
-        final snackBar = SnackBar(
-          content: Text(
-            'Password successfully changed',
-            style: TextStyle(
-              color: Colors.green,
-            ),
-          ),
+        final snackBar = createSuccessSnackbar(
+          text: 'Password successfully changed',
         );
-
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } on AuthenticationException catch (e) {
+      var error;
+
       switch (e.errorCode) {
         case NOT_AUTHORIZED:
-          setState(() {
-            _error = 'Your current password is incorrect';
-          });
+          error = 'Your current password is incorrect';
           break;
         default:
-          setState(() {
-            _error = 'There was an error changing your password';
-          });
+          error = 'There was an error changing your password';
           break;
       }
+
+      final snackBar = createErrorSnackbar(text: error);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
-      setState(() {
-        _error = 'There was an error changing your password';
-      });
+      final snackBar = createErrorSnackbar(
+        text: 'There was an error changing your password',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

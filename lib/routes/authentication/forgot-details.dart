@@ -1,14 +1,12 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
-import 'package:mywonderbird/types/reset-password-arguments.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 
 import 'components/screen-layout.dart';
-import 'reset-password.dart';
 
 class ForgotDetails extends StatefulWidget {
   static const RELATIVE_PATH = 'forgot-details';
@@ -28,7 +26,6 @@ class ForgotDetails extends StatefulWidget {
 class _ForgotDetailsState extends State<ForgotDetails> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  String _error;
 
   @override
   void initState() {
@@ -71,13 +68,6 @@ class _ForgotDetailsState extends State<ForgotDetails> {
               ),
             ),
           ),
-          if (_error != null)
-            Container(
-              padding: const EdgeInsets.all(8),
-              alignment: Alignment.center,
-              color: Colors.red,
-              child: BodyText1.light(_error),
-            ),
           AuthTextField(
             controller: _emailController,
             validator: _validateEmail,
@@ -98,12 +88,16 @@ class _ForgotDetailsState extends State<ForgotDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        ElevatedButton(
-          onPressed: _onResetPassword,
-          child: BodyText1.light('REMIND PASSWORD'),
-          style: ElevatedButton.styleFrom(
-            primary: theme.accentColor,
-          ),
+        Builder(
+          builder: (context) {
+            return ElevatedButton(
+              onPressed: () => _onResetPassword(context),
+              child: BodyText1.light('REMIND PASSWORD'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.accentColor,
+              ),
+            );
+          },
         ),
       ],
     );
@@ -119,12 +113,8 @@ class _ForgotDetailsState extends State<ForgotDetails> {
     return null;
   }
 
-  _onResetPassword() async {
+  _onResetPassword(BuildContext context) async {
     try {
-      setState(() {
-        _error = null;
-      });
-
       if (_formKey.currentState.validate()) {
         final authenticationService = locator<AuthenticationService>();
 
@@ -132,34 +122,17 @@ class _ForgotDetailsState extends State<ForgotDetails> {
           _emailController.text,
         );
 
-        Fluttertoast.showToast(
-          msg:
+        final snackBar = createSuccessSnackbar(
+          text:
               'An email with a link to reset your password has been sent to you',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
         );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (e) {
-      setState(() {
-        _error = 'An unexpected error has occurred. Please try again later.';
-      });
+      final snackBar = createErrorSnackbar(
+        text: 'An unexpected error has occurred. Please try again later.',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-  }
-
-  _onHasCode() {
-    _navigateToResetPassword();
-  }
-
-  _navigateToResetPassword() {
-    Navigator.of(context).pushNamed(
-      ResetPassword.RELATIVE_PATH,
-      arguments: ResetPasswordArguments(
-        email: _emailController.text,
-      ),
-    );
   }
 }

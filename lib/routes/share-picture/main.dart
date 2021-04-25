@@ -12,6 +12,7 @@ import 'package:mywonderbird/routes/share-picture/components/sharing-widget.dart
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/sharing.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 
 class ShareScreen extends StatefulWidget {
   static const RELATIVE_PATH = 'share-picture';
@@ -145,15 +146,7 @@ class _ShareScreenState extends State<ShareScreen> {
       navigationService.popUntil((route) => route.isFirst);
       navigationService.pushReplacementNamed(HomePage.PATH);
     } catch (e) {
-      final snackBar = SnackBar(
-        content: Text(
-          e.toString(),
-          style: TextStyle(
-            color: Colors.red,
-          ),
-        ),
-      );
-
+      final snackBar = createErrorSnackbar(text: e.toString());
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } finally {
       setState(() {

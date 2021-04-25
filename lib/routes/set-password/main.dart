@@ -7,6 +7,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/set-password/components/set-password-form.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
 class SetPassword extends StatefulWidget {
@@ -131,15 +132,9 @@ class _SetPasswordState extends State<SetPassword> {
 
           authenticationService.addUser(newAppUser);
 
-          final snackBar = SnackBar(
-            content: Text(
-              'Password successfully set for the account',
-              style: TextStyle(
-                color: Colors.green,
-              ),
-            ),
+          final snackBar = createSuccessSnackbar(
+            text: 'Password successfully set for the account',
           );
-
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }

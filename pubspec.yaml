@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.34+62
+version: 0.4.35+63
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -48,7 +48,6 @@ dependencies:
   im_stepper: ^0.1.2+6
   story_view: ^0.12.5
   permission_handler: ^6.1.0
-  fluttertoast: ^8.0.3
 
 dev_dependencies:
   flutter_test:

@@ -24,6 +24,7 @@ import 'package:mywonderbird/routes/set-password/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
 final socialProviders = Platform.isIOS
@@ -46,87 +47,88 @@ class _SettingsState extends State<Settings> {
         backgroundColor: Colors.transparent,
         title: Subtitle1('Settings'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        children: [
-          SettingsListHeader(title: 'GENERAL SETTINGS'),
-          SettingsListItem(
-            onTap: _onProfile,
-            icon: SettingsListIcon(
-              icon: Icons.person,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
+      body: Builder(builder: (context) {
+        return ListView(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          children: [
+            SettingsListHeader(title: 'GENERAL SETTINGS'),
+            SettingsListItem(
+              onTap: _onProfile,
+              icon: SettingsListIcon(
+                icon: Icons.person,
+                color: Colors.white,
+                backgroundColor: Colors.black87,
+              ),
+              title: 'Profile settings',
             ),
-            title: 'Profile settings',
-          ),
-          Divider(),
-          SettingsListItem(
-            onTap: _onNotifications,
-            icon: SettingsListIcon(
-              icon: Icons.notifications,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
+            Divider(),
+            SettingsListItem(
+              onTap: _onNotifications,
+              icon: SettingsListIcon(
+                icon: Icons.notifications,
+                color: Colors.white,
+                backgroundColor: Colors.black87,
+              ),
+              title: 'Notifications',
             ),
-            title: 'Notifications',
-          ),
-          Divider(),
-          ..._signInMethods(),
-          ..._passwordItem(context),
-          // TODO: add this back once it's relevant to the user
-          // Builder(
-          //   builder: (context) => SettingsListItem(
-          //     onTap: () => _onResetToDefaults(context),
-          //     icon: SettingsListIcon(
-          //       icon: Icons.settings_backup_restore,
-          //       color: Colors.white,
-          //       backgroundColor: Colors.black87,
-          //     ),
-          //     title: 'Reset to defaults',
-          //     hideTrailing: true,
-          //   ),
-          // ),
-          // Divider(),
-          SettingsListItem(
-            onTap: _onSignOut,
-            icon: SettingsListIcon(
-              icon: MaterialCommunityIcons.logout_variant,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
+            Divider(),
+            ..._signInMethods(context),
+            ..._passwordItem(context),
+            // TODO: add this back once it's relevant to the user
+            // Builder(
+            //   builder: (context) => SettingsListItem(
+            //     onTap: () => _onResetToDefaults(context),
+            //     icon: SettingsListIcon(
+            //       icon: Icons.settings_backup_restore,
+            //       color: Colors.white,
+            //       backgroundColor: Colors.black87,
+            //     ),
+            //     title: 'Reset to defaults',
+            //     hideTrailing: true,
+            //   ),
+            // ),
+            // Divider(),
+            SettingsListItem(
+              onTap: _onSignOut,
+              icon: SettingsListIcon(
+                icon: MaterialCommunityIcons.logout_variant,
+                color: Colors.white,
+                backgroundColor: Colors.black87,
+              ),
+              title: 'Sign out',
+              hideTrailing: true,
             ),
-            title: 'Sign out',
-            hideTrailing: true,
-          ),
-          SettingsListHeader(title: 'FEEDBACK'),
-          SettingsListItem(
-            onTap: _onFeedback,
-            icon: SettingsListIcon(
-              icon: Icons.feedback,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
+            SettingsListHeader(title: 'FEEDBACK'),
+            SettingsListItem(
+              onTap: _onFeedback,
+              icon: SettingsListIcon(
+                icon: Icons.feedback,
+                color: Colors.white,
+                backgroundColor: Colors.black87,
+              ),
+              title: 'Give feedback',
             ),
-            title: 'Give feedback',
-          ),
-          // TODO: Implement Report Bug functionality
-          // Divider(),
-          // SettingsListItem(
-          //   onTap: _onReportBug,
-          //   icon: SettingsListIcon(
-          //     icon: Icons.bug_report,
-          //     color: Colors.white,
-          //     backgroundColor: Colors.black87,
-          //   ),
-          //   title: 'Report a bug',
-          // ),
-          SettingsListHeader(title: 'LEGAL'),
-          ..._legalWidgets(),
-        ],
-      ),
+            // TODO: Implement Report Bug functionality
+            // Divider(),
+            // SettingsListItem(
+            //   onTap: _onReportBug,
+            //   icon: SettingsListIcon(
+            //     icon: Icons.bug_report,
+            //     color: Colors.white,
+            //     backgroundColor: Colors.black87,
+            //   ),
+            //   title: 'Report a bug',
+            // ),
+            SettingsListHeader(title: 'LEGAL'),
+            ..._legalWidgets(),
+          ],
+        );
+      }),
     );
   }
 
-  List<Widget> _signInMethods() {
+  List<Widget> _signInMethods(BuildContext context) {
     final currentUser = auth.FirebaseAuth.instance.currentUser;
-    final user = Provider.of<User>(context);
     final List<Widget> results = [];
     final theme = Theme.of(context);
 
@@ -135,9 +137,10 @@ class _SettingsState extends State<Settings> {
           .where((p) => p.providerId == provider)
           .isNotEmpty;
       // If it's the only login method, we don't allow to unlink
-      final canUnlink = user.providers.length > 1;
-      final onPressed =
-          () => hasProvider ? _onUnlink(provider) : _onLink(provider);
+      final canUnlink = currentUser.providerData.length > 1;
+      final onPressed = () => hasProvider
+          ? _onUnlink(context, provider)
+          : _onLink(context, provider);
 
       var color;
 
@@ -339,15 +342,9 @@ class _SettingsState extends State<Settings> {
     final defaultsService = locator<DefaultsService>();
     await defaultsService.reset();
 
-    final snackBar = SnackBar(
-      content: Text(
-        'App defaults have been reset',
-        style: TextStyle(
-          color: Colors.green,
-        ),
-      ),
+    final snackBar = createSuccessSnackbar(
+      text: 'App has been reset to default settings',
     );
-
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
@@ -389,18 +386,33 @@ class _SettingsState extends State<Settings> {
     navigationService.pushReplacementNamed(SelectAuthOption.PATH);
   }
 
-  _onLink(provider) {
+  _onLink(BuildContext context, String provider) async {
+    var providerName;
+
     switch (provider) {
       case FACEBOOK_PROVIDER:
-        return _linkFacebook();
+        await _linkFacebook(context);
+        providerName = 'Facebook';
+        break;
       case GOOGLE_PROVIDER:
-        return _linkGoogle();
+        await _linkGoogle(context);
+        providerName = 'Google';
+        break;
       case APPLE_PROVIDER:
-        return _linkApple();
+        await _linkApple(context);
+        providerName = 'Apple';
+        break;
+    }
+
+    if (providerName != null) {
+      final snackBar = createSuccessSnackbar(
+        text: "Your $providerName account has been successfully linked",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-  _onUnlink(provider) async {
+  _onUnlink(BuildContext context, String provider) async {
     final currentUser = auth.FirebaseAuth.instance.currentUser;
     final user = Provider.of<User>(context, listen: false);
     final authenticationService = locator<AuthenticationService>();
@@ -417,18 +429,44 @@ class _SettingsState extends State<Settings> {
       providers: newProviders,
       profile: user.profile,
     ));
+
+    var providerName;
+
+    switch (provider) {
+      case FACEBOOK_PROVIDER:
+        providerName = 'Facebook';
+        break;
+      case GOOGLE_PROVIDER:
+        providerName = 'Google';
+        break;
+      case APPLE_PROVIDER:
+        providerName = 'Apple';
+        break;
+    }
+
+    if (providerName != null) {
+      final snackBar = createSuccessSnackbar(
+        text: "Your $providerName account has been successfully unlinked",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
-  _linkFacebook() async {
+  _linkFacebook(BuildContext context) async {
     final result = await FacebookAuth.instance.login();
+
+    var error;
 
     switch (result.status) {
       case LoginStatus.cancelled:
-        return;
+        error = 'Operation cancelled';
+        break;
       case LoginStatus.failed:
-        return;
+        error = 'There was an error signing in';
+        break;
       case LoginStatus.operationInProgress:
-        return;
+        error = 'The operation is still in progress';
+        break;
       default:
         final credential =
             auth.FacebookAuthProvider.credential(result.accessToken.token);
@@ -448,76 +486,131 @@ class _SettingsState extends State<Settings> {
           ),
         );
 
+        if (oldCredential == null) {
+          error = 'Unable to retrieve account credentials';
+          break;
+        }
+
         if (credential != null) {
-          await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
-          await auth.FirebaseAuth.instance.currentUser
-              .linkWithCredential(credential);
+          try {
+            await auth.FirebaseAuth.instance
+                .signInWithCredential(oldCredential);
+            await auth.FirebaseAuth.instance.currentUser
+                .linkWithCredential(credential);
 
-          final newProviders = [
-            ...user.providers,
-            FACEBOOK_PROVIDER,
-          ];
+            final newProviders = [
+              ...user.providers,
+              FACEBOOK_PROVIDER,
+            ];
 
-          authenticationService.addUser(User(
-            id: user.id,
-            role: user.role,
-            provider: user.provider,
-            providers: newProviders,
-            profile: user.profile,
-          ));
+            authenticationService.addUser(User(
+              id: user.id,
+              role: user.role,
+              provider: user.provider,
+              providers: newProviders,
+              profile: user.profile,
+            ));
+          } on auth.FirebaseAuthException catch (e) {
+            switch (e.code) {
+              case 'wrong-password':
+                error = 'Invalid password / email combination';
+                break;
+              case 'too-many-requests':
+                error =
+                    'You made too many attempts to sign in. Try again later';
+                break;
+              default:
+                error = 'There was an error linking accounts';
+                break;
+            }
+          } catch (e) {
+            error = 'There was an error linking accounts';
+          }
         }
     }
-  }
 
-  _linkGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      return;
-    }
-
-    final googleAuth = await googleUser.authentication;
-
-    final credential = auth.GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final currentUser = auth.FirebaseAuth.instance.currentUser;
-    final user = Provider.of<User>(context, listen: false);
-    final authenticationService = locator<AuthenticationService>();
-
-    final providers = await auth.FirebaseAuth.instance
-        .fetchSignInMethodsForEmail(currentUser.email);
-
-    final oldCredential = await showDialog(
-      context: context,
-      builder: (context) => LinkAccountDialog(
-        providers: providers,
-        email: googleUser.email,
-        message: 'Please re-sign-in to link the account',
-      ),
-    );
-
-    if (credential != null) {
-      await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
-      await auth.FirebaseAuth.instance.currentUser
-          .linkWithCredential(credential);
-
-      final newProviders = [
-        ...user.providers,
-        GOOGLE_PROVIDER,
-      ];
-
-      authenticationService.addUser(User(
-        id: user.id,
-        role: user.role,
-        provider: user.provider,
-        providers: newProviders,
-        profile: user.profile,
-      ));
+    if (error != null) {
+      final snackBar = createErrorSnackbar(text: error);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-  _linkApple() {}
+  _linkGoogle(BuildContext context) async {
+    var error;
+
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        final snackBar = createErrorSnackbar(text: 'Operation cancelled');
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+
+      final credential = auth.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final currentUser = auth.FirebaseAuth.instance.currentUser;
+      final user = Provider.of<User>(context, listen: false);
+      final authenticationService = locator<AuthenticationService>();
+
+      final providers = await auth.FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(currentUser.email);
+
+      final oldCredential = await showDialog(
+        context: context,
+        builder: (context) => LinkAccountDialog(
+          providers: providers,
+          email: googleUser.email,
+          message: 'Please re-sign-in to link the account',
+        ),
+      );
+
+      if (credential != null) {
+        await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
+        await auth.FirebaseAuth.instance.currentUser
+            .linkWithCredential(credential);
+
+        final newProviders = [
+          ...user.providers,
+          GOOGLE_PROVIDER,
+        ];
+
+        authenticationService.addUser(User(
+          id: user.id,
+          role: user.role,
+          provider: user.provider,
+          providers: newProviders,
+          profile: user.profile,
+        ));
+      }
+    } on auth.FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'wrong-password':
+          error = 'Invalid password / email combination';
+          break;
+        case 'too-many-requests':
+          error = 'You made too many attempts to sign in. Try again later';
+          break;
+        default:
+          error = 'There was an error linking accounts';
+          break;
+      }
+    } catch (e) {
+      error = 'There was an error linking accounts';
+    }
+
+    if (error != null) {
+      final snackBar = createErrorSnackbar(
+        text: error,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  _linkApple(BuildContext context) {}
 }
