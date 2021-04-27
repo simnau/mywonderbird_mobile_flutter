@@ -21,7 +21,7 @@ class AreaSelectionActions extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton(
-            child: BodyText1.light('SELECT AREA'),
+            child: BodyText1.light('SEARCH IN THIS AREA'),
             onPressed: onSelectArea,
             style: ElevatedButton.styleFrom(
               primary: theme.primaryColor.withOpacity(0.85),
