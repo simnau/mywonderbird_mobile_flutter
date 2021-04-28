@@ -24,8 +24,10 @@ import 'package:mywonderbird/routes/set-password/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/apple.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 final socialProviders = Platform.isIOS
     ? [APPLE_PROVIDER, GOOGLE_PROVIDER, FACEBOOK_PROVIDER]
@@ -470,63 +472,11 @@ class _SettingsState extends State<Settings> {
       default:
         final credential =
             auth.FacebookAuthProvider.credential(result.accessToken.token);
-        final currentUser = auth.FirebaseAuth.instance.currentUser;
-        final user = Provider.of<User>(context, listen: false);
-        final authenticationService = locator<AuthenticationService>();
 
-        final providers = await auth.FirebaseAuth.instance
-            .fetchSignInMethodsForEmail(currentUser.email);
-
-        final oldCredential = await showDialog(
-          context: context,
-          builder: (context) => LinkAccountDialog(
-            providers: providers,
-            email: currentUser.email,
-            message: 'Please re-sign-in to link the account',
-          ),
+        error = await _handleLink(
+          credential: credential,
+          provider: FACEBOOK_PROVIDER,
         );
-
-        if (oldCredential == null) {
-          error = 'Unable to retrieve account credentials';
-          break;
-        }
-
-        if (credential != null) {
-          try {
-            await auth.FirebaseAuth.instance
-                .signInWithCredential(oldCredential);
-            await auth.FirebaseAuth.instance.currentUser
-                .linkWithCredential(credential);
-
-            final newProviders = [
-              ...user.providers,
-              FACEBOOK_PROVIDER,
-            ];
-
-            authenticationService.addUser(User(
-              id: user.id,
-              role: user.role,
-              provider: user.provider,
-              providers: newProviders,
-              profile: user.profile,
-            ));
-          } on auth.FirebaseAuthException catch (e) {
-            switch (e.code) {
-              case 'wrong-password':
-                error = 'Invalid password / email combination';
-                break;
-              case 'too-many-requests':
-                error =
-                    'You made too many attempts to sign in. Try again later';
-                break;
-              default:
-                error = 'There was an error linking accounts';
-                break;
-            }
-          } catch (e) {
-            error = 'There was an error linking accounts';
-          }
-        }
     }
 
     if (error != null) {
@@ -538,71 +488,25 @@ class _SettingsState extends State<Settings> {
   _linkGoogle(BuildContext context) async {
     var error;
 
-    try {
-      final googleUser = await GoogleSignIn().signIn();
+    final googleUser = await GoogleSignIn().signIn();
 
-      if (googleUser == null) {
-        final snackBar = createErrorSnackbar(text: 'Operation cancelled');
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
-
-      final googleAuth = await googleUser.authentication;
-
-      final credential = auth.GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final currentUser = auth.FirebaseAuth.instance.currentUser;
-      final user = Provider.of<User>(context, listen: false);
-      final authenticationService = locator<AuthenticationService>();
-
-      final providers = await auth.FirebaseAuth.instance
-          .fetchSignInMethodsForEmail(currentUser.email);
-
-      final oldCredential = await showDialog(
-        context: context,
-        builder: (context) => LinkAccountDialog(
-          providers: providers,
-          email: googleUser.email,
-          message: 'Please re-sign-in to link the account',
-        ),
-      );
-
-      if (credential != null) {
-        await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
-        await auth.FirebaseAuth.instance.currentUser
-            .linkWithCredential(credential);
-
-        final newProviders = [
-          ...user.providers,
-          GOOGLE_PROVIDER,
-        ];
-
-        authenticationService.addUser(User(
-          id: user.id,
-          role: user.role,
-          provider: user.provider,
-          providers: newProviders,
-          profile: user.profile,
-        ));
-      }
-    } on auth.FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'wrong-password':
-          error = 'Invalid password / email combination';
-          break;
-        case 'too-many-requests':
-          error = 'You made too many attempts to sign in. Try again later';
-          break;
-        default:
-          error = 'There was an error linking accounts';
-          break;
-      }
-    } catch (e) {
-      error = 'There was an error linking accounts';
+    if (googleUser == null) {
+      final snackBar = createErrorSnackbar(text: 'Operation cancelled');
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
+
+    final googleAuth = await googleUser.authentication;
+
+    final credential = auth.GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    error = await _handleLink(
+      credential: credential,
+      provider: GOOGLE_PROVIDER,
+    );
 
     if (error != null) {
       final snackBar = createErrorSnackbar(
@@ -612,5 +516,97 @@ class _SettingsState extends State<Settings> {
     }
   }
 
-  _linkApple(BuildContext context) {}
+  _linkApple(BuildContext context) async {
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+    var error;
+
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: nonce,
+    );
+
+    if (appleCredential == null) {
+      final snackBar = createErrorSnackbar(text: 'Operation cancelled');
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    final credential = auth.OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
+    );
+
+    error = await _handleLink(
+      credential: credential,
+      provider: APPLE_PROVIDER,
+    );
+
+    if (error != null) {
+      final snackBar = createErrorSnackbar(text: error);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  _handleLink({
+    auth.AuthCredential credential,
+    String provider,
+  }) async {
+    final currentUser = auth.FirebaseAuth.instance.currentUser;
+    final user = Provider.of<User>(context, listen: false);
+    final authenticationService = locator<AuthenticationService>();
+
+    final providers = await auth.FirebaseAuth.instance
+        .fetchSignInMethodsForEmail(currentUser.email);
+
+    final oldCredential = await showDialog(
+      context: context,
+      builder: (context) => LinkAccountDialog(
+        providers: providers,
+        email: currentUser.email,
+        message: 'Please re-sign-in to link the account',
+      ),
+    );
+
+    if (oldCredential == null) {
+      return 'Unable to retrieve account credentials';
+    }
+
+    if (credential != null) {
+      try {
+        await auth.FirebaseAuth.instance.signInWithCredential(oldCredential);
+        await auth.FirebaseAuth.instance.currentUser
+            .linkWithCredential(credential);
+
+        final newProviders = [
+          ...user.providers,
+          provider,
+        ];
+
+        authenticationService.addUser(User(
+          id: user.id,
+          role: user.role,
+          provider: user.provider,
+          providers: newProviders,
+          profile: user.profile,
+        ));
+
+        return null;
+      } on auth.FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case 'wrong-password':
+            return 'Invalid password / email combination';
+          case 'too-many-requests':
+            return 'You made too many attempts to sign in. Try again later';
+          default:
+            return 'There was an error linking accounts';
+        }
+      } catch (e) {
+        return 'There was an error linking accounts';
+      }
+    }
+  }
 }

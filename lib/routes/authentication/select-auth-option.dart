@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,7 +8,9 @@ import 'package:mywonderbird/components/link-account-dialog.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/routes/authentication/sign-in.dart';
 import 'package:mywonderbird/routes/authentication/sign-up.dart';
+import 'package:mywonderbird/util/apple.dart';
 import 'package:mywonderbird/util/snackbar.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SelectAuthOption extends StatefulWidget {
   static const RELATIVE_PATH = 'select-auth-option';
@@ -115,6 +119,14 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
                 primary: Color(0xFFDB4437),
               ),
             ),
+            if (Platform.isIOS)
+              ElevatedButton(
+                onPressed: () => _onAppleFlow(context),
+                child: BodyText1.light('CONTINUE WITH APPLE'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.black,
+                ),
+              ),
           ],
         ),
       );
@@ -150,46 +162,20 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
 
         try {
           return await FirebaseAuth.instance.signInWithCredential(credential);
-        } catch (e) {
-          final providers =
-              await FirebaseAuth.instance.fetchSignInMethodsForEmail(e.email);
-
-          final oldCredential = await showDialog(
-            context: context,
-            builder: (context) => LinkAccountDialog(
-              providers: providers,
-              email: e.email,
-            ),
-          );
-
-          if (oldCredential == null) {
-            error = 'Unable to retrieve account credentials';
-            break;
-          }
-
-          if (credential != null) {
-            try {
-              await FirebaseAuth.instance.signInWithCredential(oldCredential);
-              await FirebaseAuth.instance.currentUser
-                  .linkWithCredential(credential);
-              return;
-            } on FirebaseAuthException catch (e) {
-              switch (e.code) {
-                case 'wrong-password':
-                  error = 'Invalid password / email combination';
-                  break;
-                case 'too-many-requests':
-                  error =
-                      'You made too many attempts to sign in. Try again later';
-                  break;
-                default:
-                  error = 'There was an error signing you in';
-                  break;
-              }
-            } catch (e) {
+        } on FirebaseAuthException catch (e) {
+          switch (e.code) {
+            case 'account-exists-with-different-credential':
+              error = await _handleExistingAccount(
+                email: e.email,
+                credential: credential,
+              );
+              break;
+            default:
               error = 'There was an error signing you in';
-            }
+              break;
           }
+        } catch (e) {
+          error = 'There was an error signing you in';
         }
     }
 
@@ -260,6 +246,93 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
         text: error,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  _onAppleFlow(BuildContext context) async {
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+    var error;
+
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: nonce,
+    );
+
+    if (appleCredential == null) {
+      final snackBar = createErrorSnackbar(text: 'Operation cancelled');
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    final credential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
+    );
+
+    try {
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          error = _handleExistingAccount(
+            email: e.email,
+            credential: credential,
+          );
+          break;
+        default:
+          error = 'There was an error signing you in';
+          break;
+      }
+    } catch (e) {
+      error = 'There was an error signing you in';
+    }
+
+    if (error != null) {
+      final snackBar = createErrorSnackbar(text: error);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  _handleExistingAccount({
+    String email,
+    AuthCredential credential,
+  }) async {
+    final providers =
+        await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+
+    final oldCredential = await showDialog(
+      context: context,
+      builder: (context) => LinkAccountDialog(
+        providers: providers,
+        email: email,
+      ),
+    );
+
+    if (oldCredential == null) {
+      return 'Unable to retrieve account credentials';
+    }
+
+    if (credential != null) {
+      try {
+        await FirebaseAuth.instance.signInWithCredential(oldCredential);
+        await FirebaseAuth.instance.currentUser.linkWithCredential(credential);
+        return null;
+      } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case 'wrong-password':
+            return 'Invalid password / email combination';
+          case 'too-many-requests':
+            return 'You made too many attempts to sign in. Try again later';
+          default:
+            return 'There was an error signing you in';
+        }
+      } catch (e) {
+        return 'There was an error signing you in';
+      }
     }
   }
 }
