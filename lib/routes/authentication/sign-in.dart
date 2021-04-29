@@ -28,7 +28,6 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +67,6 @@ class _SignInState extends State<SignIn> {
       );
     } on AuthenticationException catch (e) {
       var error;
-
       switch (e.errorCode) {
         case INVALID_CREDENTIALS:
         case TOO_MANY_ATTEMPTS:
@@ -83,8 +81,6 @@ class _SignInState extends State<SignIn> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-
-  
 
   _navigateToForgotDetails({
     String email,

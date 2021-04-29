@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>874546630664-o5u2mq50pd9gnveu7e8kisocvjrgges9.apps.googleusercontent.com</string>
+	<string>874546630664-8sv984k5ddsq67nvrh4ckjqhkk0u7f29.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.874546630664-o5u2mq50pd9gnveu7e8kisocvjrgges9</string>
+	<string>com.googleusercontent.apps.874546630664-8sv984k5ddsq67nvrh4ckjqhkk0u7f29</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>874546630664-rlec06alhcovctm5rbdcdbtrin3rq97q.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyC7d99h2zd4-K08G09pvkRh_uKqvXnf_pU</string>
 	<key>GCM_SENDER_ID</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:874546630664:ios:c16e84894ab628f295c1bd</string>
+	<string>1:874546630664:ios:ecfe9e1d92d5c19b95c1bd</string>
 	<key>DATABASE_URL</key>
 	<string>https://mywonderbird-256205.firebaseio.com</string>
 </dict>

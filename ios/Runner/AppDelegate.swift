@@ -1,6 +1,8 @@
 import UIKit
 import Flutter
 import GoogleMaps
+import Firebase
+import GoogleSignIn
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
