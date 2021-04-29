@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -7,6 +9,8 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/link-email-password.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 const PASSWORD_PROVIDER = 'password';
 const FACEBOOK_PROVIDER = 'facebook.com';
@@ -63,7 +67,7 @@ class LinkAccountDialog extends StatelessWidget {
       case GOOGLE_PROVIDER:
         return _googleItem(context);
       case APPLE_PROVIDER:
-        return _appleItem(context);
+        return Platform.isIOS ? _appleItem(context) : null;
       default:
         return null;
     }
@@ -103,10 +107,11 @@ class LinkAccountDialog extends StatelessWidget {
 
   Widget _appleItem(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        print('Pressed apple');
-      },
-      child: Text('APPLE'),
+      onPressed: _appleLink,
+      child: BodyText1.light('APPLE'),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.black,
+      ),
     );
   }
 
@@ -154,6 +159,32 @@ class LinkAccountDialog extends StatelessWidget {
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
+    );
+
+    final navigationService = locator<NavigationService>();
+
+    navigationService.pop(credential);
+  }
+
+  _appleLink() async {
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: nonce,
+    );
+
+    if (appleCredential == null) {
+      return null;
+    }
+
+    final credential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
     );
 
     final navigationService = locator<NavigationService>();
