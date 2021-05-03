@@ -1,21 +1,20 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:mywonderbird/components/custom-icons.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
-import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
   final Function() onHome;
+  final Function() onTripPlanning;
+  final bool isPlanningTabActive;
 
-  const BottomNavBar({
-    Key key,
-    this.onHome,
-  }) : super(key: key);
+  const BottomNavBar(
+      {Key key, this.onHome, this.onTripPlanning, this.isPlanningTabActive})
+      : super(key: key);
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -41,41 +40,35 @@ class _BottomNavBarState extends State<BottomNavBar> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Ionicons.md_globe),
-              color: Colors.black87,
-              onPressed: widget.onHome,
+            new Container(
+              decoration: !widget.isPlanningTabActive
+                  ? new BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              width: 1.0, color: Colors.blue.shade300)))
+                  : null,
+              child: TextButton.icon(
+                  onPressed: widget.onHome,
+                  icon: Icon(Ionicons.md_globe),
+                  label: Text('Feed')),
             ),
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Icons.collections_bookmark),
-              color: Colors.black54,
-              onPressed: _onNavigateToBookmarks,
-            ),
-            SizedBox(
-              width: 60,
-            ),
-            IconButton(
-              iconSize: 32,
-              icon: Icon(CustomIcons.route),
-              color: Colors.black54,
-              onPressed: _onSuggestTrip,
-            ),
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Icons.person),
-              color: Colors.black54,
-              onPressed: _onNavigateToProfile,
-            ),
+            Spacer(),
+            new Container(
+              decoration: widget.isPlanningTabActive
+                  ? BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              width: 1.0, color: Colors.blue.shade300)))
+                  : null,
+              child: TextButton.icon(
+                  onPressed: widget.onTripPlanning,
+                  icon: Icon(Ionicons.md_globe),
+                  label: Text('Planning')),
+            )
           ],
         ),
       ),
     );
-  }
-
-  _onNavigateToProfile() {
-    locator<NavigationService>().pushNamed(Profile.PATH);
   }
 
   _onNavigateToBookmarks() {

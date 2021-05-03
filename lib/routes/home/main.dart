@@ -5,7 +5,9 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
+import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 import 'components/feed.dart';
@@ -26,7 +28,10 @@ class _HomePageState extends State<HomePage> {
   final _searchQueryController = TextEditingController();
   final _focusNode = FocusNode();
   bool _searching = false;
+  bool _planning = false;
   bool _autoFocus = false;
+  bool _showFab = true;
+
   List<String> _selectedTypes = [];
 
   @override
@@ -76,24 +81,30 @@ class _HomePageState extends State<HomePage> {
               queryController: _searchQueryController,
               types: _selectedTypes,
             )
-          : Feed(
-              controller: _feedController,
-            ),
-      floatingActionButton: Container(
-        width: 60,
-        height: 60,
-        margin: const EdgeInsets.all(2.0),
-        child: FloatingActionButton(
-          child: Icon(
-            Icons.add,
-            size: 36,
-          ),
-          onPressed: _onAddPicture,
-        ),
-      ),
+          : _planning
+              ? SwipeLocations()
+              : Feed(
+                  controller: _feedController,
+                ),
+      floatingActionButton: _showFab
+          ? Container(
+              width: 60,
+              height: 60,
+              margin: const EdgeInsets.all(2.0),
+              child: FloatingActionButton(
+                child: Icon(
+                  Icons.add,
+                  size: 36,
+                ),
+                onPressed: _onAddPicture,
+              ),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         onHome: _onRefresh,
+        onTripPlanning: _onTripPlanning,
+        isPlanningTabActive: _planning,
       ),
     );
   }
@@ -133,6 +144,16 @@ class _HomePageState extends State<HomePage> {
       ];
     }
 
+    if (_planning) {
+      return [
+        IconButton(
+          key: UniqueKey(),
+          icon: Icon(Icons.person),
+          onPressed: _onNavigateToProfile,
+        )
+      ];
+    }
+
     return [
       IconButton(
         key: UniqueKey(),
@@ -146,6 +167,11 @@ class _HomePageState extends State<HomePage> {
         // onPressed: _onSearch, TODO: add this back once it's implemented properly
         onPressed: _showComingSoonSearch,
       ),
+      IconButton(
+        key: UniqueKey(),
+        icon: Icon(Icons.person),
+        onPressed: _onNavigateToProfile,
+      )
     ];
   }
 
@@ -161,14 +187,29 @@ class _HomePageState extends State<HomePage> {
     locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 
+  _onNavigateToProfile() {
+    locator<NavigationService>().pushNamed(Profile.PATH);
+  }
+
   _onRefresh() {
     _feedController.refresh();
+    setState(() {
+      _planning = false;
+      _showFab = true;
+    });
   }
 
   _onSearch() {
     setState(() {
       _autoFocus = true;
       _searching = true;
+    });
+  }
+
+  _onTripPlanning() {
+    setState(() {
+      _planning = true;
+      _showFab = false;
     });
   }
 
