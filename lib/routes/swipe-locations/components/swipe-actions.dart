@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/square-icon-button.dart';
-import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/body-text2.dart';
 
 class SwipeActions extends StatelessWidget {
   final void Function() onDismiss;
@@ -18,10 +18,17 @@ class SwipeActions extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 8.0,
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: BackButton(),
+          ),
           Align(
             alignment: Alignment.center,
             child: Row(
@@ -32,13 +39,13 @@ class SwipeActions extends StatelessWidget {
                   icon: Icon(
                     Icons.close,
                     color: Colors.red,
-                    size: 36,
+                    size: 28,
                   ),
-                  label: BodyText1(
+                  label: BodyText2(
                     'Skip',
                     color: Colors.red,
                   ),
-                  size: 72,
+                  size: 56,
                   backgroundColor: Colors.transparent,
                   side: BorderSide(color: Colors.red),
                   splashColor: Colors.red.withOpacity(0.4),
@@ -50,13 +57,13 @@ class SwipeActions extends StatelessWidget {
                   icon: Icon(
                     Icons.check,
                     color: Colors.green,
-                    size: 36,
+                    size: 28,
                   ),
-                  label: BodyText1(
+                  label: BodyText2(
                     'Add',
                     color: Colors.green,
                   ),
-                  size: 72,
+                  size: 56,
                   backgroundColor: Colors.transparent,
                   side: BorderSide(color: Colors.green),
                   splashColor: Colors.green.withOpacity(0.4),
@@ -71,10 +78,10 @@ class SwipeActions extends StatelessWidget {
               onPressed: onSave,
               icon: Icon(
                 Icons.save,
-                size: 32,
+                size: 28,
                 color: Colors.white,
               ),
-              size: 60,
+              size: 56,
               backgroundColor: theme.primaryColor,
             ),
           ),

@@ -28,9 +28,7 @@ class _HomePageState extends State<HomePage> {
   final _searchQueryController = TextEditingController();
   final _focusNode = FocusNode();
   bool _searching = false;
-  bool _planning = false;
   bool _autoFocus = false;
-  bool _showFab = true;
 
   List<String> _selectedTypes = [];
 
@@ -81,30 +79,23 @@ class _HomePageState extends State<HomePage> {
               queryController: _searchQueryController,
               types: _selectedTypes,
             )
-          : _planning
-              ? SwipeLocations()
-              : Feed(
-                  controller: _feedController,
-                ),
-      floatingActionButton: _showFab
-          ? Container(
-              width: 60,
-              height: 60,
-              margin: const EdgeInsets.all(2.0),
-              child: FloatingActionButton(
-                child: Icon(
-                  Icons.add,
-                  size: 36,
-                ),
-                onPressed: _onAddPicture,
-              ),
-            )
-          : null,
+          : Feed(controller: _feedController),
+      floatingActionButton: Container(
+        width: 60,
+        height: 60,
+        margin: const EdgeInsets.all(2.0),
+        child: FloatingActionButton(
+          child: Icon(
+            Icons.add,
+            size: 36,
+          ),
+          onPressed: _onAddPicture,
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         onHome: _onRefresh,
         onTripPlanning: _onTripPlanning,
-        isPlanningTabActive: _planning,
       ),
     );
   }
@@ -141,16 +132,6 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.close),
           onPressed: _closeSearch,
         ),
-      ];
-    }
-
-    if (_planning) {
-      return [
-        IconButton(
-          key: UniqueKey(),
-          icon: Icon(Icons.person),
-          onPressed: _onNavigateToProfile,
-        )
       ];
     }
 
@@ -193,10 +174,6 @@ class _HomePageState extends State<HomePage> {
 
   _onRefresh() {
     _feedController.refresh();
-    setState(() {
-      _planning = false;
-      _showFab = true;
-    });
   }
 
   _onSearch() {
@@ -207,10 +184,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onTripPlanning() {
-    setState(() {
-      _planning = true;
-      _showFab = false;
-    });
+    final navigationService = locator<NavigationService>();
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SwipeLocations(),
+      ),
+    );
   }
 
   _closeSearch() {
