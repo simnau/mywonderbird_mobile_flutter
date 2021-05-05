@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.38+66
+version: 0.4.39+67
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -36,7 +36,7 @@ dependencies:
   crop: ^0.4.1
   vector_math: ^2.0.8
   numberpicker: ^2.0.1
-  map_launcher: ^2.0.0
+  maps_launcher: ^2.0.0
   quiver: ^3.0.0
   firebase_analytics: ^7.1.1
   firebase_core: 1.0.1
