@@ -168,45 +168,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
   _onBack() async {
     final navigationService = locator<NavigationService>();
-    final theme = Theme.of(context);
 
-    final onYes = () => navigationService.pop(true);
-    final onNo = () => navigationService.pop(false);
-
-    final shouldNavigate = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(
-          'You will lose your trip if you go back. Do you want to continue?',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: onYes,
-            child: Text(
-              'YES',
-              style: TextStyle(
-                color: theme.errorColor,
-              ),
-            ),
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  return theme.errorColor.withOpacity(0.2);
-                },
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: onNo,
-            child: Text('NO'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldNavigate != null && shouldNavigate) {
-      navigationService.pop();
-    }
+    navigationService.pop();
   }
 
   _onRemoveLocation(SuggestedLocation location) async {
