@@ -194,6 +194,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
           filterLocations: _onFilterLocations,
           selectArea: _onSelectArea,
         ),
+        SizedBox(height: 8.0),
         Expanded(child: _mainContent()),
         SwipeActions(
           onDismiss: _onDismiss,
@@ -221,9 +222,12 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       );
     }
 
-    return Stack(
-      fit: StackFit.expand,
-      children: _cards(),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Stack(
+        fit: StackFit.expand,
+        children: _cards(),
+      ),
     );
   }
 

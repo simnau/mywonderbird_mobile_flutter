@@ -2,19 +2,21 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/custom-icons.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/bookmarks/main.dart';
-import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class BottomNavBar extends StatefulWidget {
   final Function() onHome;
+  final Function() onTripPlanning;
 
   const BottomNavBar({
     Key key,
     this.onHome,
+    this.onTripPlanning,
   }) : super(key: key);
 
   @override
@@ -28,54 +30,48 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          bottom: 4.0,
-          top: 4.0,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Ionicons.md_globe),
-              color: Colors.black87,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: TextButton.icon(
               onPressed: widget.onHome,
+              icon: Icon(
+                Ionicons.md_globe,
+                color: theme.primaryColor,
+              ),
+              label: BodyText1(
+                'Feed',
+                color: theme.primaryColor,
+              ),
+              style: TextButton.styleFrom(
+                minimumSize: Size.fromHeight(48),
+              ),
             ),
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Icons.collections_bookmark),
-              color: Colors.black54,
-              onPressed: _onNavigateToBookmarks,
-            ),
-            SizedBox(
-              width: 60,
-            ),
-            IconButton(
-              iconSize: 32,
+          ),
+          Spacer(
+            flex: 1,
+          ),
+          Expanded(
+            flex: 2,
+            child: TextButton.icon(
+              onPressed: widget.onTripPlanning,
               icon: Icon(CustomIcons.route),
-              color: Colors.black54,
-              onPressed: _onSuggestTrip,
+              label: BodyText1('Planning'),
+              style: TextButton.styleFrom(
+                minimumSize: Size.fromHeight(48),
+              ),
             ),
-            IconButton(
-              iconSize: 32,
-              icon: Icon(Icons.person),
-              color: Colors.black54,
-              onPressed: _onNavigateToProfile,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  _onNavigateToProfile() {
-    locator<NavigationService>().pushNamed(Profile.PATH);
   }
 
   _onNavigateToBookmarks() {

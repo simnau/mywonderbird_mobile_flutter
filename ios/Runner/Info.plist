@@ -20,14 +20,46 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb588876068632351</string>
+				<string>com.googleusercontent.apps.874546630664-8sv984k5ddsq67nvrh4ckjqhkk0u7f29</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FacebookAppID</key>
+	<string>588876068632351</string>
+	<key>FacebookDisplayName</key>
+	<string>MyWonderbird</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This app requires media library usage</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We need access to your bluetooth connection to upload photos.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>We need access to your bluetooth connection to upload photos.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app requires calendars access to function properly</string>
 	<key>NSContactsUsageDescription</key>
@@ -41,7 +73,7 @@
 	<key>NSMotionUsageDescription</key>
 	<string>This app reauires motion usage</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Upload photos from galary</string>
+	<string>Allow access to photos to upload photos of the place you have visited from your library</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app requies speech recognition usage</string>
 	<key>UILaunchStoryboardName</key>
@@ -63,34 +95,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-			    <string>fb588876068632351</string>
-				<string>com.googleusercontent.apps.874546630664-8sv984k5ddsq67nvrh4ckjqhkk0u7f29</string>
-			</array>
-		</dict>
-	</array>
-	<key>FacebookAppID</key>
-	<string>588876068632351</string>
-	<key>FacebookDisplayName</key>
-	<string>MyWonderbird</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-	<string>fbapi</string>
-	<string>fb-messenger-share-api</string>
-	<string>fbauth2</string>
-	<string>fbshareextension</string>
-	</array>
-<!-- REMOVE BEFORE DEPLOYING -->
-	<key>NSAppTransportSecurity</key>
-		<dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-		</dict>
 </dict>
 </plist>

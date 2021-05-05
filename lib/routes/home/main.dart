@@ -5,7 +5,9 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
+import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/select-picture/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 import 'components/feed.dart';
@@ -27,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final _focusNode = FocusNode();
   bool _searching = false;
   bool _autoFocus = false;
+
   List<String> _selectedTypes = [];
 
   @override
@@ -76,9 +79,7 @@ class _HomePageState extends State<HomePage> {
               queryController: _searchQueryController,
               types: _selectedTypes,
             )
-          : Feed(
-              controller: _feedController,
-            ),
+          : Feed(controller: _feedController),
       floatingActionButton: Container(
         width: 60,
         height: 60,
@@ -94,6 +95,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         onHome: _onRefresh,
+        onTripPlanning: _onTripPlanning,
       ),
     );
   }
@@ -146,6 +148,11 @@ class _HomePageState extends State<HomePage> {
         // onPressed: _onSearch, TODO: add this back once it's implemented properly
         onPressed: _showComingSoonSearch,
       ),
+      IconButton(
+        key: UniqueKey(),
+        icon: Icon(Icons.person),
+        onPressed: _onNavigateToProfile,
+      )
     ];
   }
 
@@ -161,6 +168,10 @@ class _HomePageState extends State<HomePage> {
     locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 
+  _onNavigateToProfile() {
+    locator<NavigationService>().pushNamed(Profile.PATH);
+  }
+
   _onRefresh() {
     _feedController.refresh();
   }
@@ -170,6 +181,15 @@ class _HomePageState extends State<HomePage> {
       _autoFocus = true;
       _searching = true;
     });
+  }
+
+  _onTripPlanning() {
+    final navigationService = locator<NavigationService>();
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => SwipeLocations(),
+      ),
+    );
   }
 
   _closeSearch() {

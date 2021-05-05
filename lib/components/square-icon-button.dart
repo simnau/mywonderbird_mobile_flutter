@@ -55,9 +55,6 @@ class SquareIconButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           icon,
-          SizedBox(
-            height: 4.0,
-          ),
           label,
         ],
       );
