@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:story_view/controller/story_controller.dart';
 
@@ -9,6 +10,7 @@ class LocationCard extends StatelessWidget {
   final bool isStoryView;
   final SuggestedLocation item;
   final StoryController storyController;
+  final LocationData userLocation;
   final void Function() onViewDetails;
 
   const LocationCard({
@@ -17,6 +19,7 @@ class LocationCard extends StatelessWidget {
     @required this.item,
     @required this.storyController,
     @required this.onViewDetails,
+    @required this.userLocation,
   }) : super(key: key);
 
   @override
@@ -55,6 +58,7 @@ class LocationCard extends StatelessWidget {
             child: LocationDetails(
               item: item,
               onTap: onViewDetails,
+              userLocation: userLocation,
             ),
           ),
         ],

@@ -9,12 +9,14 @@ import 'package:mywonderbird/util/geo.dart';
 class MapTab extends StatefulWidget {
   final List<SuggestedLocation> locations;
   final void Function(SuggestedLocation) onRemoveLocation;
+  final void Function(SuggestedLocation, String event) onViewLocation;
   final bool isLoading;
 
   const MapTab({
     Key key,
     @required this.locations,
     @required this.onRemoveLocation,
+    @required this.onViewLocation,
     @required this.isLoading,
   }) : super(key: key);
 
@@ -173,6 +175,7 @@ class _MapTabState extends State<MapTab>
         child: SuggestedTripLocationDetails(
           location: _selectedLocation,
           onRemoveLocation: _onRemoveLocation,
+          onViewLocation: widget.onViewLocation,
           isLoading: widget.isLoading,
         ),
       ),

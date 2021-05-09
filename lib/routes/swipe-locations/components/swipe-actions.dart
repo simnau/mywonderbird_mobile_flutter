@@ -81,6 +81,10 @@ class SwipeActions extends StatelessWidget {
                 size: 28,
                 color: Colors.white,
               ),
+              label: BodyText2(
+                'Save',
+                color: Colors.white,
+              ),
               size: 56,
               backgroundColor: theme.primaryColor,
             ),

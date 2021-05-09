@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
@@ -45,6 +46,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   final _storyController = StoryController();
   List<SuggestedLocation> _allLocations;
   List<SuggestedLocation> _locations;
+  LocationData _userLocation;
   var _currentLocationIndex = 0;
   var _isLoading = true;
 
@@ -74,11 +76,11 @@ class _SwipeLocationsState extends State<SwipeLocations> {
 
     final suggestionService = locator<SuggestionService>();
     final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+    final currentLocation = await getCurrentLocation();
 
     if (swipeFiltersProvider.northEast == null ||
         swipeFiltersProvider.southWest == null) {
       final screenSize = MediaQuery.of(context).size;
-      final currentLocation = await getCurrentLocation();
       final center = currentLocation != null
           ? LatLng(
               currentLocation.latitude,
@@ -115,6 +117,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       _isLoading = false;
       _allLocations = locations;
       _locations = _locationSublist;
+      _userLocation = currentLocation;
     });
   }
 
@@ -249,6 +252,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
               item: item,
               storyController: _storyController,
               onViewDetails: _onViewDetails,
+              userLocation: _userLocation,
             ),
           ),
         );
@@ -259,6 +263,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
             item: item,
             storyController: _storyController,
             onViewDetails: _onViewDetails,
+            userLocation: _userLocation,
           ),
         );
       }
@@ -268,17 +273,26 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   _onViewDetails() {
+    _onViewLocationDetails(_currentLocation, event: LOCATION_INFO_SWIPING);
+  }
+
+  _onViewLocationDetails(
+    SuggestedLocation location, {
+    String event = LOCATION_INFO_SWIPING_LIST,
+  }) {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => LocationDetails(location: _currentLocation),
+      builder: (context) => LocationDetails(
+        location: location,
+      ),
     ));
 
     final analytics = locator<FirebaseAnalytics>();
-    analytics.logEvent(name: LOCATION_INFO_SWIPING, parameters: {
-      'location_id': _currentLocation.id,
-      'location_name': _currentLocation.name,
-      'location_country_code': _currentLocation.countryCode,
+    analytics.logEvent(name: event, parameters: {
+      'location_id': location.id,
+      'location_name': location.name,
+      'location_country_code': location.countryCode,
     });
   }
 
@@ -289,6 +303,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       builder: (context) => LocationList(
         removeLocation: _onRemoveLocation,
         clearLocations: _onClearLocations,
+        viewLocation: _onViewLocationDetails,
       ),
     ));
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-journey.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
@@ -11,6 +12,7 @@ import 'package:transparent_image/transparent_image.dart';
 class LocationsTab extends StatelessWidget {
   final List<SuggestedLocation> locations;
   final Function(SuggestedLocation) onRemoveLocation;
+  final Function(SuggestedLocation, String event) onViewLocation;
   final bool isLoading;
   final SuggestedJourney suggestedTrip;
 
@@ -18,6 +20,7 @@ class LocationsTab extends StatelessWidget {
     Key key,
     @required this.locations,
     @required this.onRemoveLocation,
+    @required this.onViewLocation,
     @required this.isLoading,
     @required this.suggestedTrip,
   }) : super(key: key);
@@ -57,42 +60,44 @@ class LocationsTab extends StatelessWidget {
     final location = locations[locationIndex];
     final imageUrl = location.coverImage?.url;
     final theme = Theme.of(context);
+    final onViewDetails = () => onViewLocation(
+          location,
+          LOCATION_INFO_SUGGESTED_LIST,
+        );
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 8.0,
-        ),
-        title: Subtitle1(
-          location.name,
-          overflow: TextOverflow.ellipsis,
-        ),
-        leading: AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              color: Colors.grey,
-            ),
-            child: imageUrl != null
-                ? FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                : null,
+    return ListTile(
+      onTap: onViewDetails,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: 8.0,
+      ),
+      title: Subtitle1(
+        location.name,
+        overflow: TextOverflow.ellipsis,
+      ),
+      leading: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            color: Colors.grey,
           ),
+          child: imageUrl != null
+              ? FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imageUrl,
+                  fit: BoxFit.cover,
+                )
+              : null,
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.delete_forever,
-            color: isLoading ? theme.disabledColor : Colors.red,
-          ),
-          onPressed: isLoading ? null : () => onRemoveLocation(location),
+      ),
+      trailing: IconButton(
+        icon: Icon(
+          Icons.delete_forever,
+          color: isLoading ? theme.disabledColor : Colors.red,
         ),
+        onPressed: isLoading ? null : () => onRemoveLocation(location),
       ),
     );
   }

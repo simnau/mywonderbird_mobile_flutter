@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
-import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
-import 'package:mywonderbird/services/navigation.dart';
 import 'package:story_view/story_view.dart';
 
 class LocationDetails extends StatefulWidget {
@@ -67,24 +64,13 @@ class _LocationDetailsState extends State<LocationDetails> {
           ),
         ),
         Positioned(
-          right: 16.0,
-          bottom: 0,
-          height: 48,
-          width: 48,
-          child: FloatingActionButton(
-            onPressed: _onBack,
-            child: Ink(
-              height: 48,
-              width: 48,
-              child: Icon(FontAwesome.arrow_down),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [theme.primaryColor, theme.accentColor],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
+          top: 0,
+          left: 0,
+          right: 0,
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            iconTheme: IconThemeData(
+              color: Colors.white,
             ),
           ),
         ),
@@ -145,10 +131,5 @@ class _LocationDetailsState extends State<LocationDetails> {
         ],
       ),
     );
-  }
-
-  _onBack() {
-    final navigationService = locator<NavigationService>();
-    navigationService.pop();
   }
 }

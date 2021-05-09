@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -8,11 +9,13 @@ import 'package:transparent_image/transparent_image.dart';
 class LocationList extends StatelessWidget {
   final void Function(int) removeLocation;
   final void Function() clearLocations;
+  final void Function(SuggestedLocation) viewLocation;
 
   const LocationList({
     Key key,
-    this.removeLocation,
-    this.clearLocations,
+    @required this.removeLocation,
+    @required this.clearLocations,
+    @required this.viewLocation,
   }) : super(key: key);
 
   @override
@@ -68,42 +71,41 @@ class LocationList extends StatelessWidget {
     final location = locations[locationIndex];
     final imageUrl = location.coverImage?.url;
     final onRemove = () => removeLocation(locationIndex);
+    final onViewLocation = () => viewLocation(location);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 8.0,
-        ),
-        title: Subtitle1(
-          location.name,
-          overflow: TextOverflow.ellipsis,
-        ),
-        leading: AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              color: Colors.grey,
-            ),
-            child: imageUrl != null
-                ? FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                : null,
+    return ListTile(
+      onTap: onViewLocation,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 32.0,
+        vertical: 8.0,
+      ),
+      title: Subtitle1(
+        location.name,
+        overflow: TextOverflow.ellipsis,
+      ),
+      leading: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            color: Colors.grey,
           ),
+          child: imageUrl != null
+              ? FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imageUrl,
+                  fit: BoxFit.cover,
+                )
+              : null,
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.delete_forever,
-            color: Colors.red,
-          ),
-          onPressed: onRemove,
+      ),
+      trailing: IconButton(
+        icon: Icon(
+          Icons.delete_forever,
+          color: Colors.red,
         ),
+        onPressed: onRemove,
       ),
     );
   }

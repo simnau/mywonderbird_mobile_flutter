@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:geolocator/geolocator.dart';
 import 'package:exif/exif.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -92,4 +93,22 @@ LatLngBounds getBounds(
     southwest: LatLng(latSouth, lngWest),
     northeast: LatLng(latNorth, lngEast),
   );
+}
+
+num getDistanceInKilometers(
+  LatLng start,
+  LatLng end, {
+  bool round = true,
+}) {
+  final distanceInMeters = Geolocator.distanceBetween(
+    start.latitude,
+    start.longitude,
+    end.latitude,
+    end.longitude,
+  );
+
+  double distanceInKilometers = distanceInMeters / 1000;
+
+  return distanceInKilometers;
+  // return round ? distanceInKilometers.ceil() : distanceInKilometers;
 }

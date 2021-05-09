@@ -2,20 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/swipe-locations/models/area-selection-suggested-location.dart';
+import 'package:mywonderbird/routes/swipe-locations/models/current-index-update.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class AreaSelectionLocationSlider extends StatefulWidget {
+  final int initialIndex;
   final List<AreaSelectionSuggestedLocation> locations;
+  final ValueNotifier<CurrentIndexUpdate> currentLocationNotifier;
   final Function(SuggestedLocation) addLocation;
   final Function(SuggestedLocation) removeLocation;
   final Function(int) onLocationChange;
+  final Function() onViewLocation;
 
   AreaSelectionLocationSlider({
     Key key,
+    @required this.initialIndex,
     @required this.locations,
+    @required this.currentLocationNotifier,
     @required this.addLocation,
     @required this.removeLocation,
     @required this.onLocationChange,
+    @required this.onViewLocation,
   }) : super(key: key);
 
   @override
@@ -25,18 +32,21 @@ class AreaSelectionLocationSlider extends StatefulWidget {
 
 class _AreaSelectionLocationSliderState
     extends State<AreaSelectionLocationSlider> {
-  final PageController _pageController = PageController(initialPage: 0);
+  PageController _pageController;
+
+  bool disableLocationChange = false;
 
   @override
   initState() {
     super.initState();
+    _pageController = PageController(initialPage: widget.initialIndex);
 
-    _pageController.addListener(_onPageChange);
+    widget.currentLocationNotifier.addListener(_currentLocationChange);
   }
 
   @override
   dispose() {
-    _pageController.removeListener(_onPageChange);
+    widget.currentLocationNotifier.removeListener(_currentLocationChange);
 
     super.dispose();
   }
@@ -48,8 +58,10 @@ class _AreaSelectionLocationSliderState
       child: PageView(
         scrollDirection: Axis.horizontal,
         controller: _pageController,
+        onPageChanged: _onPageChange,
         children: widget.locations.map((location) {
           return Container(
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(
                 Radius.circular(16.0),
@@ -66,9 +78,12 @@ class _AreaSelectionLocationSliderState
             margin: const EdgeInsets.fromLTRB(32.0, 0.0, 32.0, 32.0),
             child: Material(
               color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _location(context, location),
+              child: InkWell(
+                onTap: widget.onViewLocation,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _location(context, location),
+                ),
               ),
             ),
           );
@@ -119,7 +134,20 @@ class _AreaSelectionLocationSliderState
     );
   }
 
-  _onPageChange() {
-    widget.onLocationChange(_pageController.page.floor());
+  _onPageChange(int page) {
+    if (!widget.currentLocationNotifier.value.disableSliderChange) {
+      disableLocationChange = true;
+    }
+    widget.onLocationChange(page);
+  }
+
+  _currentLocationChange() {
+    if (!disableLocationChange) {
+      final currentIndex = widget.currentLocationNotifier.value.index;
+
+      _pageController.jumpToPage(currentIndex);
+    } else {
+      disableLocationChange = false;
+    }
   }
 }
