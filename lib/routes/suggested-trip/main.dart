@@ -155,6 +155,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
                 isLoading: _isLoading,
                 suggestedTrip: _suggestedTrip,
                 onViewLocation: _onViewLocationDetails,
+                onReorder: _onReorder,
               ),
               MapTab(
                 locations: _locations,
@@ -267,6 +268,26 @@ class _SuggestedTripState extends State<SuggestedTrip>
       'location_id': location.id,
       'location_name': location.name,
       'location_country_code': location.countryCode,
+    });
+  }
+
+  _onReorder(
+    int oldIndex,
+    int newIndex,
+  ) {
+    setState(() {
+      // These two lines are workarounds for ReorderableListView problems
+      if (newIndex > _locations.length) {
+        newIndex = _locations.length;
+      }
+
+      if (oldIndex < newIndex) {
+        newIndex--;
+      }
+
+      final temp = _locations[oldIndex];
+      _locations.remove(temp);
+      _locations.insert(newIndex, temp);
     });
   }
 }

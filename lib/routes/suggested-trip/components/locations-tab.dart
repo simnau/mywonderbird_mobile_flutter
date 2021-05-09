@@ -13,6 +13,7 @@ class LocationsTab extends StatelessWidget {
   final List<SuggestedLocation> locations;
   final Function(SuggestedLocation) onRemoveLocation;
   final Function(SuggestedLocation, String event) onViewLocation;
+  final Function(int, int) onReorder;
   final bool isLoading;
   final SuggestedJourney suggestedTrip;
 
@@ -23,6 +24,7 @@ class LocationsTab extends StatelessWidget {
     @required this.onViewLocation,
     @required this.isLoading,
     @required this.suggestedTrip,
+    @required this.onReorder,
   }) : super(key: key);
 
   Widget build(BuildContext context) {
@@ -47,11 +49,34 @@ class LocationsTab extends StatelessWidget {
       );
     }
 
-    return ListView.separated(
+    return _locations();
+
+    // return ListView.separated(
+    //   itemBuilder: _location,
+    //   itemCount: locations.length,
+    //   separatorBuilder: (context, index) => Padding(
+    //     padding: const EdgeInsets.only(bottom: 8.0),
+    //   ),
+    // );
+  }
+
+  Widget _locations() {
+    return ReorderableListView.builder(
       itemBuilder: _location,
       itemCount: locations.length,
-      separatorBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
+      onReorder: onReorder,
+      buildDefaultDragHandles: true,
+      header: Padding(
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          bottom: 8.0,
+        ),
+        child: BodyText1(
+          'Long press on a location and drag it to re-arrange',
+          color: Colors.black87,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -66,6 +91,7 @@ class LocationsTab extends StatelessWidget {
         );
 
     return ListTile(
+      key: ValueKey(location.id),
       onTap: onViewDetails,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 24.0,

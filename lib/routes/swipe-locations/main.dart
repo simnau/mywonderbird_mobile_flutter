@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,6 +36,12 @@ const DEFAULT_CAMERA_POSITION = LatLng(
   63.791580,
   -17.352658,
 );
+
+const ADD_LOCATION_FEATURE = 'add_location_swipe';
+const SKIP_LOCATION_FEATURE = 'skip_location_swipe';
+const COMPLETE_PLANNING_FEATURE = 'complete_planning_swipe';
+const SELECT_AREA_FEATURE = 'select_area_swipe';
+const FILTER_LOCATIONS_FEATURE = 'filter_locations_swipe';
 
 class SwipeLocations extends StatefulWidget {
   @override
@@ -152,6 +159,14 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      FeatureDiscovery.discoverFeatures(context, <String>[
+        ADD_LOCATION_FEATURE,
+        SKIP_LOCATION_FEATURE,
+        COMPLETE_PLANNING_FEATURE,
+        FILTER_LOCATIONS_FEATURE,
+        SELECT_AREA_FEATURE,
+      ]);
+
       final swipeProvider = locator<SwipeFiltersProvider>();
       swipeProvider.addListener(_onFilterChange);
 

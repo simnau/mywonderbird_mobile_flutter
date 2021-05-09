@@ -1,7 +1,10 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/bottom-nav-bar.dart';
+import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
@@ -13,6 +16,10 @@ import 'package:mywonderbird/services/navigation.dart';
 import 'components/feed.dart';
 import 'components/filters.dart';
 import 'components/search.dart';
+
+const SHARE_PHOTO_FEATURE = 'share_photo_feed';
+const PLANNING_FEATURE = 'planning_feed';
+const PROFILE_FEATURE = 'profile_feed';
 
 class HomePage extends StatefulWidget {
   static const RELATIVE_PATH = 'home';
@@ -31,6 +38,19 @@ class _HomePageState extends State<HomePage> {
   bool _autoFocus = false;
 
   List<String> _selectedTypes = [];
+
+  @override
+  initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      FeatureDiscovery.discoverFeatures(context, <String>[
+        SHARE_PHOTO_FEATURE,
+        PLANNING_FEATURE,
+        PROFILE_FEATURE,
+      ]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +104,26 @@ class _HomePageState extends State<HomePage> {
         width: 60,
         height: 60,
         margin: const EdgeInsets.all(2.0),
-        child: FloatingActionButton(
-          child: Icon(
+        child: DescribedFeatureOverlay(
+          featureId: SHARE_PHOTO_FEATURE,
+          tapTarget: Icon(
             Icons.add,
             size: 36,
           ),
-          onPressed: _onAddPicture,
+          title: H6.light('Share photo'),
+          description: Subtitle2.light(
+            'Tap the plus icon to share photos from your trips',
+          ),
+          backgroundColor: Theme.of(context).accentColor,
+          targetColor: Colors.white,
+          textColor: Colors.white,
+          child: FloatingActionButton(
+            child: Icon(
+              Icons.add,
+              size: 36,
+            ),
+            onPressed: _onAddPicture,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -148,10 +182,19 @@ class _HomePageState extends State<HomePage> {
         // onPressed: _onSearch, TODO: add this back once it's implemented properly
         onPressed: _showComingSoonSearch,
       ),
-      IconButton(
-        key: UniqueKey(),
-        icon: Icon(Icons.person),
-        onPressed: _onNavigateToProfile,
+      DescribedFeatureOverlay(
+        featureId: PROFILE_FEATURE,
+        tapTarget: Icon(Icons.person),
+        title: H6.light('Your profile'),
+        description: Subtitle2.light(
+          'Access your saved or created trips, update your settings and more',
+        ),
+        backgroundColor: Theme.of(context).accentColor,
+        child: IconButton(
+          key: UniqueKey(),
+          icon: Icon(Icons.person),
+          onPressed: _onNavigateToProfile,
+        ),
       )
     ];
   }
