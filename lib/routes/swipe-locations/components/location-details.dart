@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -78,12 +80,18 @@ class LocationDetails extends StatelessWidget {
   }
 
   Widget _distanceFromUser() {
-    final distanceInKilometers = userLocation != null
-        ? getDistanceInKilometers(
-            LatLng(userLocation.latitude, userLocation.longitude),
-            item.latLng,
-          ).toStringAsFixed(2)
-        : null;
+    final userLocationLatLng =
+        LatLng(userLocation.latitude, userLocation.longitude);
+
+    final distanceInKilometers = getDistanceInKilometers(
+      userLocationLatLng,
+      item.latLng,
+    )?.toStringAsFixed(2);
+
+    final bearing = getBearing(
+      userLocationLatLng,
+      item.latLng,
+    );
 
     return Row(
       children: [
@@ -93,10 +101,27 @@ class LocationDetails extends StatelessWidget {
         ),
         SizedBox(width: 4),
         Subtitle2.light(
-          "${distanceInKilometers ?? '-'} kilometers away",
+          "${distanceInKilometers ?? '-'} km away",
           overflow: TextOverflow.ellipsis,
         ),
+        SizedBox(width: 4),
+        _directionIcon(bearing),
       ],
+    );
+  }
+
+  Widget _directionIcon(bearing) {
+    if (bearing == null) {
+      return null;
+    }
+
+    return Transform.rotate(
+      // rotating by -45 degrees as the icon looks to be rotated by 45 degrees
+      angle: (-45 + bearing) * math.pi / 180,
+      child: Icon(
+        FontAwesome.location_arrow,
+        color: Colors.white,
+      ),
     );
   }
 }

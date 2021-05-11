@@ -100,6 +100,10 @@ num getDistanceInKilometers(
   LatLng end, {
   bool round = true,
 }) {
+  if (start == null || end == null) {
+    return null;
+  }
+
   final distanceInMeters = Geolocator.distanceBetween(
     start.latitude,
     start.longitude,
@@ -110,5 +114,22 @@ num getDistanceInKilometers(
   double distanceInKilometers = distanceInMeters / 1000;
 
   return distanceInKilometers;
-  // return round ? distanceInKilometers.ceil() : distanceInKilometers;
+}
+
+double getBearing(
+  LatLng start,
+  LatLng end,
+) {
+  if (start == null || end == null) {
+    return null;
+  }
+
+  final bearing = Geolocator.bearingBetween(
+    start.latitude,
+    start.longitude,
+    end.latitude,
+    end.longitude,
+  );
+
+  return bearing;
 }
