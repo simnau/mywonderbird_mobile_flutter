@@ -9,6 +9,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
@@ -197,6 +198,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     if (title != null) {
       await _saveTrip(title);
+      final swipeProvider = locator<SwipeProvider>();
+      swipeProvider.clearLocations();
     }
   }
 
