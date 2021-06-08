@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
@@ -224,11 +226,47 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   }
 
   Widget _mainContent() {
+    final theme = Theme.of(context);
+    final buttonStyle = ButtonStyle(
+      overlayColor: MaterialStateProperty.all(
+        theme.accentColor.withOpacity(0.2),
+      ),
+      side: MaterialStateProperty.all(
+        BorderSide(color: theme.accentColor),
+      ),
+    );
+
+    final helperActions = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        OutlinedButton.icon(
+          onPressed: _onFilterLocations,
+          icon: Icon(
+            FontAwesome.sliders,
+            color: theme.accentColor,
+          ),
+          label: BodyText1('Change filters'),
+          style: buttonStyle,
+        ),
+        SizedBox(width: 8),
+        OutlinedButton.icon(
+          onPressed: _onSelectArea,
+          icon: Icon(
+            MaterialCommunityIcons.map_marker,
+            color: theme.accentColor,
+          ),
+          label: BodyText1('Change area'),
+          style: buttonStyle,
+        ),
+      ],
+    );
+
     if (_locations.isEmpty && _allLocations.isNotEmpty) {
       return EmptyListPlaceholder(
         title: 'No more places left',
         subtitle:
             'Try searching in a different area or try using different filters',
+        action: helperActions,
       );
     }
 
@@ -237,6 +275,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         title: 'No places found',
         subtitle:
             'Try searching in a different area or try using different filters',
+        action: helperActions,
       );
     }
 
