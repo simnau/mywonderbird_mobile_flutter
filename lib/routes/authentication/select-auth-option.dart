@@ -29,20 +29,14 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-          image: AssetImage('images/mywonderbird-travel.jpg'),
+          image: AssetImage('images/mywonderbird-travel.png'),
           fit: BoxFit.cover,
         )),
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32.0,
-            vertical: 32.0,
-          ),
+          padding: const EdgeInsets.fromLTRB(32, 64, 32, 96),
           child: Column(
             children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: _logo(),
-              ),
+              _logo(),
               if (_error != null)
                 Container(
                   padding: const EdgeInsets.all(8),
@@ -69,8 +63,9 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
   }
 
   Widget _logo() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32.0),
+    return SizedBox(
+      width: 120,
+      height: 120,
       child: Image(
         image: AssetImage('images/logo.png'),
       ),
