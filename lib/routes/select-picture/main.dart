@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
 import 'package:mywonderbird/routes/share-picture/main.dart';
@@ -23,6 +27,7 @@ class _SelectPictureState extends State<SelectPicture> {
   int _currentPage = 0;
   int _lastPage;
   AssetEntity _selectedPhoto;
+  bool _hasPermission = true;
 
   @override
   void initState() {
@@ -74,7 +79,9 @@ class _SelectPictureState extends State<SelectPicture> {
         _currentPage += 1;
       });
     } else {
-      // failure
+      setState(() {
+        _hasPermission = false;
+      });
     }
   }
 
@@ -99,10 +106,40 @@ class _SelectPictureState extends State<SelectPicture> {
           ),
         ],
       ),
-      body: Container(
-        child: _pictures(),
-      ),
+      body: _body(),
     );
+  }
+
+  Widget _body() {
+    final theme = Theme.of(context);
+    final subtitle = Platform.isAndroid
+        ? 'Please give the permission to access the device\'s storage to share photos'
+        : 'Please give the permission to access the device\'s photos to share them';
+
+    if (!_hasPermission) {
+      return EmptyListPlaceholder(
+        title: 'No permission',
+        subtitle: subtitle,
+        action: OutlinedButton.icon(
+          onPressed: _requestPermission,
+          icon: Icon(
+            Icons.lock_open,
+            color: theme.accentColor,
+          ),
+          label: BodyText1('Allow access'),
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.all(
+              theme.accentColor.withOpacity(0.2),
+            ),
+            side: MaterialStateProperty.all(
+              BorderSide(color: theme.accentColor),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return _pictures();
   }
 
   Widget _pictures() {
@@ -154,6 +191,16 @@ class _SelectPictureState extends State<SelectPicture> {
         return Container();
       },
     );
+  }
+
+  _requestPermission() async {
+    final result = await PhotoManager.requestPermission();
+
+    if (!result) {
+      PhotoManager.openSetting();
+    } else {
+      _fetchPhotos();
+    }
   }
 
   _selectPhoto(AssetEntity photo) {
