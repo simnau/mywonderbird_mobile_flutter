@@ -140,7 +140,7 @@ class _ShareScreenState extends State<ShareScreen> {
         _descriptionController.text,
         sharePictureProvider.pictureData,
         _selectedLocation ?? sharePictureProvider.pictureData.location,
-        trip.id,
+        trip,
       );
 
       navigationService.popUntil((route) => route.isFirst);
@@ -188,14 +188,7 @@ class _ShareScreenState extends State<ShareScreen> {
       return null;
     }
 
-    final journeysProvider = locator<JourneysProvider>();
-    final trip = Journey(
-      name: title,
-      startDate: DateTime.now(),
-    );
-    final createdTrip = await journeysProvider.addJourney(trip);
-
-    return createdTrip;
+    return Journey(name: title, startDate: DateTime.now());
   }
 
   _onTripChange(Journey trip) {

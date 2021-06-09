@@ -1,3 +1,3 @@
 String formatDateTime(DateTime dateTime) {
-  return dateTime.toUtc().toIso8601String();
+  return dateTime?.toUtc()?.toIso8601String();
 }

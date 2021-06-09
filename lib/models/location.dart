@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/routes/share-picture/mock.dart';
 import 'package:mywonderbird/types/named-item.dart';
+import 'package:mywonderbird/util/date.dart';
 import 'package:mywonderbird/util/json.dart';
 
 class LocationModel extends NamedItem {
@@ -64,6 +65,21 @@ class LocationModel extends NamedItem {
       'provider': provider,
       'skipped': skipped,
       'visitedAt': visitedAt,
+    });
+  }
+
+  Map<String, String> toStringJson() {
+    return removeNulls({
+      'locationId': id,
+      'locationTitle': name,
+      'locationImage': imageUrl,
+      'locationCountry': country,
+      'locationCountryCode': countryCode,
+      'locationLat': latLng?.latitude?.toString(),
+      'locationLng': latLng?.longitude?.toString(),
+      'locationProvider': provider,
+      'locationSkipped': skipped?.toString(),
+      'locationVisitedAt': formatDateTime(visitedAt),
     });
   }
 }
