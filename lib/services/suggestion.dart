@@ -69,7 +69,7 @@ class SuggestionService {
       "latMax": northEast?.latitude?.toString(),
       "lngMin": southWest?.longitude?.toString(),
       "lngMax": northEast?.longitude?.toString(),
-      "selectedLocations": selectedLocations.map((e) => e.id),
+      "selectedLocations": selectedLocations?.map((e) => e.id) ?? [],
     };
     final response =
         await api.get(SUGGEST_LOCATIONS_PAGINATED_PATH, params: params);
