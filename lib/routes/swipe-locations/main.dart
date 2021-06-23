@@ -108,6 +108,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         notify: false,
       );
     }
+    final swipeProvider = locator<SwipeProvider>();
 
     final locations = await suggestionService.suggestLocations(
       page: 0,
@@ -115,6 +116,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
       tags: swipeFiltersProvider.selectedTags,
       southWest: swipeFiltersProvider.southWest,
       northEast: swipeFiltersProvider.northEast,
+      selectedLocations: swipeProvider.selectedLocations,
     );
 
     setState(() {
@@ -131,12 +133,14 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   _fetchMore() async {
     final suggestionService = locator<SuggestionService>();
     final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+    final swipeProvider = locator<SwipeProvider>();
     final locations = await suggestionService.suggestLocations(
       page: _page,
       pageSize: DEFAULT_PAGE_SIZE,
       tags: swipeFiltersProvider.selectedTags,
       southWest: swipeFiltersProvider.southWest,
       northEast: swipeFiltersProvider.northEast,
+      selectedLocations: swipeProvider.selectedLocations,
     );
 
     setState(() {
