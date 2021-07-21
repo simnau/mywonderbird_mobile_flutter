@@ -84,6 +84,7 @@ class _SavedTripState extends State<SavedTripOverview> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _body(),
+      backgroundColor: Colors.white,
     );
   }
 

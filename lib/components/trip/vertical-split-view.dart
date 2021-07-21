@@ -53,6 +53,17 @@ class VerticalSplitView extends StatelessWidget {
           0.65,
         ],
       ),
+      indicator: Container(
+        height: 8,
+        width: 40,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey,
+        ),
+      ),
+      gripColor: Colors.white,
+      gripColorActive: Colors.white,
+      gripSize: 16,
     );
   }
 }
