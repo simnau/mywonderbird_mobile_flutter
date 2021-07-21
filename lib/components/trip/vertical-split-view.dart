@@ -14,6 +14,9 @@ class VerticalSplitView extends StatelessWidget {
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
   final Function(LocationModel) onViewLocation;
+  final Function() onStart;
+  final Function(LocationModel, BuildContext) onSkip;
+  final Function(LocationModel, BuildContext) onVisit;
 
   const VerticalSplitView({
     Key key,
@@ -23,6 +26,9 @@ class VerticalSplitView extends StatelessWidget {
     @required this.onMapCreated,
     @required this.onCameraMove,
     @required this.onViewLocation,
+    this.onStart,
+    this.onSkip,
+    this.onVisit,
   }) : super(key: key);
 
   @override
@@ -40,6 +46,9 @@ class VerticalSplitView extends StatelessWidget {
           locations: locations,
           currentLocationIndex: currentLocationIndex,
           onViewLocation: onViewLocation,
+          onStart: onStart,
+          onSkip: onSkip,
+          onVisit: onVisit,
         ),
       ],
       viewMode: SplitViewMode.Vertical,

@@ -102,6 +102,9 @@ class _SavedTripState extends State<SavedTripOverview> {
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
       onViewLocation: _onViewLocation,
+      onStart: _onStart,
+      onSkip: _onSkip,
+      onVisit: _onVisited,
     );
   }
 
@@ -412,11 +415,14 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _goToPage(int page) {
-    _pageController.animateToPage(
-      page,
-      duration: Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    // _pageController.animateToPage(
+    //   page,
+    //   duration: Duration(milliseconds: 400),
+    //   curve: Curves.easeInOut,
+    // );
+    setState(() {
+      _currentPage = page;
+    });
   }
 
   // TODO: either makes this work or remove it if we deem it unnecessary

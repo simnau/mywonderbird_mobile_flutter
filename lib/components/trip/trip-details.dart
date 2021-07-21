@@ -13,6 +13,9 @@ class TripDetails extends StatefulWidget {
   final int currentLocationIndex;
   final Function(LocationModel) onViewLocation;
   final ItemScrollController itemScrollController;
+  final Function() onStart;
+  final Function(LocationModel, BuildContext) onSkip;
+  final Function(LocationModel, BuildContext) onVisit;
 
   TripDetails({
     Key key,
@@ -21,6 +24,9 @@ class TripDetails extends StatefulWidget {
     @required this.currentLocationIndex,
     @required this.onViewLocation,
     this.itemScrollController,
+    this.onStart,
+    this.onSkip,
+    this.onVisit,
   }) : super(key: key);
 
   @override
@@ -84,7 +90,7 @@ class _TripDetailsState extends State<TripDetails> {
         SizedBox(width: spacingFactor(2)),
         Expanded(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: widget.onStart,
             child: BodyText1.light('Start'),
             style: ElevatedButton.styleFrom(
               primary: theme.primaryColor,
@@ -117,6 +123,9 @@ class _TripDetailsState extends State<TripDetails> {
           spacing: spacingFactor(1),
           number: index + 1,
           onTap: () => widget.onViewLocation(location),
+          isActive: index == widget.currentLocationIndex,
+          onSkip: widget.onSkip,
+          onVisit: widget.onVisit,
         );
       },
       separatorBuilder: (context, index) {

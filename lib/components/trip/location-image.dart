@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 
+import 'location-state.dart';
+
 class LocationImage extends StatelessWidget {
   final ImageProvider image;
   final int number;
   final double size;
   final double borderWidth;
+  final LocationState state;
 
   const LocationImage({
     Key key,
@@ -13,19 +16,28 @@ class LocationImage extends StatelessWidget {
     @required this.number,
     double size,
     double borderWidth,
+    this.state,
   })  : this.size = size ?? 56,
         this.borderWidth = borderWidth ?? 3,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = state == LocationState.active
+        ? theme.primaryColorDark
+        : state == LocationState.skipped
+            ? Colors.grey
+            : state == LocationState.visited
+                ? Colors.green
+                : Colors.white;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(28)),
         border: Border.all(
-          color: Colors.white,
+          color: color,
           width: borderWidth,
         ),
         image: DecorationImage(
@@ -39,9 +51,10 @@ class LocationImage extends StatelessWidget {
           color: Colors.black.withOpacity(0.15),
         ),
         alignment: Alignment.center,
-        child: H6.light(
+        child: H6(
           number.toString(),
           fontWeight: FontWeight.bold,
+          color: color,
         ),
       ),
     );
