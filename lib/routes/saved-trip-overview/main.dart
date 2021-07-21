@@ -4,15 +4,19 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:mywonderbird/components/trip/vertical-split-view.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/routes/saved-trip-finished/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
+import 'package:mywonderbird/util/converters/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -59,6 +63,18 @@ class _SavedTripState extends State<SavedTripOverview> {
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     extendBodyBehindAppBar: true,
+  //     appBar: AppBar(
+  //       backgroundColor: Colors.transparent,
+  //       iconTheme: IconThemeData(color: Colors.white),
+  //     ),
+  //     body: _body(),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,45 +94,62 @@ class _SavedTripState extends State<SavedTripOverview> {
       );
     }
 
-    return Builder(
-      builder: (context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AspectRatio(
-            aspectRatio: 3 / 2,
-            child: TripMap(
-              locations: _journey?.locations,
-              onMapCreated: _onMapCreated,
-              onCameraMove: _onCameraMove,
-              currentLocationIndex: _currentLocationIndex,
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black87,
-                    width: 4.0,
-                  ),
-                ),
-              ),
-              child: TripSlides(
-                journey: _journey,
-                pageController: _pageController,
-                onPageChanged: _onPageChanged,
-                onStart: _onStart,
-                onSkip: (location) => _onSkip(location, context),
-                onUploadPhoto: (location) => _onUploadPhoto(location, context),
-                onVisited: (location) => _onVisited(location, context),
-                onNavigate: (location) => _onNavigate(location, context),
-              ),
-            ),
-          )
-        ],
-      ),
+    return VerticalSplitView(
+      trip: _journey,
+      locations: _journey?.locations,
+      currentLocationIndex: _currentLocationIndex,
+      onMapCreated: _onMapCreated,
+      onCameraMove: _onCameraMove,
+      onViewLocation: _onViewLocation,
     );
   }
+
+  // Widget _body() {
+  //   if (_isLoading) {
+  //     return Center(
+  //       child: CircularProgressIndicator(),
+  //     );
+  //   }
+
+  //   return Builder(
+  //     builder: (context) => Column(
+  //       crossAxisAlignment: CrossAxisAlignment.stretch,
+  //       children: [
+  //         AspectRatio(
+  //           aspectRatio: 3 / 2,
+  //           child: TripMap(
+  //             locations: _journey?.locations,
+  //             onMapCreated: _onMapCreated,
+  //             onCameraMove: _onCameraMove,
+  //             currentLocationIndex: _currentLocationIndex,
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: Container(
+  //             decoration: BoxDecoration(
+  //               border: Border(
+  //                 top: BorderSide(
+  //                   color: Colors.black87,
+  //                   width: 4.0,
+  //                 ),
+  //               ),
+  //             ),
+  //             child: TripSlides(
+  //               journey: _journey,
+  //               pageController: _pageController,
+  //               onPageChanged: _onPageChanged,
+  //               onStart: _onStart,
+  //               onSkip: (location) => _onSkip(location, context),
+  //               onUploadPhoto: (location) => _onUploadPhoto(location, context),
+  //               onVisited: (location) => _onVisited(location, context),
+  //               onNavigate: (location) => _onNavigate(location, context),
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   _loadJourney() async {
     try {
@@ -184,10 +217,9 @@ class _SavedTripState extends State<SavedTripOverview> {
     var cameraUpdate;
 
     if (_currentPage == 0) {
-      final center = boundsCenter(_tripBounds);
-
-      if (center != null) {
-        cameraUpdate = CameraUpdate.newLatLngZoom(center, INITIAL_ZOOM);
+      if (_tripBounds != null) {
+        cameraUpdate =
+            CameraUpdate.newLatLngBounds(_tripBounds, spacingFactor(8));
       }
     } else {
       int locationIndex = locationIndexFromPage(_currentPage);
@@ -213,6 +245,24 @@ class _SavedTripState extends State<SavedTripOverview> {
     if (cameraPosition.zoom != _currentZoom) {
       _currentZoom = cameraPosition.zoom;
     }
+  }
+
+  _onViewLocation(LocationModel location) {
+    final navigationService = locator<NavigationService>();
+    final suggestedLocationConverter = locator<SuggestedLocationConverter>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => LocationDetails(
+        location: suggestedLocationConverter.convertFrom(location),
+      ),
+    ));
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: LOCATION_INFO_SAVED_LIST, parameters: {
+      'location_id': location.id,
+      'location_name': location.name,
+      'location_country_code': location.countryCode,
+    });
   }
 
   _onPageChanged(int page) async {
