@@ -28,6 +28,7 @@ class _SelectPictureState extends State<SelectPicture> {
   int _lastPage;
   AssetEntity _selectedPhoto;
   bool _hasPermission = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -61,9 +62,13 @@ class _SelectPictureState extends State<SelectPicture> {
 
   _fetchPhotos() async {
     _lastPage = _currentPage;
-    final result = await PhotoManager.requestPermission();
+    final hasPermission = await PhotoManager.requestPermission();
 
-    if (result) {
+    if (hasPermission) {
+      setState(() {
+        _isLoading = true;
+      });
+
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
         onlyAll: true,
         type: RequestType.image,
@@ -74,9 +79,11 @@ class _SelectPictureState extends State<SelectPicture> {
       List<Widget> photoWidgets = photos.map<Widget>(_picture).toList();
 
       _photoList = _photoList..addAll(photos);
+
       setState(() {
         _photoWidgetList = _photoWidgetList..addAll(photoWidgets);
         _currentPage += 1;
+        _isLoading = false;
       });
     } else {
       setState(() {
@@ -136,6 +143,14 @@ class _SelectPictureState extends State<SelectPicture> {
             ),
           ),
         ),
+      );
+    }
+
+    if (!_isLoading && _currentPage == 0 && _photoWidgetList.isEmpty) {
+      return EmptyListPlaceholder(
+        title: 'No photos on the device',
+        subtitle:
+            'No photos found on your device. Take some pictures to share them.',
       );
     }
 

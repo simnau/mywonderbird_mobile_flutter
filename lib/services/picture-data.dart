@@ -46,7 +46,7 @@ class PictureDataService {
         latLng: LatLng(latitude, longitude),
         country: locationModel?.country,
         countryCode: locationModel?.countryCode,
-        name: locationModel?.name ?? latLngToString(latLng),
+        name: locationModel?.name,
         imageUrl: filePath,
         provider: locationModel?.provider,
       );

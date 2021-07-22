@@ -17,7 +17,7 @@ class LocationModel extends NamedItem {
   DateTime visitedAt;
 
   LocationModel({
-    @required name,
+    name,
     this.id,
     @required this.country,
     @required this.countryCode,
