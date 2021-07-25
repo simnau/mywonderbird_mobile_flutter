@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/trip/location-item.dart';
+import 'package:mywonderbird/components/trip/location-state.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/constants/theme.dart';
@@ -16,6 +17,7 @@ class TripDetails extends StatefulWidget {
   final Function() onStart;
   final Function(LocationModel, BuildContext) onSkip;
   final Function(LocationModel, BuildContext) onVisit;
+  final Function(LocationModel) onNavigate;
 
   TripDetails({
     Key key,
@@ -23,10 +25,11 @@ class TripDetails extends StatefulWidget {
     @required this.locations,
     @required this.currentLocationIndex,
     @required this.onViewLocation,
+    @required this.onStart,
+    @required this.onSkip,
+    @required this.onVisit,
+    @required this.onNavigate,
     this.itemScrollController,
-    this.onStart,
-    this.onSkip,
-    this.onVisit,
   }) : super(key: key);
 
   @override
@@ -35,6 +38,8 @@ class TripDetails extends StatefulWidget {
 
 class _TripDetailsState extends State<TripDetails> {
   bool showFullTripName = false;
+
+  bool get isTripStarted => widget.trip?.startDate != null;
 
   @override
   Widget build(BuildContext context) {
@@ -87,59 +92,60 @@ class _TripDetailsState extends State<TripDetails> {
             ),
           ),
         ),
-        SizedBox(width: spacingFactor(2)),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: widget.onStart,
-            child: BodyText1.light('Start'),
-            style: ElevatedButton.styleFrom(
-              primary: theme.primaryColor,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
+        if (widget.trip?.startDate != null) Expanded(child: SizedBox()),
+        if (widget.trip?.startDate == null) SizedBox(width: spacingFactor(2)),
+        if (widget.trip?.startDate == null)
+          Expanded(
+            child: ElevatedButton(
+              onPressed: widget.onStart,
+              child: BodyText1.light('Start'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.primaryColor,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(8.0),
+                  ),
                 ),
+                elevation: 0,
               ),
-              elevation: 0,
             ),
           ),
-        ),
       ],
     );
   }
 
   Widget _itemList() {
-    final theme = Theme.of(context);
+    print(widget.locations?.length ?? 0);
 
-    return ScrollablePositionedList.separated(
+    return ScrollablePositionedList.builder(
       itemScrollController: widget.itemScrollController,
       padding: const EdgeInsets.all(0),
       itemBuilder: (context, index) {
         final location = widget.locations[index];
+        final isFirst = index == 0;
+        final isLast = index == widget.locations.length - 1;
+        final previousLocation = isFirst ? null : widget.locations[index - 1];
+        final isActive = isTripStarted && index == widget.currentLocationIndex;
+        final isLastLocationActive =
+            isTripStarted && index - 1 == widget.currentLocationIndex;
+        final previousLocationState = previousLocation != null
+            ? locationStateFromLocation(
+                previousLocation,
+                isLastLocationActive,
+              )
+            : null;
 
         return LocationItem(
           location: location,
-          isFirst: index == 0,
-          isLast: index == widget.locations.length - 1,
-          spacing: spacingFactor(1),
+          isFirst: isFirst,
+          isLast: isLast,
           number: index + 1,
           onTap: () => widget.onViewLocation(location),
-          isActive: index == widget.currentLocationIndex,
+          isActive: isActive,
+          previousLocationState: previousLocationState,
           onSkip: widget.onSkip,
           onVisit: widget.onVisit,
-        );
-      },
-      separatorBuilder: (context, index) {
-        return Container(
-          padding: EdgeInsets.only(
-            left: (56 - 4) / 2 + spacingFactor(1),
-          ),
-          alignment: Alignment.centerLeft,
-          color: theme.primaryColorLight,
-          child: Container(
-            width: 4,
-            height: 16,
-            color: Colors.white,
-          ),
+          onNavigate: widget.onNavigate,
         );
       },
       itemCount: widget.locations?.length ?? 0,

@@ -5,12 +5,12 @@ import 'package:mywonderbird/util/json.dart';
 
 class Journey extends NamedItem {
   final String id;
-  final DateTime startDate;
-  final DateTime finishDate;
+  DateTime startDate;
+  DateTime finishDate;
   final String imageUrl;
   final String country;
 
-  const Journey({
+  Journey({
     @required name,
     this.id,
     this.country,

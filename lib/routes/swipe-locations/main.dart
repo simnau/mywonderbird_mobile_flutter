@@ -33,7 +33,7 @@ import 'pages/location-details/main.dart';
 
 const LOCATIONS_LOADED = 3;
 const DEFAULT_PAGE_SIZE = 5;
-const INITIAL_ZOOM = 15.0;
+const INITIAL_ZOOM = 12.0;
 const DEFAULT_CAMERA_POSITION = LatLng(
   63.791580,
   -17.352658,

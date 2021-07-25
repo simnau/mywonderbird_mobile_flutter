@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:split_view/split_view.dart';
 
 import 'trip-details.dart';
@@ -17,6 +18,8 @@ class VerticalSplitView extends StatelessWidget {
   final Function() onStart;
   final Function(LocationModel, BuildContext) onSkip;
   final Function(LocationModel, BuildContext) onVisit;
+  final Function(LocationModel) onNavigate;
+  final ItemScrollController itemScrollController;
 
   const VerticalSplitView({
     Key key,
@@ -26,9 +29,11 @@ class VerticalSplitView extends StatelessWidget {
     @required this.onMapCreated,
     @required this.onCameraMove,
     @required this.onViewLocation,
-    this.onStart,
-    this.onSkip,
-    this.onVisit,
+    @required this.onStart,
+    @required this.onSkip,
+    @required this.onVisit,
+    @required this.onNavigate,
+    this.itemScrollController,
   }) : super(key: key);
 
   @override
@@ -40,6 +45,7 @@ class VerticalSplitView extends StatelessWidget {
           currentLocationIndex: currentLocationIndex,
           onMapCreated: onMapCreated,
           onCameraMove: onCameraMove,
+          isTripStarted: trip?.startDate != null,
         ),
         TripDetails(
           trip: trip,
@@ -49,6 +55,8 @@ class VerticalSplitView extends StatelessWidget {
           onStart: onStart,
           onSkip: onSkip,
           onVisit: onVisit,
+          onNavigate: onNavigate,
+          itemScrollController: itemScrollController,
         ),
       ],
       viewMode: SplitViewMode.Vertical,

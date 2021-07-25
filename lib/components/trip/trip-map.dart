@@ -18,6 +18,7 @@ class TripMap extends StatelessWidget {
   final int currentLocationIndex;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
+  final bool isTripStarted;
 
   const TripMap({
     Key key,
@@ -25,6 +26,7 @@ class TripMap extends StatelessWidget {
     @required this.currentLocationIndex,
     this.onMapCreated,
     this.onCameraMove,
+    @required this.isTripStarted,
   }) : super(key: key);
 
   @override
@@ -51,29 +53,19 @@ class TripMap extends StatelessWidget {
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
-    const hueMap = [
-      BitmapDescriptor.hueBlue,
-      BitmapDescriptor.hueViolet,
-      BitmapDescriptor.hueAzure,
-      BitmapDescriptor.hueOrange,
-      BitmapDescriptor.hueRose,
-      BitmapDescriptor.hueAzure,
-    ];
-
     for (var i = 0; i < locations.length; i++) {
       final location = locations[i];
       var icon;
 
-      if (currentLocationIndex == i) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
+      if (isTripStarted && currentLocationIndex == i) {
+        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
       } else if (location.visitedAt != null) {
         icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
       } else if (location.skipped != null && location.skipped) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+        icon =
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
       } else {
-        icon = BitmapDescriptor.defaultMarkerWithHue(
-          hueMap[location.dayIndex % hueMap.length],
-        );
+        icon = BitmapDescriptor.defaultMarker;
       }
 
       markers.add(Marker(

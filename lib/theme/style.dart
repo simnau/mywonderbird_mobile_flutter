@@ -26,7 +26,6 @@ final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
 );
 
 final ThemeData appTheme = ThemeData(
-  scaffoldBackgroundColor: Colors.black,
   brightness: Brightness.light,
   fontFamily: 'Montserrat',
   primaryColor: Colors.blue[500],

@@ -24,13 +24,8 @@ class LocationImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = state == LocationState.active
-        ? theme.primaryColorDark
-        : state == LocationState.skipped
-            ? Colors.grey
-            : state == LocationState.visited
-                ? Colors.green
-                : Colors.white;
+    final color = colorFromLocationState(state, theme);
+
     return Container(
       width: size,
       height: size,
@@ -48,7 +43,7 @@ class LocationImage extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(size)),
-          color: Colors.black.withOpacity(0.15),
+          color: Colors.black.withOpacity(0.3),
         ),
         alignment: Alignment.center,
         child: H6(

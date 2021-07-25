@@ -5,30 +5,33 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/location.dart';
+
 import 'location-state.dart';
 
 class LocationItem extends StatelessWidget {
   final LocationModel location;
   final bool isFirst;
   final bool isLast;
-  final double spacing;
   final int number;
   final Function() onTap;
   final bool isActive;
+  final LocationState previousLocationState;
   final Function(LocationModel, BuildContext) onSkip;
   final Function(LocationModel, BuildContext) onVisit;
+  final Function(LocationModel) onNavigate;
 
   const LocationItem({
     Key key,
     @required this.location,
     @required this.isFirst,
     @required this.isLast,
-    @required this.spacing,
     @required this.number,
-    this.onTap,
+    @required this.onTap,
     this.isActive,
-    this.onSkip,
-    this.onVisit,
+    @required this.onSkip,
+    @required this.onVisit,
+    @required this.onNavigate,
+    this.previousLocationState,
   }) : super(key: key);
 
   @override
@@ -37,26 +40,24 @@ class LocationItem extends StatelessWidget {
 
     final borderRadius = BorderRadius.vertical(
       top: Radius.circular(isFirst ? borderRadiusFactor(4) : 0),
-      bottom: Radius.circular(isLast ? borderRadiusFactor(4) : 0),
+      bottom: Radius.circular(!isActive && isLast ? borderRadiusFactor(4) : 0),
     );
     final padding = EdgeInsets.fromLTRB(
-      spacing,
-      isFirst ? spacing : 0,
-      spacing,
-      isLast ? spacing : 0,
+      spacingFactor(1),
+      isFirst ? spacingFactor(1) : 0,
+      spacingFactor(2),
+      isLast ? spacingFactor(1) : 0,
     );
-    final state = isActive
-        ? LocationState.active
-        : location?.skipped ?? false
-            ? LocationState.skipped
-            : location.visitedAt != null
-                ? LocationState.visited
-                : null;
+    final state = locationStateFromLocation(location, isActive);
+    final containerColor = isActive
+        ? theme.primaryColorLight
+        : theme.primaryColorLight.withOpacity(0.4);
+
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            color: isActive ? theme.primaryColor : theme.primaryColorLight,
+            color: containerColor,
             borderRadius: borderRadius,
           ),
           clipBehavior: Clip.antiAlias,
@@ -64,117 +65,149 @@ class LocationItem extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: onTap,
-              child: Container(
-                padding: padding,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(0),
-                  leading: LocationImage(
-                    image: NetworkImage(
-                      location?.imageUrl,
+              child: Column(
+                children: [
+                  if (!isFirst) _separator(previousLocationState, theme),
+                  Container(
+                    padding: padding,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(0),
+                      leading: LocationImage(
+                        image: NetworkImage(
+                          location?.imageUrl,
+                        ),
+                        number: number,
+                        state: state,
+                      ),
+                      title: Subtitle1(
+                        location.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: isActive
+                          ? SquareIconButton(
+                              size: 32,
+                              icon: Icon(
+                                Icons.directions,
+                                color: theme.primaryColorDark,
+                              ),
+                              onPressed: _onNavigate,
+                              backgroundColor: Colors.transparent,
+                              side: BorderSide(color: theme.primaryColorDark),
+                              splashColor: theme.primaryColor,
+                            )
+                          : null,
                     ),
-                    number: number,
-                    state: state,
                   ),
-                  title: Subtitle1(
-                    location.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: isActive
-                      ? SquareIconButton(
-                          size: 32,
-                          icon: Icon(Icons.directions),
-                          onPressed: () {},
-                          backgroundColor: theme.primaryColorDark,
-                        )
-                      : null,
-                ),
+                  if (!isLast) _separator(state, theme),
+                ],
               ),
             ),
           ),
         ),
-        if (state == LocationState.active)
-          Container(
-            decoration: BoxDecoration(
-              color: theme.primaryColorLight.withOpacity(0.5),
-            ),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(
-                      left: (56 - 4) / 2 + spacingFactor(1),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 4,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => onVisit(location, context),
-                            child: BodyText1.light('Visit'),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.green,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
-                              elevation: 0,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          OutlinedButton(
-                            onPressed: () => onSkip(location, context),
-                            child: BodyText1(
-                              'Skip',
-                              color: theme.accentColor,
-                            ),
-                            style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.all(
-                                theme.accentColor.withOpacity(0.2),
-                              ),
-                              side: MaterialStateProperty.all(
-                                BorderSide(color: theme.accentColor),
-                              ),
-                              shape: MaterialStateProperty.all(
-                                const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          // OutlinedButton(
-                          //   onPressed: () {},
-                          //   child: BodyText1('Share photo'),
-                          //   style: OutlinedButton.styleFrom(
-                          //     shape: const RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.all(
-                          //         Radius.circular(8.0),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
+        if (state == LocationState.active) _activeWidget(state, context),
       ],
     );
+  }
+
+  Widget _activeWidget(LocationState state, BuildContext context) {
+    final theme = Theme.of(context);
+    final verticalLineColor = colorFromLocationState(state, theme);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.primaryColorLight.withOpacity(0.15),
+        borderRadius: isLast
+            ? BorderRadius.vertical(
+                bottom: Radius.circular(borderRadiusFactor(4)),
+              )
+            : null,
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!isLast) _verticalLine(verticalLineColor),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => onVisit(location, context),
+                        child: BodyText1.light('Visit'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(borderRadiusFactor(2)),
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => onSkip(location, context),
+                        child: BodyText1(
+                          'Skip',
+                          color: theme.accentColor,
+                        ),
+                        style: ButtonStyle(
+                          overlayColor: MaterialStateProperty.all(
+                            theme.accentColor.withOpacity(0.2),
+                          ),
+                          side: MaterialStateProperty.all(
+                            BorderSide(color: theme.accentColor),
+                          ),
+                          shape: MaterialStateProperty.all(
+                            const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _separator(
+    LocationState state,
+    ThemeData theme,
+  ) {
+    final verticalLineColor = colorFromLocationState(state, theme);
+
+    return Container(
+      height: spacingFactor(1),
+      alignment: Alignment.centerLeft,
+      child: _verticalLine(verticalLineColor),
+    );
+  }
+
+  Widget _verticalLine(Color color) {
+    return Container(
+      margin: EdgeInsets.only(left: (56 - 4) / 2 + spacingFactor(1)),
+      width: 4,
+      color: color,
+    );
+  }
+
+  _onNavigate() {
+    this.onNavigate(location);
   }
 }
