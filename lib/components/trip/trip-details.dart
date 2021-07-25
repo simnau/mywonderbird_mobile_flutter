@@ -115,8 +115,6 @@ class _TripDetailsState extends State<TripDetails> {
   }
 
   Widget _itemList() {
-    print(widget.locations?.length ?? 0);
-
     return ScrollablePositionedList.builder(
       itemScrollController: widget.itemScrollController,
       padding: const EdgeInsets.all(0),

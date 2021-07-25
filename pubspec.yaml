@@ -123,4 +123,5 @@ flutter:
     - images/feedback/
     - images/filters/
     - images/questionnaire/
+    - images/map-markers/
     - env/

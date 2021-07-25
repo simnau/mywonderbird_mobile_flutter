@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 
 const INITIAL_ZOOM = 10.0;
 const PLACE_ZOOM = 13.0;
@@ -58,14 +59,13 @@ class TripMap extends StatelessWidget {
       var icon;
 
       if (isTripStarted && currentLocationIndex == i) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+        icon = currentMarker;
       } else if (location.visitedAt != null) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+        icon = visitedMarker;
       } else if (location.skipped != null && location.skipped) {
-        icon =
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+        icon = skippedMarker;
       } else {
-        icon = BitmapDescriptor.defaultMarker;
+        icon = defaultMarker;
       }
 
       markers.add(Marker(
