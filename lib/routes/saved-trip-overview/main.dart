@@ -88,9 +88,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       );
     }
 
-    return VerticalSplitView(
+    return VerticalSplitView<LocationModel>(
       trip: _journey,
-      locations: _journey?.locations,
       currentLocationIndex: _currentLocationIndex,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
@@ -100,6 +99,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       onVisit: _onVisited,
       onNavigate: _onNavigate,
       itemScrollController: _itemScrollController,
+      isSaved: true,
     );
   }
 

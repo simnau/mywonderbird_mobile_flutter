@@ -1,17 +1,20 @@
+import 'package:mywonderbird/models/full-journey.dart';
+
 import 'suggested-location.dart';
 
-class SuggestedJourney {
-  final String imageUrl;
+class SuggestedJourney extends FullJourney {
   final String countryCode;
-  final String country;
-  final List<SuggestedLocation> locations;
 
   SuggestedJourney({
-    this.imageUrl,
+    imageUrl,
+    country,
+    locations,
     this.countryCode,
-    this.country,
-    this.locations,
-  });
+  }) : super(
+          imageUrl: imageUrl,
+          locations: locations,
+          country: country,
+        );
 
   factory SuggestedJourney.fromJson(Map<String, dynamic> json) {
     return SuggestedJourney(
@@ -20,7 +23,8 @@ class SuggestedJourney {
       countryCode: json['countryCode'],
       locations: json['locations']
           ?.map<SuggestedLocation>(
-              (locationJson) => SuggestedLocation.fromJson(locationJson))
+            (locationJson) => SuggestedLocation.fromJson(locationJson),
+          )
           ?.toList(),
     );
   }

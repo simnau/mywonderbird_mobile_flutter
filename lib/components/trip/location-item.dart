@@ -8,17 +8,17 @@ import 'package:mywonderbird/models/location.dart';
 
 import 'location-state.dart';
 
-class LocationItem extends StatelessWidget {
-  final LocationModel location;
+class LocationItem<T extends LocationModel> extends StatelessWidget {
+  final T location;
   final bool isFirst;
   final bool isLast;
   final int number;
-  final Function() onTap;
+  final Function(T) onViewLocation;
   final bool isActive;
   final LocationState previousLocationState;
-  final Function(LocationModel, BuildContext) onSkip;
-  final Function(LocationModel, BuildContext) onVisit;
-  final Function(LocationModel) onNavigate;
+  final Function(T, BuildContext) onSkip;
+  final Function(T, BuildContext) onVisit;
+  final Function(T) onNavigate;
 
   const LocationItem({
     Key key,
@@ -26,7 +26,7 @@ class LocationItem extends StatelessWidget {
     @required this.isFirst,
     @required this.isLast,
     @required this.number,
-    @required this.onTap,
+    @required this.onViewLocation,
     this.isActive,
     @required this.onSkip,
     @required this.onVisit,
@@ -64,7 +64,7 @@ class LocationItem extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: onTap,
+              onTap: _onViewLocation,
               child: Column(
                 children: [
                   if (!isFirst) _separator(previousLocationState, theme),
@@ -209,5 +209,9 @@ class LocationItem extends StatelessWidget {
 
   _onNavigate() {
     this.onNavigate(location);
+  }
+
+  _onViewLocation() {
+    onViewLocation(location);
   }
 }

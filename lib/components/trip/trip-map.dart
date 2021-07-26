@@ -6,7 +6,7 @@ import 'package:mywonderbird/util/map-markers.dart';
 const INITIAL_ZOOM = 10.0;
 const PLACE_ZOOM = 13.0;
 
-class TripMap extends StatelessWidget {
+class TripMap<T extends LocationModel> extends StatelessWidget {
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
       63.791580,
@@ -15,7 +15,7 @@ class TripMap extends StatelessWidget {
     zoom: INITIAL_ZOOM,
   );
 
-  final List<LocationModel> locations;
+  final List<T> locations;
   final int currentLocationIndex;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;

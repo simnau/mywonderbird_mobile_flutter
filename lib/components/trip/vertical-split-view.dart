@@ -8,55 +8,58 @@ import 'package:split_view/split_view.dart';
 import 'trip-details.dart';
 import 'trip-map.dart';
 
-class VerticalSplitView extends StatelessWidget {
-  final List<LocationModel> locations;
+class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
   final int currentLocationIndex;
   final FullJourney trip;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
-  final Function(LocationModel) onViewLocation;
+  final Function(T) onViewLocation;
+  final Function() onSaveTrip;
   final Function() onStart;
-  final Function(LocationModel, BuildContext) onSkip;
-  final Function(LocationModel, BuildContext) onVisit;
-  final Function(LocationModel) onNavigate;
+  final Function(T, BuildContext) onSkip;
+  final Function(T, BuildContext) onVisit;
+  final Function(T) onNavigate;
   final ItemScrollController itemScrollController;
+  final bool isSaved;
 
   const VerticalSplitView({
     Key key,
-    @required this.locations,
     @required this.currentLocationIndex,
     @required this.trip,
     @required this.onMapCreated,
     @required this.onCameraMove,
     @required this.onViewLocation,
-    @required this.onStart,
-    @required this.onSkip,
-    @required this.onVisit,
-    @required this.onNavigate,
+    this.onSaveTrip,
+    this.onStart,
+    this.onSkip,
+    this.onVisit,
+    this.onNavigate,
     this.itemScrollController,
+    this.isSaved,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SplitView(
       children: [
-        TripMap(
-          locations: locations,
+        TripMap<T>(
+          locations: trip?.locations,
           currentLocationIndex: currentLocationIndex,
           onMapCreated: onMapCreated,
           onCameraMove: onCameraMove,
           isTripStarted: trip?.startDate != null,
         ),
-        TripDetails(
+        TripDetails<T>(
           trip: trip,
-          locations: locations,
           currentLocationIndex: currentLocationIndex,
           onViewLocation: onViewLocation,
+          onSaveTrip: onSaveTrip,
           onStart: onStart,
           onSkip: onSkip,
           onVisit: onVisit,
           onNavigate: onNavigate,
           itemScrollController: itemScrollController,
+          isSaved: isSaved,
         ),
       ],
       viewMode: SplitViewMode.Vertical,
