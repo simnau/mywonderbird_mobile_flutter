@@ -57,7 +57,9 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
           GestureDetector(
             onTap: toggleShowFullTripName,
             child: H6(
-              widget.trip?.name ?? 'Loading...',
+              widget.isSaved
+                  ? widget.trip?.name ?? 'Loading...'
+                  : 'Your trip is ready!',
               overflow: showFullTripName
                   ? TextOverflow.visible
                   : TextOverflow.ellipsis,

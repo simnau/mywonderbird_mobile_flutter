@@ -137,7 +137,7 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () => onVisit(location, context),
-                        child: BodyText1.light('Visit'),
+                        child: BodyText1.light('I visited it!'),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.green,
                           shape: RoundedRectangleBorder(
