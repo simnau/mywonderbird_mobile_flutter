@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 
 const INITIAL_ZOOM = 10.0;
 const PLACE_ZOOM = 13.0;
@@ -18,6 +19,7 @@ class TripMap extends StatelessWidget {
   final int currentLocationIndex;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
+  final bool isTripStarted;
 
   const TripMap({
     Key key,
@@ -25,6 +27,7 @@ class TripMap extends StatelessWidget {
     @required this.currentLocationIndex,
     this.onMapCreated,
     this.onCameraMove,
+    @required this.isTripStarted,
   }) : super(key: key);
 
   @override
@@ -51,29 +54,18 @@ class TripMap extends StatelessWidget {
   Set<Marker> _markers() {
     Set<Marker> markers = Set();
 
-    const hueMap = [
-      BitmapDescriptor.hueBlue,
-      BitmapDescriptor.hueViolet,
-      BitmapDescriptor.hueAzure,
-      BitmapDescriptor.hueOrange,
-      BitmapDescriptor.hueRose,
-      BitmapDescriptor.hueAzure,
-    ];
-
     for (var i = 0; i < locations.length; i++) {
       final location = locations[i];
       var icon;
 
-      if (currentLocationIndex == i) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
+      if (isTripStarted && currentLocationIndex == i) {
+        icon = currentMarker;
       } else if (location.visitedAt != null) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+        icon = visitedMarker;
       } else if (location.skipped != null && location.skipped) {
-        icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+        icon = skippedMarker;
       } else {
-        icon = BitmapDescriptor.defaultMarkerWithHue(
-          hueMap[location.dayIndex % hueMap.length],
-        );
+        icon = defaultMarker;
       }
 
       markers.add(Marker(

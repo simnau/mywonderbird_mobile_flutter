@@ -19,9 +19,9 @@ import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'components/trip-map.dart';
-import 'components/trip-slides.dart';
 
 class SavedTripOverview extends StatefulWidget {
   final String id;
@@ -36,18 +36,23 @@ class SavedTripOverview extends StatefulWidget {
 }
 
 class _SavedTripState extends State<SavedTripOverview> {
+  ItemScrollController _itemScrollController = ItemScrollController();
   bool _isLoading = false;
   FullJourney _journey;
   GoogleMapController _mapController;
-  PageController _pageController;
   LatLngBounds _tripBounds;
-  int _currentPage;
+  int _currentLocationIndex;
   double _currentZoom;
 
-  int get _currentLocationIndex => locationIndexFromPage(_currentPage);
   bool get _isLastLocation {
     return _currentLocationIndex == _journey.locations.length - 1;
   }
+
+  bool get _isTripStarted => _journey?.startDate != null;
+
+  LocationModel get _selectedLocation => _currentLocationIndex >= 0
+      ? _journey.locations[_currentLocationIndex]
+      : null;
 
   @override
   void initState() {
@@ -63,18 +68,6 @@ class _SavedTripState extends State<SavedTripOverview> {
     });
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     extendBodyBehindAppBar: true,
-  //     appBar: AppBar(
-  //       backgroundColor: Colors.transparent,
-  //       iconTheme: IconThemeData(color: Colors.white),
-  //     ),
-  //     body: _body(),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +77,7 @@ class _SavedTripState extends State<SavedTripOverview> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _body(),
+      backgroundColor: Colors.white,
     );
   }
 
@@ -101,55 +95,13 @@ class _SavedTripState extends State<SavedTripOverview> {
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
       onViewLocation: _onViewLocation,
+      onStart: _onStart,
+      onSkip: _onSkip,
+      onVisit: _onVisited,
+      onNavigate: _onNavigate,
+      itemScrollController: _itemScrollController,
     );
   }
-
-  // Widget _body() {
-  //   if (_isLoading) {
-  //     return Center(
-  //       child: CircularProgressIndicator(),
-  //     );
-  //   }
-
-  //   return Builder(
-  //     builder: (context) => Column(
-  //       crossAxisAlignment: CrossAxisAlignment.stretch,
-  //       children: [
-  //         AspectRatio(
-  //           aspectRatio: 3 / 2,
-  //           child: TripMap(
-  //             locations: _journey?.locations,
-  //             onMapCreated: _onMapCreated,
-  //             onCameraMove: _onCameraMove,
-  //             currentLocationIndex: _currentLocationIndex,
-  //           ),
-  //         ),
-  //         Expanded(
-  //           child: Container(
-  //             decoration: BoxDecoration(
-  //               border: Border(
-  //                 top: BorderSide(
-  //                   color: Colors.black87,
-  //                   width: 4.0,
-  //                 ),
-  //               ),
-  //             ),
-  //             child: TripSlides(
-  //               journey: _journey,
-  //               pageController: _pageController,
-  //               onPageChanged: _onPageChanged,
-  //               onStart: _onStart,
-  //               onSkip: (location) => _onSkip(location, context),
-  //               onUploadPhoto: (location) => _onUploadPhoto(location, context),
-  //               onVisited: (location) => _onVisited(location, context),
-  //               onNavigate: (location) => _onNavigate(location, context),
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   _loadJourney() async {
     try {
@@ -172,16 +124,17 @@ class _SavedTripState extends State<SavedTripOverview> {
           savedJourney.locations.map((location) => location.latLng).toList(),
         );
 
-        final startingPage = _findStartingPage(savedJourney);
+        final startingLocation = _findStartingLocation(savedJourney);
 
-        _pageController = PageController(initialPage: startingPage);
-        _currentPage = startingPage;
+        _currentLocationIndex = startingLocation;
 
         setState(() {
           _isLoading = false;
           _journey = savedJourney;
           _tripBounds = tripBounds;
         });
+
+        _animateToLocation(_currentLocationIndex);
       }
     } catch (e) {
       print(e);
@@ -191,12 +144,12 @@ class _SavedTripState extends State<SavedTripOverview> {
     }
   }
 
-  int _findStartingPage(FullJourney journey) {
+  int _findStartingLocation(FullJourney journey) {
     if (journey.startDate == null) {
       return 0;
     }
 
-    var startingPage = 1;
+    var startingLocation = 0;
 
     for (int i = 0; i < journey.locations.length; i++) {
       final location = journey.locations[i];
@@ -205,28 +158,29 @@ class _SavedTripState extends State<SavedTripOverview> {
           location.visitedAt == null) {
         break;
       } else {
-        startingPage += 1;
+        startingLocation += 1;
       }
     }
 
-    return startingPage;
+    return startingLocation;
   }
 
   _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    _adjustMapCamera();
+  }
+
+  _adjustMapCamera({final bool animateCamera = false}) {
     var cameraUpdate;
 
-    if (_currentPage == 0) {
+    if (!_isTripStarted) {
       if (_tripBounds != null) {
         cameraUpdate =
             CameraUpdate.newLatLngBounds(_tripBounds, spacingFactor(8));
       }
     } else {
-      int locationIndex = locationIndexFromPage(_currentPage);
-      LocationModel location = _journey.locations[locationIndex];
-
       cameraUpdate = CameraUpdate.newLatLngZoom(
-        location.latLng,
+        _selectedLocation?.latLng,
         _currentZoom ?? PLACE_ZOOM,
       );
     }
@@ -234,8 +188,12 @@ class _SavedTripState extends State<SavedTripOverview> {
     Future.delayed(
       Duration(milliseconds: 200),
       () {
-        if (cameraUpdate != null) {
-          controller.moveCamera(cameraUpdate);
+        if (cameraUpdate != null && _mapController != null) {
+          if (animateCamera) {
+            _mapController.animateCamera(cameraUpdate);
+          } else {
+            _mapController.moveCamera(cameraUpdate);
+          }
         }
       },
     );
@@ -265,33 +223,6 @@ class _SavedTripState extends State<SavedTripOverview> {
     });
   }
 
-  _onPageChanged(int page) async {
-    var cameraUpdate;
-
-    if (page == 0) {
-      final center = boundsCenter(_tripBounds);
-      if (center != null) {
-        cameraUpdate = CameraUpdate.newLatLngZoom(center, INITIAL_ZOOM);
-      }
-    } else {
-      int locationIndex = locationIndexFromPage(page);
-      LocationModel location = _journey.locations[locationIndex];
-
-      cameraUpdate = CameraUpdate.newLatLngZoom(
-        location.latLng,
-        _currentZoom ?? PLACE_ZOOM,
-      );
-    }
-
-    if (cameraUpdate != null) {
-      _mapController?.animateCamera(cameraUpdate);
-    }
-
-    setState(() {
-      _currentPage = page;
-    });
-  }
-
   _onStart() async {
     final savedTripService = locator<SavedTripService>();
 
@@ -301,7 +232,10 @@ class _SavedTripState extends State<SavedTripOverview> {
     });
 
     await savedTripService.startTrip(_journey.id);
-    _goToPage(1);
+    setState(() {
+      _journey.startDate = DateTime.now();
+    });
+    _goToLocation(0);
   }
 
   _onEnd() async {
@@ -336,12 +270,13 @@ class _SavedTripState extends State<SavedTripOverview> {
       _onEnd();
     } else {
       setState(() {
-        _journey.locations[_currentLocationIndex].skipped = true;
-        _goToPage(_currentPage + 1);
+        _selectedLocation.skipped = true;
+        _goToLocation(_currentLocationIndex + 1);
       });
     }
   }
 
+  // TODO: implement and use this
   _onUploadPhoto(LocationModel location, BuildContext context) async {
     final analytics = locator<FirebaseAnalytics>();
     analytics.logEvent(name: ADD_PHOTO_SAVED, parameters: {
@@ -388,14 +323,16 @@ class _SavedTripState extends State<SavedTripOverview> {
       _onEnd();
     } else {
       setState(() {
-        _journey.locations[_currentLocationIndex].visitedAt = DateTime.now();
+        _selectedLocation.visitedAt = DateTime.now();
+
+        // TODO: do we want to show a snackbar after we upload a photo so it's less intrusive?
         // _showUploadPhotoSnackbar(context);
-        _goToPage(_currentPage + 1);
+        _goToLocation(_currentLocationIndex + 1);
       });
     }
   }
 
-  _onNavigate(LocationModel location, BuildContext context) async {
+  _onNavigate(LocationModel location) async {
     final analytics = locator<FirebaseAnalytics>();
     analytics.logEvent(name: NAVIGATE_TO_LOCATION_SAVED, parameters: {
       'saved_trip_id': widget.id,
@@ -410,12 +347,25 @@ class _SavedTripState extends State<SavedTripOverview> {
     );
   }
 
-  _goToPage(int page) {
-    _pageController.animateToPage(
-      page,
-      duration: Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
+  _goToLocation(int newLocation) {
+    setState(() {
+      _currentLocationIndex = newLocation;
+    });
+    _animateToLocation(newLocation);
+  }
+
+  _animateToLocation(int locationIndex) {
+    Future.delayed(
+      Duration(milliseconds: 200),
+      () {
+        _itemScrollController.scrollTo(
+          index: locationIndex,
+          duration: Duration(milliseconds: 400),
+        );
+      },
     );
+
+    _adjustMapCamera(animateCamera: true);
   }
 
   // TODO: either makes this work or remove it if we deem it unnecessary
