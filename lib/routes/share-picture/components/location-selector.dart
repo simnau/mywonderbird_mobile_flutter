@@ -44,7 +44,7 @@ class LocationSelector extends FormField<LocationModel> {
                 ),
                 title: Text(
                   state.value != null
-                      ? state.value.name
+                      ? state.value.name ?? 'Unnamed location'
                       : 'Choose the photo location',
                 ),
                 subtitle: subtitle,

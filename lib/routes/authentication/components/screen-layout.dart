@@ -20,7 +20,7 @@ class ScreenLayout extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('images/mywonderbird-travel.jpg'),
+                image: AssetImage('images/mywonderbird-travel.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -40,12 +40,7 @@ class ScreenLayout extends StatelessWidget {
                 ),
                 child: IntrinsicHeight(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 64.0,
-                      bottom: 32.0,
-                      left: 32.0,
-                      right: 32.0,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(32, 64, 32, 96),
                     child: child,
                   ),
                 ),

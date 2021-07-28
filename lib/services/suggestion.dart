@@ -59,6 +59,7 @@ class SuggestionService {
     List<String> tags = const [],
     LatLng southWest,
     LatLng northEast,
+    List<SuggestedLocation> selectedLocations,
   }) async {
     Map<String, dynamic> params = {
       "page": page?.toString(),
@@ -68,6 +69,7 @@ class SuggestionService {
       "latMax": northEast?.latitude?.toString(),
       "lngMin": southWest?.longitude?.toString(),
       "lngMax": northEast?.longitude?.toString(),
+      "selectedLocations": selectedLocations?.map((e) => e.id) ?? [],
     };
     final response =
         await api.get(SUGGEST_LOCATIONS_PAGINATED_PATH, params: params);

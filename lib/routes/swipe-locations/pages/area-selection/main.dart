@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/locator.dart';
@@ -7,10 +8,13 @@ import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/area-selection-actions.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/area-selection-location-slider.dart';
 import 'package:mywonderbird/routes/swipe-locations/models/area-selection-suggested-location.dart';
+import 'package:mywonderbird/routes/swipe-locations/models/current-index-update.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/util/debouncer.dart';
 import 'package:mywonderbird/util/location.dart';
+import 'package:mywonderbird/constants/analytics-events.dart';
 
 import '../../main.dart';
 
@@ -21,14 +25,22 @@ class AreaSelection extends StatefulWidget {
 
 class _AreaSelectionState extends State<AreaSelection> {
   final _searchDebouncer = Debouncer(milliseconds: 50);
+  final currentLocationNotifier = ValueNotifier(
+    CurrentIndexUpdate(
+      disableSliderChange: false,
+      index: 0,
+    ),
+  );
 
   GoogleMapController mapController;
   List<SuggestedLocation> _suggestedLocations;
   List<AreaSelectionSuggestedLocation> _locations;
-  bool isLoading = true;
   LatLngBounds bounds;
-  bool showLocationSlider = true;
   int currentLocationIndex = 0;
+
+  bool isLoading = true;
+  bool showLocationSlider = true;
+  bool disableSliderChange = false;
 
   fetchLocations({
     LatLng southWest,
@@ -58,6 +70,9 @@ class _AreaSelectionState extends State<AreaSelection> {
     });
   }
 
+  SuggestedLocation get currentLocation =>
+      _suggestedLocations[currentLocationIndex];
+
   @override
   initState() {
     super.initState();
@@ -65,6 +80,7 @@ class _AreaSelectionState extends State<AreaSelection> {
     final swipeProvider = locator<SwipeProvider>();
 
     swipeProvider.addListener(_updateLocations);
+    currentLocationNotifier.addListener(_currentLocationIndexChange);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocations();
@@ -76,6 +92,7 @@ class _AreaSelectionState extends State<AreaSelection> {
     final swipeProvider = locator<SwipeProvider>();
 
     swipeProvider.removeListener(_updateLocations);
+    currentLocationNotifier.removeListener(_currentLocationIndexChange);
 
     super.dispose();
   }
@@ -137,10 +154,13 @@ class _AreaSelectionState extends State<AreaSelection> {
                 _locations != null &&
                 _locations.isNotEmpty)
               AreaSelectionLocationSlider(
+                initialIndex: currentLocationIndex,
                 locations: _locations,
                 addLocation: _addLocation,
                 removeLocation: _removeLocation,
                 onLocationChange: _onLocationChange,
+                currentLocationNotifier: currentLocationNotifier,
+                onViewLocation: _onViewDetails,
               ),
           ],
         ),
@@ -168,6 +188,17 @@ class _AreaSelectionState extends State<AreaSelection> {
                 ? BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueBlue)
                 : BitmapDescriptor.defaultMarker,
+        consumeTapEvents: true,
+        onTap: () {
+          setState(() {
+            showLocationSlider = true;
+          });
+          disableSliderChange = true;
+          currentLocationNotifier.value = CurrentIndexUpdate(
+            index: index,
+            disableSliderChange: disableSliderChange,
+          );
+        },
       );
 
       markers.add(marker);
@@ -272,8 +303,38 @@ class _AreaSelectionState extends State<AreaSelection> {
   }
 
   _onLocationChange(int index) {
+    if (!disableSliderChange) {
+      currentLocationNotifier.value = CurrentIndexUpdate(
+        index: index,
+        disableSliderChange: disableSliderChange,
+      );
+    } else {
+      disableSliderChange = false;
+      currentLocationNotifier.value = CurrentIndexUpdate(
+        index: index,
+        disableSliderChange: disableSliderChange,
+      );
+    }
+  }
+
+  _currentLocationIndexChange() {
     setState(() {
-      currentLocationIndex = index;
+      currentLocationIndex = currentLocationNotifier.value.index;
+    });
+  }
+
+  _onViewDetails() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => LocationDetails(location: currentLocation),
+    ));
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: LOCATION_INFO_SWIPING_AREA_SELECTION, parameters: {
+      'location_id': currentLocation.id,
+      'location_name': currentLocation.name,
+      'location_country_code': currentLocation.countryCode,
     });
   }
 }

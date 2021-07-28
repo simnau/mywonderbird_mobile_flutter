@@ -9,8 +9,10 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/saved-trip-location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
+import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
+import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
@@ -153,11 +155,14 @@ class _SuggestedTripState extends State<SuggestedTrip>
                 onRemoveLocation: _onRemoveLocation,
                 isLoading: _isLoading,
                 suggestedTrip: _suggestedTrip,
+                onViewLocation: _onViewLocationDetails,
+                onReorder: _onReorder,
               ),
               MapTab(
                 locations: _locations,
                 onRemoveLocation: _onRemoveLocation,
                 isLoading: _isLoading,
+                onViewLocation: _onViewLocationDetails,
               ),
             ],
           ),
@@ -193,6 +198,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     if (title != null) {
       await _saveTrip(title);
+      final swipeProvider = locator<SwipeProvider>();
+      swipeProvider.clearLocations();
     }
   }
 
@@ -245,5 +252,45 @@ class _SuggestedTripState extends State<SuggestedTrip>
     } else if (value == MAP_TAB_INDEX) {
       analytics.logEvent(name: MAP_SUGGESTED);
     }
+  }
+
+  _onViewLocationDetails(
+    SuggestedLocation location,
+    String event,
+  ) {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => LocationDetails(
+        location: location,
+      ),
+    ));
+
+    final analytics = locator<FirebaseAnalytics>();
+    analytics.logEvent(name: event, parameters: {
+      'location_id': location.id,
+      'location_name': location.name,
+      'location_country_code': location.countryCode,
+    });
+  }
+
+  _onReorder(
+    int oldIndex,
+    int newIndex,
+  ) {
+    setState(() {
+      // These two lines are workarounds for ReorderableListView problems
+      if (newIndex > _locations.length) {
+        newIndex = _locations.length;
+      }
+
+      if (oldIndex < newIndex) {
+        newIndex--;
+      }
+
+      final temp = _locations[oldIndex];
+      _locations.remove(temp);
+      _locations.insert(newIndex, temp);
+    });
   }
 }

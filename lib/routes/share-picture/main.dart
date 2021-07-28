@@ -3,7 +3,6 @@ import 'package:mywonderbird/components/input-title-dialog.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
 import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/select-journey/main.dart';
@@ -101,7 +100,7 @@ class _ShareScreenState extends State<ShareScreen> {
       onCreateTrip: _createTrip,
       onTripChange: _onTripChange,
       trip: _lastTrip,
-      onSelectLocation: _selectLocation,
+      onSelectLocation: _onSelectLocation,
       onLocationChange: _onLocationChange,
       location: location,
       image: image,
@@ -140,7 +139,7 @@ class _ShareScreenState extends State<ShareScreen> {
         _descriptionController.text,
         sharePictureProvider.pictureData,
         _selectedLocation ?? sharePictureProvider.pictureData.location,
-        trip.id,
+        trip,
       );
 
       navigationService.popUntil((route) => route.isFirst);
@@ -188,14 +187,7 @@ class _ShareScreenState extends State<ShareScreen> {
       return null;
     }
 
-    final journeysProvider = locator<JourneysProvider>();
-    final trip = Journey(
-      name: title,
-      startDate: DateTime.now(),
-    );
-    final createdTrip = await journeysProvider.addJourney(trip);
-
-    return createdTrip;
+    return Journey(name: title, startDate: DateTime.now());
   }
 
   _onTripChange(Journey trip) {
@@ -204,7 +196,7 @@ class _ShareScreenState extends State<ShareScreen> {
     });
   }
 
-  Future<LocationModel> _selectLocation() async {
+  Future<LocationModel> _onSelectLocation() async {
     final navigationService = locator<NavigationService>();
     final selectedLocation = await navigationService.push(
       MaterialPageRoute(

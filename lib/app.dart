@@ -1,7 +1,7 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/constants/auth.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
@@ -49,16 +49,18 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     final analyticsObserver = locator<FirebaseAnalyticsObserver>();
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'MyWonderbird',
-      initialRoute: initialRoute,
-      navigatorKey: locator<NavigationService>().navigatorKey,
-      theme: appTheme,
-      onGenerateRoute: generateRoute,
-      navigatorObservers: [
-        analyticsObserver,
-      ],
+    return FeatureDiscovery(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'MyWonderbird',
+        initialRoute: initialRoute,
+        navigatorKey: locator<NavigationService>().navigatorKey,
+        theme: appTheme,
+        onGenerateRoute: generateRoute,
+        navigatorObservers: [
+          analyticsObserver,
+        ],
+      ),
     );
   }
 

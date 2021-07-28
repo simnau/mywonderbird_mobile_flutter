@@ -73,11 +73,10 @@ class _SelectLocationState extends State<SelectLocation> {
     );
   }
 
-  void _onMapLongPress(LatLng pos) {
+  void _onSelectLocation(LatLng pos) {
     setState(() {
       _selectedLocation = LocationModel(
         id: Uuid().v4(),
-        name: latLngToString(pos),
         country: null,
         countryCode: null,
         imageUrl: null,
@@ -174,8 +173,8 @@ class _SelectLocationState extends State<SelectLocation> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
-              onTap: _searchModalOpen ? (_) => _closeSearch() : null,
-              onLongPress: _searchModalOpen ? null : _onMapLongPress,
+              onTap:
+                  _searchModalOpen ? (_) => _closeSearch() : _onSelectLocation,
               markers: _createMarkers(),
               mapToolbarEnabled: false,
               rotateGesturesEnabled: false,
