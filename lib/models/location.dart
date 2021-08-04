@@ -21,7 +21,7 @@ class LocationModel extends NamedItem {
     this.id,
     @required this.country,
     @required this.countryCode,
-    @required this.imageUrl,
+    this.imageUrl,
     @required this.latLng,
     this.provider,
     this.skipped,

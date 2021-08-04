@@ -19,7 +19,8 @@ class SuggestedLocation extends LocationModel {
           name: name,
           country: country,
           countryCode: countryCode,
-          imageUrl: images?.first?.url,
+          imageUrl:
+              images != null && images.isNotEmpty ? images.first?.url : null,
           latLng: latLng,
           id: id,
         );
