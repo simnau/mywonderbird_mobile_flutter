@@ -39,3 +39,6 @@ const LOCATION_INFO_SAVED_LIST = 'location_info_saved_list';
 // Feed
 const FEED_FILTER = 'feed_filter';
 const FEED_SEARCH = 'feed_search';
+
+// Trip planning
+const EDIT_TRIP = 'edit_trip';
