@@ -88,9 +88,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       );
     }
 
-    return VerticalSplitView(
+    return VerticalSplitView<LocationModel>(
       trip: _journey,
-      locations: _journey?.locations,
       currentLocationIndex: _currentLocationIndex,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
@@ -100,6 +99,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       onVisit: _onVisited,
       onNavigate: _onNavigate,
       itemScrollController: _itemScrollController,
+      isSaved: true,
     );
   }
 
@@ -200,9 +200,10 @@ class _SavedTripState extends State<SavedTripOverview> {
   }
 
   _onCameraMove(CameraPosition cameraPosition) {
-    if (cameraPosition.zoom != _currentZoom) {
-      _currentZoom = cameraPosition.zoom;
-    }
+    // FIXME: this seems to set the zoom level inappropriately
+    // if (cameraPosition.zoom != _currentZoom) {
+    //   _currentZoom = cameraPosition.zoom;
+    // }
   }
 
   _onViewLocation(LocationModel location) {
@@ -234,6 +235,7 @@ class _SavedTripState extends State<SavedTripOverview> {
     await savedTripService.startTrip(_journey.id);
     setState(() {
       _journey.startDate = DateTime.now();
+      _currentZoom = null;
     });
     _goToLocation(0);
   }

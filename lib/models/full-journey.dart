@@ -9,11 +9,11 @@ class FullJourney extends Journey {
   final List<LocationModel> locations;
 
   FullJourney({
-    @required name,
     id,
     country,
-    @required startDate,
     finishDate,
+    name,
+    startDate,
     @required imageUrl,
     @required this.locations,
   }) : super(

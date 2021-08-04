@@ -8,38 +8,41 @@ import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-class TripDetails extends StatefulWidget {
+class TripDetails<T extends LocationModel> extends StatefulWidget {
   final FullJourney trip;
-  final List<LocationModel> locations;
   final int currentLocationIndex;
-  final Function(LocationModel) onViewLocation;
+  final Function(T) onViewLocation;
   final ItemScrollController itemScrollController;
+  final Function() onSaveTrip;
   final Function() onStart;
-  final Function(LocationModel, BuildContext) onSkip;
-  final Function(LocationModel, BuildContext) onVisit;
-  final Function(LocationModel) onNavigate;
+  final Function(T, BuildContext) onSkip;
+  final Function(T, BuildContext) onVisit;
+  final Function(T) onNavigate;
+  final bool isSaved;
 
   TripDetails({
     Key key,
     @required this.trip,
-    @required this.locations,
     @required this.currentLocationIndex,
     @required this.onViewLocation,
+    @required this.onSaveTrip,
     @required this.onStart,
     @required this.onSkip,
     @required this.onVisit,
     @required this.onNavigate,
+    @required this.isSaved,
     this.itemScrollController,
   }) : super(key: key);
 
   @override
-  _TripDetailsState createState() => _TripDetailsState();
+  _TripDetailsState<T> createState() => _TripDetailsState<T>();
 }
 
-class _TripDetailsState extends State<TripDetails> {
+class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   bool showFullTripName = false;
 
   bool get isTripStarted => widget.trip?.startDate != null;
+  List<T> get locations => widget.trip?.locations;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,9 @@ class _TripDetailsState extends State<TripDetails> {
           GestureDetector(
             onTap: toggleShowFullTripName,
             child: H6(
-              widget.trip?.name ?? 'Loading...',
+              widget.isSaved
+                  ? widget.trip?.name ?? 'Loading...'
+                  : 'Your trip is ready!',
               overflow: showFullTripName
                   ? TextOverflow.visible
                   : TextOverflow.ellipsis,
@@ -84,26 +89,43 @@ class _TripDetailsState extends State<TripDetails> {
             onPressed: () {},
             child: BodyText1('Edit'),
             style: OutlinedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
+                  Radius.circular(borderRadiusFactor(2)),
                 ),
               ),
             ),
           ),
         ),
         if (widget.trip?.startDate != null) Expanded(child: SizedBox()),
-        if (widget.trip?.startDate == null) SizedBox(width: spacingFactor(2)),
-        if (widget.trip?.startDate == null)
+        if (widget.trip?.startDate == null || !widget.isSaved)
+          SizedBox(width: spacingFactor(2)),
+        if (widget.isSaved && widget.trip?.startDate == null)
           Expanded(
             child: ElevatedButton(
               onPressed: widget.onStart,
               child: BodyText1.light('Start'),
               style: ElevatedButton.styleFrom(
                 primary: theme.primaryColor,
-                shape: const RoundedRectangleBorder(
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
-                    Radius.circular(8.0),
+                    Radius.circular(borderRadiusFactor(2)),
+                  ),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+        if (!widget.isSaved)
+          Expanded(
+            child: ElevatedButton(
+              onPressed: widget.onSaveTrip,
+              child: BodyText1.light('Save trip'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(borderRadiusFactor(2)),
                   ),
                 ),
                 elevation: 0,
@@ -119,10 +141,10 @@ class _TripDetailsState extends State<TripDetails> {
       itemScrollController: widget.itemScrollController,
       padding: const EdgeInsets.all(0),
       itemBuilder: (context, index) {
-        final location = widget.locations[index];
+        final location = locations[index];
         final isFirst = index == 0;
-        final isLast = index == widget.locations.length - 1;
-        final previousLocation = isFirst ? null : widget.locations[index - 1];
+        final isLast = index == locations.length - 1;
+        final previousLocation = isFirst ? null : locations[index - 1];
         final isActive = isTripStarted && index == widget.currentLocationIndex;
         final isLastLocationActive =
             isTripStarted && index - 1 == widget.currentLocationIndex;
@@ -132,13 +154,14 @@ class _TripDetailsState extends State<TripDetails> {
                 isLastLocationActive,
               )
             : null;
+        print(widget);
 
-        return LocationItem(
+        return LocationItem<T>(
           location: location,
           isFirst: isFirst,
           isLast: isLast,
           number: index + 1,
-          onTap: () => widget.onViewLocation(location),
+          onViewLocation: widget.onViewLocation,
           isActive: isActive,
           previousLocationState: previousLocationState,
           onSkip: widget.onSkip,
@@ -146,7 +169,7 @@ class _TripDetailsState extends State<TripDetails> {
           onNavigate: widget.onNavigate,
         );
       },
-      itemCount: widget.locations?.length ?? 0,
+      itemCount: locations?.length ?? 0,
     );
   }
 
