@@ -1,33 +1,35 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/trip/location-item.dart';
 import 'package:mywonderbird/components/trip/location-state.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
-import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/constants/theme.dart';
-import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
-import 'package:mywonderbird/services/navigation.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class TripDetails<T extends LocationModel> extends StatefulWidget {
   final FullJourney trip;
+  final List<T> locations;
   final int currentLocationIndex;
   final Function(T) onViewLocation;
   final ItemScrollController itemScrollController;
   final Function() onSaveTrip;
   final Function() onStart;
+  final Function() onEdit;
+  final Function() onSaveEdit;
+  final Function() onCancelEdit;
   final Function(T, BuildContext) onSkip;
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
+  final Function(T) onRemove;
   final bool isSaved;
+  final bool isEditing;
 
   TripDetails({
     Key key,
     @required this.trip,
+    @required this.locations,
     @required this.currentLocationIndex,
     @required this.onViewLocation,
     @required this.onSaveTrip,
@@ -36,8 +38,14 @@ class TripDetails<T extends LocationModel> extends StatefulWidget {
     @required this.onVisit,
     @required this.onNavigate,
     @required this.isSaved,
+    bool isEditing,
     this.itemScrollController,
-  }) : super(key: key);
+    @required this.onEdit,
+    @required this.onSaveEdit,
+    @required this.onCancelEdit,
+    @required this.onRemove,
+  })  : isEditing = isEditing ?? false,
+        super(key: key);
 
   @override
   _TripDetailsState<T> createState() => _TripDetailsState<T>();
@@ -47,7 +55,7 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   bool showFullTripName = false;
 
   bool get isTripStarted => widget.trip?.startDate != null;
-  List<T> get locations => widget.trip?.locations;
+  List<T> get locations => widget.locations;
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +93,45 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   Widget _actions() {
     final theme = Theme.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
+    var content;
+
+    if (widget.isEditing) {
+      content = [
         Expanded(
           child: OutlinedButton(
-            onPressed: _onEditTrip,
+            onPressed: widget.onCancelEdit,
+            child: BodyText1('Cancel'),
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadiusFactor(2)),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: spacingFactor(2)),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: widget.onSaveEdit,
+            child: BodyText1.light('Save changes'),
+            style: ElevatedButton.styleFrom(
+              primary: theme.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadiusFactor(2)),
+                ),
+              ),
+              elevation: 0,
+            ),
+          ),
+        )
+      ];
+    } else {
+      content = [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: widget.onEdit,
             child: BodyText1('Edit'),
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -135,8 +175,14 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
                 elevation: 0,
               ),
             ),
-          ),
-      ],
+          )
+      ];
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
+      children: content,
     );
   }
 
@@ -170,6 +216,9 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
           onSkip: widget.onSkip,
           onVisit: widget.onVisit,
           onNavigate: widget.onNavigate,
+          isEditing: widget.isEditing,
+          onRemove: widget.onRemove,
+          locationCount: locations.length,
         );
       },
       itemCount: locations?.length ?? 0,
@@ -180,11 +229,5 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
     setState(() {
       showFullTripName = !showFullTripName;
     });
-  }
-
-  _onEditTrip() {
-    final analytics = locator<FirebaseAnalytics>();
-    analytics.logEvent(name: EDIT_TRIP);
-    locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 }

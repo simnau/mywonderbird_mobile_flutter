@@ -7,6 +7,7 @@ import 'package:mywonderbird/util/json.dart';
 
 class LocationModel extends NamedItem {
   final String id;
+  final String placeId;
   final String country;
   final String countryCode;
   final String imageUrl;
@@ -19,6 +20,7 @@ class LocationModel extends NamedItem {
   LocationModel({
     name,
     this.id,
+    this.placeId,
     @required this.country,
     @required this.countryCode,
     this.imageUrl,
@@ -40,6 +42,7 @@ class LocationModel extends NamedItem {
 
     return LocationModel(
       id: json['id'],
+      placeId: json['placeId'],
       name: json['name'],
       country: json['country'],
       countryCode: json['countryCode'],
@@ -56,6 +59,7 @@ class LocationModel extends NamedItem {
   Map<String, dynamic> toJson() {
     return removeNulls({
       'id': id,
+      'placeId': placeId,
       'title': name,
       'imageUrl': imageUrl,
       'country': country,
@@ -71,6 +75,7 @@ class LocationModel extends NamedItem {
   Map<String, String> toStringJson() {
     return removeNulls({
       'locationId': id,
+      'locationPlaceId': placeId,
       'locationTitle': name,
       'locationImage': imageUrl,
       'locationCountry': country,

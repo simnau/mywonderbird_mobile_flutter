@@ -13,12 +13,15 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
   final int number;
+  final int locationCount;
   final Function(T) onViewLocation;
   final bool isActive;
+  final bool isEditing;
   final LocationState previousLocationState;
   final Function(T, BuildContext) onSkip;
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
+  final Function(T) onRemove;
 
   const LocationItem({
     Key key,
@@ -26,13 +29,20 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
     @required this.isFirst,
     @required this.isLast,
     @required this.number,
+    @required this.locationCount,
     @required this.onViewLocation,
     this.isActive,
+    bool isEditing,
     @required this.onSkip,
     @required this.onVisit,
     @required this.onNavigate,
+    @required this.onRemove,
     this.previousLocationState,
-  }) : super(key: key);
+  })  : isEditing = isEditing ?? false,
+        super(key: key);
+
+  bool get isVisited => location?.visitedAt != null;
+  bool get isSkipped => location?.skipped != null && location.skipped;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +62,30 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
     final containerColor = isActive
         ? theme.primaryColorLight
         : theme.primaryColorLight.withOpacity(0.4);
+
+    var trailingWidget;
+
+    if (isEditing && !isVisited && !isSkipped) {
+      if (locationCount > 1) {
+        trailingWidget = IconButton(
+          onPressed: _onRemove,
+          icon: Icon(Icons.delete),
+          color: theme.accentColor,
+        );
+      }
+    } else if (isActive) {
+      trailingWidget = SquareIconButton(
+        size: 32,
+        icon: Icon(
+          Icons.directions,
+          color: theme.primaryColorDark,
+        ),
+        onPressed: _onNavigate,
+        backgroundColor: Colors.transparent,
+        side: BorderSide(color: theme.primaryColorDark),
+        splashColor: theme.primaryColor,
+      );
+    }
 
     return Column(
       children: [
@@ -84,19 +118,7 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      trailing: isActive
-                          ? SquareIconButton(
-                              size: 32,
-                              icon: Icon(
-                                Icons.directions,
-                                color: theme.primaryColorDark,
-                              ),
-                              onPressed: _onNavigate,
-                              backgroundColor: Colors.transparent,
-                              side: BorderSide(color: theme.primaryColorDark),
-                              splashColor: theme.primaryColor,
-                            )
-                          : null,
+                      trailing: trailingWidget,
                     ),
                   ),
                   if (!isLast) _separator(state, theme),
@@ -213,5 +235,9 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
 
   _onViewLocation() {
     onViewLocation(location);
+  }
+
+  _onRemove() {
+    onRemove(location);
   }
 }

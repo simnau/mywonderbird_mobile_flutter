@@ -19,10 +19,12 @@ import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 const LOCATIONS_TAB_INDEX = 0;
 const MAP_TAB_INDEX = 1;
+const PLACE_ZOOM = 13.0;
 
 class SuggestedTrip extends StatefulWidget {
   final List<SuggestedLocation> locations;
@@ -42,9 +44,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
   LatLngBounds _tripBounds;
   GoogleMapController _mapController;
   List<SuggestedLocation> _locations = [];
+  List<SuggestedLocation> _temporaryEditLocations = [];
   SuggestedJourney _suggestedTrip;
   double _currentZoom;
   bool _isLoading = true;
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -107,6 +111,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
 
     return VerticalSplitView<SuggestedLocation>(
       trip: _suggestedTrip,
+      locations: _isEditing ? _temporaryEditLocations : _locations,
       currentLocationIndex: null,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
@@ -114,6 +119,11 @@ class _SuggestedTripState extends State<SuggestedTrip>
       onViewLocation: _onViewLocationDetails,
       itemScrollController: _itemScrollController,
       isSaved: false,
+      isEditing: _isEditing,
+      onEdit: _onEdit,
+      onSaveEdit: _onSaveEdit,
+      onCancelEdit: _onCancelEdit,
+      onRemove: _onRemoveLocation,
     );
   }
 
@@ -131,7 +141,12 @@ class _SuggestedTripState extends State<SuggestedTrip>
   _adjustMapCamera() {
     var cameraUpdate;
 
-    if (_tripBounds != null) {
+    if (_locations.length == 1) {
+      cameraUpdate = CameraUpdate.newLatLngZoom(
+        _locations.first?.latLng,
+        PLACE_ZOOM,
+      );
+    } else if (_tripBounds != null) {
       cameraUpdate =
           CameraUpdate.newLatLngBounds(_tripBounds, spacingFactor(8));
     }
@@ -144,13 +159,6 @@ class _SuggestedTripState extends State<SuggestedTrip>
         }
       },
     );
-  }
-
-  _onRemoveLocation(SuggestedLocation location) async {
-    setState(() {
-      _locations.remove(location);
-    });
-    await getJourneySuggestion(_locations);
   }
 
   _onSaveTrip() async {
@@ -227,6 +235,60 @@ class _SuggestedTripState extends State<SuggestedTrip>
       'location_id': location.id,
       'location_name': location.name,
       'location_country_code': location.countryCode,
+    });
+  }
+
+  _onRemoveLocation(SuggestedLocation location) {
+    setState(() {
+      _temporaryEditLocations.remove(location);
+    });
+  }
+
+  _onEdit() {
+    setState(() {
+      _temporaryEditLocations = List.from(_locations);
+      _isEditing = true;
+    });
+  }
+
+  _onSaveEdit() {
+    if (_temporaryEditLocations.isEmpty) {
+      final snackBar = createErrorSnackbar(
+        text: 'Your trip should include at least 1 location',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      _updateTripLocations(_temporaryEditLocations);
+    }
+
+    setState(() {
+      _isEditing = false;
+      _temporaryEditLocations = null;
+    });
+  }
+
+  _onCancelEdit() {
+    setState(() {
+      _isEditing = false;
+      _temporaryEditLocations = null;
+    });
+  }
+
+  _updateTripLocations(List<SuggestedLocation> newLocations) {
+    final updatedTrip = SuggestedJourney(
+      imageUrl: _suggestedTrip.imageUrl,
+      country: _suggestedTrip.country,
+      countryCode: _suggestedTrip.countryCode,
+      locations: newLocations,
+    );
+    final tripBounds = boundsFromLatLngList(
+      newLocations.map((location) => location.latLng).toList(),
+    );
+
+    setState(() {
+      _tripBounds = tripBounds;
+      _suggestedTrip = updatedTrip;
+      _locations = newLocations;
     });
   }
 
