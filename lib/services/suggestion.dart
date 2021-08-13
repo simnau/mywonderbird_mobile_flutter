@@ -26,9 +26,18 @@ class SuggestionService {
   }
 
   Future<SuggestedJourney> suggestJourneyFromLocations(
-      List<String> locationIds) async {
+    List<String> locationIds, {
+    lng: double,
+    lat: double,
+  }) async {
     final response = await api.post(SUGGEST_JOURNEY_FROM_LOCATIONS_PATH, {
       'locationIds': locationIds,
+      'startingLocation': lng != null && lat != null
+          ? {
+              'lng': lng,
+              'lat': lat,
+            }
+          : null,
     });
     final journeyRaw = response['body']['journey'];
     final journey = SuggestedJourney.fromJson(journeyRaw);

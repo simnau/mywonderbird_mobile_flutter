@@ -19,6 +19,7 @@ import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/location.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -74,9 +75,13 @@ class _SuggestedTripState extends State<SuggestedTrip>
     final suggestionService = locator<SuggestionService>();
     final locationIds =
         suggestedLocations.map((location) => location.id).toList();
+    final currentLocation = await getCurrentLocation();
 
-    final suggestedTrip =
-        await suggestionService.suggestJourneyFromLocations(locationIds);
+    final suggestedTrip = await suggestionService.suggestJourneyFromLocations(
+      locationIds,
+      lat: currentLocation?.latitude,
+      lng: currentLocation?.longitude,
+    );
     final tripBounds = boundsFromLatLngList(
       suggestedTrip.locations.map((location) => location.latLng).toList(),
     );
