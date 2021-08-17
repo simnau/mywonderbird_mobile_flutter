@@ -40,6 +40,7 @@ class _SavedTripState extends State<SavedTripOverview> {
   ItemScrollController _itemScrollController = ItemScrollController();
   bool _isLoading = false;
   bool _isEditing = false;
+  bool _isRecalculatingRoute = false;
   FullJourney _journey;
   GoogleMapController _mapController;
   LatLngBounds _tripBounds;
@@ -109,10 +110,12 @@ class _SavedTripState extends State<SavedTripOverview> {
       itemScrollController: _itemScrollController,
       isSaved: true,
       isEditing: _isEditing,
+      isRecalculatingRoute: _isRecalculatingRoute,
       onEdit: _onEdit,
       onRemove: _onRemoveLocation,
       onCancelEdit: _onCancelEdit,
       onSaveEdit: _onSaveEdit,
+      onStartFromLocation: _onStartFromLocation,
     );
   }
 
@@ -215,6 +218,22 @@ class _SavedTripState extends State<SavedTripOverview> {
         }
       },
     );
+  }
+
+  _adjustCameraToLocation(
+    LocationModel location, {
+    final bool animateCamera = false,
+  }) {
+    final cameraUpdate = CameraUpdate.newLatLngZoom(
+      location?.latLng,
+      _currentZoom ?? PLACE_ZOOM,
+    );
+
+    if (animateCamera) {
+      _mapController.animateCamera(cameraUpdate);
+    } else {
+      _mapController.moveCamera(cameraUpdate);
+    }
   }
 
   _onCameraMove(CameraPosition cameraPosition) {
@@ -428,6 +447,30 @@ class _SavedTripState extends State<SavedTripOverview> {
       _isEditing = false;
       _temporaryEditLocations = null;
     });
+  }
+
+  _onStartFromLocation(LocationModel location) async {
+    setState(() {
+      _isRecalculatingRoute = true;
+    });
+
+    final suggestionService = locator<SavedTripService>();
+    final suggestedTrip = await suggestionService.startTripAtLocation(
+      _journey.id,
+      location.placeId,
+    );
+
+    setState(() {
+      _journey = suggestedTrip;
+      _isRecalculatingRoute = false;
+    });
+
+    if (_isTripStarted) {
+      _adjustCameraToLocation(
+        suggestedTrip.locations[_currentLocationIndex],
+        animateCamera: true,
+      );
+    }
   }
 
   updateTrip(List<LocationModel> newLocations) async {

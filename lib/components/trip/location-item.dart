@@ -17,11 +17,14 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
   final Function(T) onViewLocation;
   final bool isActive;
   final bool isEditing;
+  final bool isTripStarted;
+  final bool isRecalculatingRoute;
   final LocationState previousLocationState;
   final Function(T, BuildContext) onSkip;
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
   final Function(T) onRemove;
+  final Function(T) onStartFromLocation;
 
   const LocationItem({
     Key key,
@@ -33,11 +36,14 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
     @required this.onViewLocation,
     this.isActive,
     bool isEditing,
+    this.isTripStarted,
+    this.isRecalculatingRoute,
     @required this.onSkip,
     @required this.onVisit,
     @required this.onNavigate,
     @required this.onRemove,
     this.previousLocationState,
+    @required this.onStartFromLocation,
   })  : isEditing = isEditing ?? false,
         super(key: key);
 
@@ -84,6 +90,18 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
         backgroundColor: Colors.transparent,
         side: BorderSide(color: theme.primaryColorDark),
         splashColor: theme.primaryColor,
+      );
+    } else if (!isFirst && !isVisited && !isSkipped) {
+      trailingWidget = OutlinedButton(
+        onPressed: isRecalculatingRoute ? null : _onStartFromLocation,
+        child: BodyText1(isTripStarted ? 'Next here' : 'Start here'),
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(borderRadiusFactor(2)),
+            ),
+          ),
+        ),
       );
     }
 
@@ -239,5 +257,9 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
 
   _onRemove() {
     onRemove(location);
+  }
+
+  _onStartFromLocation() {
+    onStartFromLocation(location);
   }
 }

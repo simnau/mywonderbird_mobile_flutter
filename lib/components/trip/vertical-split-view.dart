@@ -24,9 +24,11 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
   final Function(T) onRemove;
+  final Function(T) onStartFromLocation;
   final ItemScrollController itemScrollController;
   final bool isSaved;
   final bool isEditing;
+  final bool isRecalculatingRoute;
 
   const VerticalSplitView({
     Key key,
@@ -43,11 +45,13 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
     this.onNavigate,
     this.itemScrollController,
     this.isSaved,
+    this.isRecalculatingRoute,
     @required this.onEdit,
     @required this.onSaveEdit,
     @required this.onCancelEdit,
     @required this.onRemove,
     bool isEditing,
+    @required this.onStartFromLocation,
   })  : isEditing = isEditing ?? false,
         super(key: key);
 
@@ -75,10 +79,12 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
           itemScrollController: itemScrollController,
           isSaved: isSaved,
           isEditing: isEditing,
+          isRecalculatingRoute: isRecalculatingRoute,
           onEdit: onEdit,
           onSaveEdit: onSaveEdit,
           onCancelEdit: onCancelEdit,
           onRemove: onRemove,
+          onStartFromLocation: onStartFromLocation,
         ),
       ],
       viewMode: SplitViewMode.Vertical,

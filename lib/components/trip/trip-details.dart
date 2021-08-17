@@ -23,8 +23,10 @@ class TripDetails<T extends LocationModel> extends StatefulWidget {
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
   final Function(T) onRemove;
+  final Function(T) onStartFromLocation;
   final bool isSaved;
   final bool isEditing;
+  final bool isRecalculatingRoute;
 
   TripDetails({
     Key key,
@@ -39,11 +41,13 @@ class TripDetails<T extends LocationModel> extends StatefulWidget {
     @required this.onNavigate,
     @required this.isSaved,
     bool isEditing,
+    @required this.isRecalculatingRoute,
     this.itemScrollController,
     @required this.onEdit,
     @required this.onSaveEdit,
     @required this.onCancelEdit,
     @required this.onRemove,
+    @required this.onStartFromLocation,
   })  : isEditing = isEditing ?? false,
         super(key: key);
 
@@ -61,7 +65,7 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: spacingFactor(4),
+        horizontal: spacingFactor(2),
         vertical: spacingFactor(2),
       ),
       child: Column(
@@ -212,13 +216,16 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
           number: index + 1,
           onViewLocation: widget.onViewLocation,
           isActive: isActive,
+          isTripStarted: isTripStarted,
           previousLocationState: previousLocationState,
           onSkip: widget.onSkip,
           onVisit: widget.onVisit,
           onNavigate: widget.onNavigate,
           isEditing: widget.isEditing,
+          isRecalculatingRoute: widget.isRecalculatingRoute,
           onRemove: widget.onRemove,
           locationCount: locations.length,
+          onStartFromLocation: widget.onStartFromLocation,
         );
       },
       itemCount: locations?.length ?? 0,

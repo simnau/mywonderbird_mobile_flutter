@@ -50,6 +50,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
   double _currentZoom;
   bool _isLoading = true;
   bool _isEditing = false;
+  bool _isRecalculatingRoute = false;
 
   @override
   void initState() {
@@ -125,10 +126,12 @@ class _SuggestedTripState extends State<SuggestedTrip>
       itemScrollController: _itemScrollController,
       isSaved: false,
       isEditing: _isEditing,
+      isRecalculatingRoute: _isRecalculatingRoute,
       onEdit: _onEdit,
       onSaveEdit: _onSaveEdit,
       onCancelEdit: _onCancelEdit,
       onRemove: _onRemoveLocation,
+      onStartFromLocation: _onStartFromLocation,
     );
   }
 
@@ -276,6 +279,27 @@ class _SuggestedTripState extends State<SuggestedTrip>
     setState(() {
       _isEditing = false;
       _temporaryEditLocations = null;
+    });
+  }
+
+  _onStartFromLocation(SuggestedLocation location) async {
+    setState(() {
+      _isRecalculatingRoute = true;
+    });
+
+    final suggestionService = locator<SuggestionService>();
+    final locationIds = _locations.map((e) => e.id).toList();
+
+    final suggestedTrip =
+        await suggestionService.suggestJourneyFromLocationsStartingAt(
+      locationIds,
+      location.id,
+    );
+
+    setState(() {
+      _suggestedTrip = suggestedTrip;
+      _locations = List.from(suggestedTrip.locations);
+      _isRecalculatingRoute = false;
     });
   }
 

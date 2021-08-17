@@ -91,11 +91,10 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
       }
       polylines.add(Polyline(
         polylineId: PolylineId("Polyline-$i"),
-        width: 1,
+        width: 3,
         visible: true,
         color: Colors.white,
         jointType: JointType.bevel,
-        patterns: [PatternItem.dash(12), PatternItem.gap(12)],
         points: [point1.latLng, point2.latLng],
       ));
     }
