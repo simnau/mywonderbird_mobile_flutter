@@ -18,6 +18,7 @@ import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -38,11 +39,14 @@ class SavedTripOverview extends StatefulWidget {
 class _SavedTripState extends State<SavedTripOverview> {
   ItemScrollController _itemScrollController = ItemScrollController();
   bool _isLoading = false;
+  bool _isEditing = false;
+  bool _isRecalculatingRoute = false;
   FullJourney _journey;
   GoogleMapController _mapController;
   LatLngBounds _tripBounds;
   int _currentLocationIndex;
   double _currentZoom;
+  List<LocationModel> _temporaryEditLocations;
 
   bool get _isLastLocation {
     return _currentLocationIndex == _journey.locations.length - 1;
@@ -50,9 +54,13 @@ class _SavedTripState extends State<SavedTripOverview> {
 
   bool get _isTripStarted => _journey?.startDate != null;
 
-  LocationModel get _selectedLocation => _currentLocationIndex >= 0
+  LocationModel get _selectedLocation => _currentLocationIndex >= 0 &&
+          _currentLocationIndex < _journey.locations.length
       ? _journey.locations[_currentLocationIndex]
       : null;
+
+  List<LocationModel> get _locations =>
+      _isEditing ? _temporaryEditLocations : _journey?.locations;
 
   @override
   void initState() {
@@ -90,6 +98,7 @@ class _SavedTripState extends State<SavedTripOverview> {
 
     return VerticalSplitView<LocationModel>(
       trip: _journey,
+      locations: _locations,
       currentLocationIndex: _currentLocationIndex,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
@@ -100,6 +109,13 @@ class _SavedTripState extends State<SavedTripOverview> {
       onNavigate: _onNavigate,
       itemScrollController: _itemScrollController,
       isSaved: true,
+      isEditing: _isEditing,
+      isRecalculatingRoute: _isRecalculatingRoute,
+      onEdit: _onEdit,
+      onRemove: _onRemoveLocation,
+      onCancelEdit: _onCancelEdit,
+      onSaveEdit: _onSaveEdit,
+      onStartFromLocation: _onStartFromLocation,
     );
   }
 
@@ -174,7 +190,12 @@ class _SavedTripState extends State<SavedTripOverview> {
     var cameraUpdate;
 
     if (!_isTripStarted) {
-      if (_tripBounds != null) {
+      if (_locations.length == 1) {
+        cameraUpdate = CameraUpdate.newLatLngZoom(
+          _locations.first?.latLng,
+          PLACE_ZOOM,
+        );
+      } else if (_tripBounds != null) {
         cameraUpdate =
             CameraUpdate.newLatLngBounds(_tripBounds, spacingFactor(8));
       }
@@ -197,6 +218,22 @@ class _SavedTripState extends State<SavedTripOverview> {
         }
       },
     );
+  }
+
+  _adjustCameraToLocation(
+    LocationModel location, {
+    final bool animateCamera = false,
+  }) {
+    final cameraUpdate = CameraUpdate.newLatLngZoom(
+      location?.latLng,
+      _currentZoom ?? PLACE_ZOOM,
+    );
+
+    if (animateCamera) {
+      _mapController.animateCamera(cameraUpdate);
+    } else {
+      _mapController.moveCamera(cameraUpdate);
+    }
   }
 
   _onCameraMove(CameraPosition cameraPosition) {
@@ -368,6 +405,95 @@ class _SavedTripState extends State<SavedTripOverview> {
     );
 
     _adjustMapCamera(animateCamera: true);
+  }
+
+  _onRemoveLocation(LocationModel location) {
+    // Do not allow removal of skipped/visited locations
+    if ((location?.skipped != null && location.skipped) ||
+        location?.visitedAt != null) {
+      return;
+    }
+
+    setState(() {
+      _temporaryEditLocations.remove(location);
+    });
+  }
+
+  _onEdit() {
+    setState(() {
+      _temporaryEditLocations = List.from(_journey.locations);
+      _isEditing = true;
+    });
+  }
+
+  _onSaveEdit() async {
+    if (_temporaryEditLocations.isEmpty) {
+      final snackBar = createErrorSnackbar(
+        text: 'Your trip should include at least 1 location',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      await updateTrip(_temporaryEditLocations);
+    }
+
+    setState(() {
+      _isEditing = false;
+      _temporaryEditLocations = null;
+    });
+  }
+
+  _onCancelEdit() {
+    setState(() {
+      _isEditing = false;
+      _temporaryEditLocations = null;
+    });
+  }
+
+  _onStartFromLocation(LocationModel location) async {
+    setState(() {
+      _isRecalculatingRoute = true;
+    });
+
+    final suggestionService = locator<SavedTripService>();
+    final suggestedTrip = await suggestionService.startTripAtLocation(
+      _journey.id,
+      location.placeId,
+    );
+
+    setState(() {
+      _journey = suggestedTrip;
+      _isRecalculatingRoute = false;
+    });
+
+    if (_isTripStarted) {
+      _adjustCameraToLocation(
+        suggestedTrip.locations[_currentLocationIndex],
+        animateCamera: true,
+      );
+    }
+  }
+
+  updateTrip(List<LocationModel> newLocations) async {
+    final savedTripService = locator<SavedTripService>();
+    final updatedTrip = await savedTripService.updateTripLocations(
+      _journey.id,
+      newLocations,
+    );
+
+    final tripBounds = boundsFromLatLngList(
+      updatedTrip.locations.map((location) => location.latLng).toList(),
+    );
+
+    setState(() {
+      _journey = updatedTrip;
+      _tripBounds = tripBounds;
+    });
+
+    if (_currentLocationIndex >= updatedTrip.locations.length) {
+      _onEnd();
+    } else {
+      _adjustMapCamera(animateCamera: true);
+    }
   }
 
   // TODO: either makes this work or remove it if we deem it unnecessary
