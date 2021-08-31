@@ -121,6 +121,7 @@ class _SuggestedTripState extends State<SuggestedTrip>
       currentLocationIndex: null,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
+      onGoToMyLocation: _onGoToMyLocation,
       onSaveTrip: _onSaveTrip,
       onViewLocation: _onViewLocationDetails,
       itemScrollController: _itemScrollController,
@@ -143,6 +144,18 @@ class _SuggestedTripState extends State<SuggestedTrip>
   _onCameraMove(CameraPosition cameraPosition) {
     if (cameraPosition.zoom != _currentZoom) {
       _currentZoom = cameraPosition.zoom;
+    }
+  }
+
+  _onGoToMyLocation() async {
+    final currentLocation = await getCurrentLocation();
+    final newLatLng = LatLng(
+      currentLocation.latitude,
+      currentLocation.longitude,
+    );
+
+    if (_mapController != null) {
+      _mapController.animateCamera(CameraUpdate.newLatLng(newLatLng));
     }
   }
 

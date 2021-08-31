@@ -14,6 +14,7 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
   final List<T> locations;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
+  final Function() onGoToMyLocation;
   final Function(T) onViewLocation;
   final Function() onSaveTrip;
   final Function() onStart;
@@ -38,6 +39,7 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
     @required this.onMapCreated,
     @required this.onCameraMove,
     @required this.onViewLocation,
+    @required this.onGoToMyLocation,
     this.onSaveTrip,
     this.onStart,
     this.onSkip,
@@ -64,6 +66,7 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
           currentLocationIndex: currentLocationIndex,
           onMapCreated: onMapCreated,
           onCameraMove: onCameraMove,
+          onGoToMyLocation: onGoToMyLocation,
           isTripStarted: trip?.startDate != null,
         ),
         TripDetails<T>(
@@ -91,7 +94,7 @@ class VerticalSplitView<T extends LocationModel> extends StatelessWidget {
       controller: SplitViewController(
         limits: [
           WeightLimit(min: 0.35),
-          WeightLimit(min: 0.1),
+          WeightLimit(min: 0.25),
         ],
         weights: [
           0.35,

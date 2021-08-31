@@ -43,7 +43,7 @@ class LocationImage extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(size)),
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withOpacity(0.1),
         ),
         alignment: Alignment.center,
         child: H6(

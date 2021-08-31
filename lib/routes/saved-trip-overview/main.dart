@@ -18,6 +18,7 @@ import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/location.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -102,6 +103,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       currentLocationIndex: _currentLocationIndex,
       onMapCreated: _onMapCreated,
       onCameraMove: _onCameraMove,
+      onGoToMyLocation: _onGoToMyLocation,
       onViewLocation: _onViewLocation,
       onStart: _onStart,
       onSkip: _onSkip,
@@ -241,6 +243,18 @@ class _SavedTripState extends State<SavedTripOverview> {
     // if (cameraPosition.zoom != _currentZoom) {
     //   _currentZoom = cameraPosition.zoom;
     // }
+  }
+
+  _onGoToMyLocation() async {
+    final currentLocation = await getCurrentLocation();
+    final newLatLng = LatLng(
+      currentLocation.latitude,
+      currentLocation.longitude,
+    );
+
+    if (_mapController != null) {
+      _mapController.animateCamera(CameraUpdate.newLatLng(newLatLng));
+    }
   }
 
   _onViewLocation(LocationModel location) {
