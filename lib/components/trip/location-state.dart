@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/util/color.dart';
 
 enum LocationState {
   visited,
@@ -22,11 +23,11 @@ LocationState locationStateFromLocation(LocationModel location, bool isActive) {
 Color colorFromLocationState(LocationState state, ThemeData theme) {
   switch (state) {
     case LocationState.active:
-      return theme.primaryColor;
+      return lighten(theme.primaryColor, amount: 0.05);
     case LocationState.skipped:
-      return Colors.grey[400];
+      return Colors.grey[300];
     case LocationState.visited:
-      return Colors.green;
+      return Color(0xFF38D01F);
     default:
       return Colors.white;
   }

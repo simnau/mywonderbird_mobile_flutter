@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mywonderbird/components/square-icon-button.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/util/map-markers.dart';
 
@@ -19,6 +21,7 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
   final int currentLocationIndex;
   final Function(GoogleMapController) onMapCreated;
   final Function(CameraPosition) onCameraMove;
+  final Function() onGoToMyLocation;
   final bool isTripStarted;
 
   const TripMap({
@@ -27,6 +30,7 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
     @required this.currentLocationIndex,
     this.onMapCreated,
     this.onCameraMove,
+    this.onGoToMyLocation,
     @required this.isTripStarted,
   }) : super(key: key);
 
@@ -36,18 +40,36 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
       return Container();
     }
 
-    return GoogleMap(
-      mapType: MapType.hybrid,
-      initialCameraPosition: _INITIAL_CAMERA_POSITION,
-      polylines: _lines(),
-      markers: _markers(),
-      onMapCreated: onMapCreated,
-      onCameraMove: onCameraMove,
-      mapToolbarEnabled: false,
-      rotateGesturesEnabled: false,
-      zoomControlsEnabled: false,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
+    return Stack(
+      children: [
+        GoogleMap(
+          mapType: MapType.hybrid,
+          initialCameraPosition: _INITIAL_CAMERA_POSITION,
+          polylines: _lines(),
+          markers: _markers(),
+          onMapCreated: onMapCreated,
+          onCameraMove: onCameraMove,
+          mapToolbarEnabled: false,
+          rotateGesturesEnabled: false,
+          zoomControlsEnabled: false,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+        ),
+        Positioned.directional(
+          bottom: spacingFactor(2),
+          end: spacingFactor(2),
+          textDirection: TextDirection.ltr,
+          child: SquareIconButton(
+            size: 36,
+            icon: Icon(
+              Icons.my_location,
+              color: Colors.black,
+            ),
+            onPressed: onGoToMyLocation,
+            backgroundColor: Colors.grey[50].withOpacity(0.85),
+          ),
+        )
+      ],
     );
   }
 
@@ -91,11 +113,10 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
       }
       polylines.add(Polyline(
         polylineId: PolylineId("Polyline-$i"),
-        width: 1,
+        width: 3,
         visible: true,
         color: Colors.white,
         jointType: JointType.bevel,
-        patterns: [PatternItem.dash(12), PatternItem.gap(12)],
         points: [point1.latLng, point2.latLng],
       ));
     }

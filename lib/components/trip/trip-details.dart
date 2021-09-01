@@ -15,19 +15,28 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class TripDetails<T extends LocationModel> extends StatefulWidget {
   final FullJourney trip;
+  final List<T> locations;
   final int currentLocationIndex;
   final Function(T) onViewLocation;
   final ItemScrollController itemScrollController;
   final Function() onSaveTrip;
   final Function() onStart;
+  final Function() onEdit;
+  final Function() onSaveEdit;
+  final Function() onCancelEdit;
   final Function(T, BuildContext) onSkip;
   final Function(T, BuildContext) onVisit;
   final Function(T) onNavigate;
+  final Function(T) onRemove;
+  final Function(T) onStartFromLocation;
   final bool isSaved;
+  final bool isEditing;
+  final bool isRecalculatingRoute;
 
   TripDetails({
     Key key,
     @required this.trip,
+    @required this.locations,
     @required this.currentLocationIndex,
     @required this.onViewLocation,
     @required this.onSaveTrip,
@@ -36,8 +45,16 @@ class TripDetails<T extends LocationModel> extends StatefulWidget {
     @required this.onVisit,
     @required this.onNavigate,
     @required this.isSaved,
+    bool isEditing,
+    @required this.isRecalculatingRoute,
     this.itemScrollController,
-  }) : super(key: key);
+    @required this.onEdit,
+    @required this.onSaveEdit,
+    @required this.onCancelEdit,
+    @required this.onRemove,
+    @required this.onStartFromLocation,
+  })  : isEditing = isEditing ?? false,
+        super(key: key);
 
   @override
   _TripDetailsState<T> createState() => _TripDetailsState<T>();
@@ -47,13 +64,13 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   bool showFullTripName = false;
 
   bool get isTripStarted => widget.trip?.startDate != null;
-  List<T> get locations => widget.trip?.locations;
+  List<T> get locations => widget.locations;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: spacingFactor(4),
+        horizontal: spacingFactor(2),
         vertical: spacingFactor(2),
       ),
       child: Column(
@@ -85,13 +102,45 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
   Widget _actions() {
     final theme = Theme.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
+    var content;
+
+    if (widget.isEditing) {
+      content = [
         Expanded(
           child: OutlinedButton(
-            onPressed: _onEditTrip,
+            onPressed: widget.onCancelEdit,
+            child: BodyText1('Cancel'),
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadiusFactor(2)),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: spacingFactor(2)),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: widget.onSaveEdit,
+            child: BodyText1.light('Save changes'),
+            style: ElevatedButton.styleFrom(
+              primary: theme.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadiusFactor(2)),
+                ),
+              ),
+              elevation: 0,
+            ),
+          ),
+        )
+      ];
+    } else {
+      content = [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: widget.onEdit,
             child: BodyText1('Edit'),
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -135,8 +184,14 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
                 elevation: 0,
               ),
             ),
-          ),
-      ],
+          )
+      ];
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
+      children: content,
     );
   }
 
@@ -158,7 +213,6 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
                 isLastLocationActive,
               )
             : null;
-        print(widget);
 
         return LocationItem<T>(
           location: location,
@@ -167,10 +221,16 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
           number: index + 1,
           onViewLocation: widget.onViewLocation,
           isActive: isActive,
+          isTripStarted: isTripStarted,
           previousLocationState: previousLocationState,
           onSkip: widget.onSkip,
           onVisit: widget.onVisit,
           onNavigate: widget.onNavigate,
+          isEditing: widget.isEditing,
+          isRecalculatingRoute: widget.isRecalculatingRoute,
+          onRemove: widget.onRemove,
+          locationCount: locations.length,
+          onStartFromLocation: widget.onStartFromLocation,
         );
       },
       itemCount: locations?.length ?? 0,

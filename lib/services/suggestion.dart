@@ -7,6 +7,8 @@ import 'package:mywonderbird/services/api.dart';
 const SUGGESTED_LOCATIONS_PATH = '/api/suggestions/locations';
 const SUGGEST_LOCATIONS_PAGINATED_PATH = '/api/suggestions/locations/paginated';
 const SUGGEST_JOURNEY_FROM_LOCATIONS_PATH = '/api/suggestions/locations';
+const SUGGEST_JOURNEY_FROM_LOCATIONS_STARTING_AT_PATH =
+    '/api/suggestions/locations/from-point';
 final suggestJourneyPath =
     (bookmarkGroupId) => "/api/suggestions/$bookmarkGroupId";
 
@@ -26,9 +28,33 @@ class SuggestionService {
   }
 
   Future<SuggestedJourney> suggestJourneyFromLocations(
-      List<String> locationIds) async {
+    List<String> locationIds, {
+    lng: double,
+    lat: double,
+  }) async {
     final response = await api.post(SUGGEST_JOURNEY_FROM_LOCATIONS_PATH, {
       'locationIds': locationIds,
+      'startingLocation': lng != null && lat != null
+          ? {
+              'lng': lng,
+              'lat': lat,
+            }
+          : null,
+    });
+    final journeyRaw = response['body']['journey'];
+    final journey = SuggestedJourney.fromJson(journeyRaw);
+
+    return journey;
+  }
+
+  Future<SuggestedJourney> suggestJourneyFromLocationsStartingAt(
+    List<String> locationIds,
+    String startingLocationId,
+  ) async {
+    final response =
+        await api.post(SUGGEST_JOURNEY_FROM_LOCATIONS_STARTING_AT_PATH, {
+      'locationIds': locationIds,
+      'startingLocationId': startingLocationId,
     });
     final journeyRaw = response['body']['journey'];
     final journey = SuggestedJourney.fromJson(journeyRaw);
