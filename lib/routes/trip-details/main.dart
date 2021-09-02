@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TripDetails extends StatefulWidget {
@@ -116,7 +117,7 @@ class _TripDetailsState extends State<TripDetails> {
       markers.add(Marker(
         markerId: MarkerId("Marker-$i"),
         position: _locations[i].latLng,
-        icon: BitmapDescriptor.defaultMarker,
+        icon: defaultMarker,
         consumeTapEvents: true,
       ));
     }
@@ -182,14 +183,13 @@ class _TripDetailsState extends State<TripDetails> {
 
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
-    final center = boundsCenter(widget.bounds);
 
     Future.delayed(
       Duration(milliseconds: 200),
       () {
-        if (center != null) {
+        if (widget.bounds != null) {
           controller.moveCamera(
-            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
+            CameraUpdate.newLatLngBounds(widget.bounds, spacingFactor(4)),
           );
         }
       },
