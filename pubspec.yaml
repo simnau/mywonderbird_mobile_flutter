@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.57+85
+version: 0.4.58+86
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
