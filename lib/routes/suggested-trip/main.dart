@@ -20,6 +20,7 @@ import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/util/location.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -86,6 +87,8 @@ class _SuggestedTripState extends State<SuggestedTrip>
     final tripBounds = boundsFromLatLngList(
       suggestedTrip.locations.map((location) => location.latLng).toList(),
     );
+
+    await ensureMarkersAreAvailable(suggestedTrip.locations.length);
 
     setState(() {
       _tripBounds = tripBounds;
