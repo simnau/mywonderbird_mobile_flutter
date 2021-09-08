@@ -229,6 +229,9 @@ class _AreaSelectionState extends State<AreaSelection> {
 
   _onSelectArea() async {
     if (mapController != null) {
+      final swipeFiltersProvider = locator<SwipeFiltersProvider>();
+      swipeFiltersProvider.setBounds(bounds?.southwest, bounds?.northeast);
+
       final visibleRegion = await mapController.getVisibleRegion();
 
       final navigationService = locator<NavigationService>();
