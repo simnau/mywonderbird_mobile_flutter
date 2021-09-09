@@ -1,31 +1,35 @@
 import 'dart:io';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
-import 'package:image/image.dart';
+const double MAX_IMAGE_SIZE = 1920;
 
-const double MAX_IMAGE_SIZE = 1080;
-
-int _getMaxWidth(double maxSize, double aspectRatio) {
+int getMaxWidth(double maxSize, double aspectRatio) {
   return (aspectRatio > 1 ? maxSize : maxSize * aspectRatio).floor();
 }
 
-int _getMaxHeight(double maxSize, double aspectRatio) {
+int getMaxHeight(double maxSize, double aspectRatio) {
   return (aspectRatio > 1 ? maxSize / aspectRatio : maxSize).floor();
 }
 
 Future<List<int>> resizeImageAsBytes(filename) async {
-  final image = decodeJpg(await File(filename).readAsBytes());
-  double aspectRatio = image.width / image.height;
-  final maxWidth = _getMaxWidth(MAX_IMAGE_SIZE, aspectRatio);
-  final maxHeight = _getMaxHeight(MAX_IMAGE_SIZE, aspectRatio);
+  ImageProperties properties =
+      await FlutterNativeImage.getImageProperties(filename);
 
-  final resizedWidth = image.width < maxWidth ? image.width : maxWidth;
-  final resizedHeight = image.height < maxHeight ? image.height : maxHeight;
+  double aspectRatio = properties.width / properties.height;
+  final maxWidth = getMaxWidth(MAX_IMAGE_SIZE, aspectRatio);
+  final maxHeight = getMaxHeight(MAX_IMAGE_SIZE, aspectRatio);
 
-  Image resizedImage = copyResize(
-    image,
-    width: resizedWidth,
-    height: resizedHeight,
+  final resizedWidth =
+      properties.width < maxWidth ? properties.width : maxWidth;
+  final resizedHeight =
+      properties.height < maxHeight ? properties.height : maxHeight;
+
+  File compressedFile = await FlutterNativeImage.compressImage(
+    filename,
+    quality: 80,
+    targetWidth: resizedWidth,
+    targetHeight: resizedHeight,
   );
 
-  return encodeJpg(resizedImage, quality: 80);
+  return compressedFile.readAsBytes();
 }
