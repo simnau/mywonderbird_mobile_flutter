@@ -86,8 +86,10 @@ class TripMap<T extends LocationModel> extends StatelessWidget {
         icon = visitedMarker;
       } else if (location.skipped != null && location.skipped) {
         icon = skippedMarker;
+      } else if (i >= 99) {
+        icon = moreThan99Marker;
       } else {
-        icon = defaultMarker;
+        icon = numberedMarkers[i + 1] ?? defaultMarker;
       }
 
       markers.add(Marker(
