@@ -4,7 +4,9 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 
@@ -15,6 +17,8 @@ class SelectedLocations extends StatelessWidget {
   final void Function() filterLocations;
   final void Function() viewLocations;
   final void Function() selectArea;
+  final int selectedFilterCount;
+  final bool isAreaSelected;
 
   const SelectedLocations({
     Key key,
@@ -22,12 +26,16 @@ class SelectedLocations extends StatelessWidget {
     @required this.filterLocations,
     @required this.viewLocations,
     @required this.selectArea,
+    this.selectedFilterCount,
+    this.isAreaSelected,
   }) : super(key: key);
+
+  bool get hasFilters => selectedFilterCount > 0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
       child: _content(context),
     );
   }
@@ -36,6 +44,11 @@ class SelectedLocations extends StatelessWidget {
     final theme = Theme.of(context);
     final selectedPlacesCount =
         selectedLocations.length > 9 ? '9+' : selectedLocations.length;
+    final filterCountText = hasFilters
+        ? Subtitle1.light(
+            selectedFilterCount > 9 ? "9+" : selectedFilterCount.toString(),
+          )
+        : null;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,9 +81,17 @@ class SelectedLocations extends StatelessWidget {
           backgroundColor: theme.accentColor,
           child: SquareIconButton(
             size: HEIGHT,
-            icon: Icon(FontAwesome.sliders),
+            icon: Icon(
+              FontAwesome.sliders,
+              color: hasFilters ? null : theme.accentColor,
+            ),
             onPressed: filterLocations,
-            backgroundColor: theme.accentColor,
+            backgroundColor:
+                hasFilters ? theme.accentColor : Colors.transparent,
+            label: filterCountText,
+            layout: Layout.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: spacingFactor(1)),
+            side: hasFilters ? null : BorderSide(color: theme.accentColor),
           ),
         ),
         SizedBox(width: 8.0),
@@ -84,9 +105,14 @@ class SelectedLocations extends StatelessWidget {
           backgroundColor: theme.primaryColor,
           child: SquareIconButton(
             size: HEIGHT,
-            icon: Icon(MaterialCommunityIcons.map_marker),
+            icon: Icon(
+              MaterialCommunityIcons.map_marker,
+              color: isAreaSelected ? null : theme.accentColor,
+            ),
             onPressed: selectArea,
-            backgroundColor: theme.accentColor,
+            backgroundColor:
+                isAreaSelected ? theme.accentColor : Colors.transparent,
+            side: isAreaSelected ? null : BorderSide(color: theme.accentColor),
           ),
         ),
       ],
