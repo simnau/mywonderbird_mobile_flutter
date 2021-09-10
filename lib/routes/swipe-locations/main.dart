@@ -185,7 +185,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   void dispose() {
     final swipeProvider = locator<SwipeFiltersProvider>();
     swipeProvider.removeListener(_onFilterChange);
-    swipeProvider.setBounds(null, null);
 
     super.dispose();
   }
