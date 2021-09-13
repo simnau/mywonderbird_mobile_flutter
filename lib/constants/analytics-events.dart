@@ -34,7 +34,11 @@ const VISIT_LOCATION_SAVED = 'visit_location_saved';
 const NAVIGATE_TO_LOCATION_SAVED = 'navigate_to_location_saved';
 const FINISH_SAVED = 'finish_saved';
 const SHARE_SAVED = 'share_saved';
+const LOCATION_INFO_SAVED_LIST = 'location_info_saved_list';
 
 // Feed
 const FEED_FILTER = 'feed_filter';
 const FEED_SEARCH = 'feed_search';
+
+// Trip planning
+const EDIT_TRIP = 'edit_trip';

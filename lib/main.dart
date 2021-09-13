@@ -16,6 +16,7 @@ import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 import 'package:mywonderbird/util/sentry.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry/sentry.dart' as sentry;
@@ -34,6 +35,7 @@ Future main({String env = 'dev'}) async {
     await Firebase.initializeApp();
     await _initOAuthUrl();
     await _initTags();
+    await initMarkers();
   } on UnauthorizedException {
     initialRoute = SplashScreen.PATH;
   }

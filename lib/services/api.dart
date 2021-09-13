@@ -134,7 +134,48 @@ class API {
         ...fullHeaders,
         ...await authenticationHeaders,
       },
-      body: json.encode(body),
+      body: encodeToJson(body),
+    );
+
+    if (!noRetry) {
+      final shouldRetry =
+          await retryPolicy.shouldAttemptRetryOnResponse(response);
+
+      if (retryCount < retryPolicy.maxRetryAttempts && shouldRetry) {
+        return post(
+          path,
+          body,
+          params: params,
+          headers: {
+            ...headers,
+            ...await authenticationHeaders,
+          },
+          retryCount: retryCount + 1,
+        );
+      }
+    }
+
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> put(
+    String path,
+    Map<String, dynamic> body, {
+    Map<String, dynamic> params,
+    Map<String, String> headers = const {},
+    int retryCount = 0,
+    bool noRetry = false,
+  }) async {
+    final uri = _createUri(apiBase, path, params);
+    final fullHeaders = _jsonHeaders(headers);
+
+    final response = await client.put(
+      uri,
+      headers: {
+        ...fullHeaders,
+        ...await authenticationHeaders,
+      },
+      body: encodeToJson(body),
     );
 
     if (!noRetry) {
@@ -252,5 +293,19 @@ class API {
   _navigateToAuth() async {
     navigationService.popUntil((route) => route.isFirst);
     navigationService.pushReplacementNamed(SelectAuthOption.PATH);
+  }
+
+  String encodeToJson(Map<String, dynamic> object) {
+    return json.encode(
+      object,
+      toEncodable: customToEncodable,
+    );
+  }
+
+  dynamic customToEncodable(dynamic item) {
+    if (item is DateTime) {
+      return item.toIso8601String();
+    }
+    return item;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/tag.dart';
 
 class TagFilterItem extends StatelessWidget {
@@ -40,7 +41,7 @@ class TagFilterItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                     border: selected
                         ? Border.all(
-                            color: theme.primaryColor,
+                            color: theme.accentColor,
                             width: 4.0,
                           )
                         : null,
@@ -54,6 +55,21 @@ class TagFilterItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (selected)
+                  Positioned(
+                    bottom: spacingFactor(1),
+                    left: spacingFactor(1),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: theme.accentColor,
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

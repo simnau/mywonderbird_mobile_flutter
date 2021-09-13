@@ -30,10 +30,8 @@ class SharingService {
     Journey journey,
   ) async {
     final filename = "${Uuid().v4()}.jpg";
-    final fileBytes = await compute<String, List<int>>(
-      resizeImageAsBytes,
-      pictureData.imagePath,
-    );
+    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
+
     final files = [
       http.MultipartFile.fromBytes(
         filename,

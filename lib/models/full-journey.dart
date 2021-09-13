@@ -8,12 +8,12 @@ const SHOWCASE_PICTURE_COUNT = 3;
 class FullJourney extends Journey {
   final List<LocationModel> locations;
 
-  const FullJourney({
-    @required name,
+  FullJourney({
     id,
     country,
-    @required startDate,
     finishDate,
+    name,
+    startDate,
     @required imageUrl,
     @required this.locations,
   }) : super(

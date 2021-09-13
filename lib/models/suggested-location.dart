@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mywonderbird/types/named-item.dart';
+import 'package:mywonderbird/models/location.dart';
 
 import 'suggested-location-image.dart';
 
-class SuggestedLocation extends NamedItem {
-  final String id;
-  final String country;
-  final String countryCode;
-  final LatLng latLng;
+class SuggestedLocation extends LocationModel {
   final List<SuggestedLocationImage> images;
 
-  const SuggestedLocation({
-    @required name,
-    this.id,
-    @required this.country,
-    @required this.countryCode,
-    @required this.latLng,
-    @required this.images,
-  }) : super(name: name);
+  SuggestedLocation({
+    @required String name,
+    @required String country,
+    String id,
+    @required String countryCode,
+    @required LatLng latLng,
+    @required List<SuggestedLocationImage> images,
+  })  : images = images,
+        super(
+          name: name,
+          country: country,
+          countryCode: countryCode,
+          imageUrl:
+              images != null && images.isNotEmpty ? images.first?.url : null,
+          latLng: latLng,
+          id: id,
+        );
 
   SuggestedLocationImage get coverImage =>
       images != null && images.isNotEmpty ? images.first : null;

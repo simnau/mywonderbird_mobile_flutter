@@ -20,7 +20,8 @@ class SelectPicture extends StatefulWidget {
   _SelectPictureState createState() => _SelectPictureState();
 }
 
-class _SelectPictureState extends State<SelectPicture> {
+class _SelectPictureState extends State<SelectPicture>
+    with WidgetsBindingObserver {
   final ScrollController _scrollController = new ScrollController();
   List<AssetEntity> _photoList = [];
   List<Widget> _photoWidgetList = [];
@@ -28,7 +29,27 @@ class _SelectPictureState extends State<SelectPicture> {
   int _lastPage;
   AssetEntity _selectedPhoto;
   bool _hasPermission = true;
-  bool _isLoading = false;
+  bool _isLoading = true;
+  bool _isPaused = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // Whether the app was put into background and then reopened
+        if (_isPaused) {
+          await _fetchPhotos();
+        }
+        _isPaused = false;
+        break;
+      case AppLifecycleState.paused:
+        _isPaused = true;
+        break;
+      default:
+        _isPaused = false;
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -52,12 +73,15 @@ class _SelectPictureState extends State<SelectPicture> {
         }
       }
     });
+
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   _fetchPhotos() async {
@@ -67,24 +91,32 @@ class _SelectPictureState extends State<SelectPicture> {
     if (hasPermission) {
       setState(() {
         _isLoading = true;
+        _hasPermission = true;
       });
 
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
         onlyAll: true,
         type: RequestType.image,
       );
-      List<AssetEntity> photos =
-          await albums[0].getAssetListPaged(_currentPage, 20);
 
-      List<Widget> photoWidgets = photos.map<Widget>(_picture).toList();
+      if (albums.isEmpty) {
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        List<AssetEntity> photos =
+            await albums[0].getAssetListPaged(_currentPage, 20);
 
-      _photoList = _photoList..addAll(photos);
+        List<Widget> photoWidgets = photos.map<Widget>(_picture).toList();
 
-      setState(() {
-        _photoWidgetList = _photoWidgetList..addAll(photoWidgets);
-        _currentPage += 1;
-        _isLoading = false;
-      });
+        _photoList = _photoList..addAll(photos);
+
+        setState(() {
+          _photoWidgetList = _photoWidgetList..addAll(photoWidgets);
+          _currentPage += 1;
+          _isLoading = false;
+        });
+      }
     } else {
       setState(() {
         _hasPermission = false;
@@ -143,6 +175,12 @@ class _SelectPictureState extends State<SelectPicture> {
             ),
           ),
         ),
+      );
+    }
+
+    if (_isLoading && _currentPage == 0) {
+      return Center(
+        child: CircularProgressIndicator(),
       );
     }
 

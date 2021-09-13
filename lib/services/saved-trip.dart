@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/journey.dart';
+import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/services/api.dart';
 
@@ -11,6 +12,8 @@ const SAVED_TRIPS_PATH = ROOT_PATH;
 const SAVE_TRIP_PATH = ROOT_PATH;
 final savedTripsByUserIdPath = (userId) => "$ROOT_PATH/users/$userId";
 final savedTripByIdPath = (id) => "$ROOT_PATH/$id";
+final updateTripByIdPath = (id) => "$ROOT_PATH/$id";
+final startTripAtLocationPath = (id) => "$ROOT_PATH/$id/from-point";
 final deleteSavedTripPath = (id) => "$ROOT_PATH/$id";
 final startTripPath = (id) => "$ROOT_PATH/$id/started";
 final skipLocationPath =
@@ -138,5 +141,56 @@ class SavedTripService {
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw Exception('There was an error ending the trip');
     }
+  }
+
+  Future<FullJourney> updateTripLocations(
+    String id,
+    List<LocationModel> newLocations,
+  ) async {
+    final response = await api.put(updateTripByIdPath(id), {
+      'trip': {
+        'savedTripLocations': newLocations
+            .map(
+              (location) => ({
+                'savedTripId': id,
+                'placeId': location.placeId,
+                'skipped': location.skipped,
+                'visitedAt': location.visitedAt,
+              }),
+            )
+            .toList(),
+      },
+    });
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error updating the trip locations');
+    }
+
+    final tripRaw = response['body']['trip'];
+    final updatedTrip = FullJourney.fromJson(tripRaw);
+
+    return updatedTrip;
+  }
+
+  Future<FullJourney> startTripAtLocation(
+    String tripId,
+    String startingLocationId,
+  ) async {
+    final response = await api.put(startTripAtLocationPath(tripId), {
+      'startingLocationId': startingLocationId,
+    });
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception(
+        "There was an error starting the trip from location $startingLocationId",
+      );
+    }
+
+    final tripRaw = response['body']['trip'];
+    final updatedTrip = FullJourney.fromJson(tripRaw);
+
+    return updatedTrip;
   }
 }

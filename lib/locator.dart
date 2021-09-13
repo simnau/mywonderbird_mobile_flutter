@@ -38,6 +38,7 @@ import 'package:mywonderbird/services/tag.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/sharing-intent.dart';
+import 'package:mywonderbird/util/converters/suggested-location.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -130,4 +131,5 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => retryPolicy);
   locator.registerLazySingleton(() => analytics);
   locator.registerLazySingleton(() => analyticsObserver);
+  locator.registerLazySingleton(() => SuggestedLocationConverter());
 }

@@ -5,12 +5,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/routes/trip-details/main.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/geo.dart';
+import 'package:mywonderbird/util/map-markers.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TripOverview extends StatefulWidget {
@@ -265,7 +267,7 @@ class _TripOverviewState extends State<TripOverview> {
       markers.add(Marker(
         markerId: MarkerId("Marker-$i"),
         position: _journey.locations[i].latLng,
-        icon: BitmapDescriptor.defaultMarker,
+        icon: defaultMarker,
         consumeTapEvents: true,
       ));
     }
@@ -310,14 +312,13 @@ class _TripOverviewState extends State<TripOverview> {
 
   _onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
-    final center = boundsCenter(_tripBounds);
 
     Future.delayed(
       Duration(milliseconds: 200),
       () {
-        if (center != null) {
+        if (_tripBounds != null) {
           controller.moveCamera(
-            CameraUpdate.newLatLngZoom(center, _INITIAL_ZOOM),
+            CameraUpdate.newLatLngBounds(_tripBounds, spacingFactor(4)),
           );
         }
       },
