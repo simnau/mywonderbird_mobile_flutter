@@ -91,6 +91,7 @@ class _SelectPictureState extends State<SelectPicture>
     if (hasPermission) {
       setState(() {
         _isLoading = true;
+        _hasPermission = true;
       });
 
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
@@ -114,7 +115,6 @@ class _SelectPictureState extends State<SelectPicture>
           _photoWidgetList = _photoWidgetList..addAll(photoWidgets);
           _currentPage += 1;
           _isLoading = false;
-          _hasPermission = true;
         });
       }
     } else {
