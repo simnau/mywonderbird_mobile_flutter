@@ -63,7 +63,7 @@ class _LocationDetailsState extends State<LocationDetails> {
           child: Opacity(
             opacity: 0.5,
             child: Container(
-              height: 64,
+              height: kToolbarHeight,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,

@@ -66,8 +66,10 @@ class _SystemLocationDetailsState extends State<SystemLocationDetails> {
       );
     }
 
-    return LocationDetails(
-      location: location,
+    return SafeArea(
+      child: LocationDetails(
+        location: location,
+      ),
     );
   }
 }
