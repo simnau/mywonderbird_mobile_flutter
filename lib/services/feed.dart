@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:mywonderbird/models/feed-location.dart';
 import 'package:mywonderbird/services/api.dart';
 
-const FETCH_FEED_ITEMS_PATH = '/api/pictures/feed';
+const FETCH_FEED_ITEMS_PATH = '/api/pictures/v2/feed';
 
 class FeedService {
   final API api;

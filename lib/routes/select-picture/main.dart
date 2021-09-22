@@ -5,11 +5,9 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/share-picture/main.dart';
-import 'package:mywonderbird/routes/share-picture/mock.dart';
+import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
-import 'package:mywonderbird/types/picture-data.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class SelectPicture extends StatefulWidget {
@@ -55,15 +53,6 @@ class _SelectPictureState extends State<SelectPicture>
   void initState() {
     super.initState();
     _fetchPhotos();
-
-    final sharePictureProvider = locator<SharePictureProvider>();
-
-    sharePictureProvider.pictureData = PictureData(
-      image: NetworkImage(MOCK_IMAGE),
-      imagePath: '',
-      location: MOCK_LOCATION,
-      creationDate: DateTime.now(),
-    );
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -279,7 +268,9 @@ class _SelectPictureState extends State<SelectPicture>
           await pictureDataService.extractPictureData(selectedFile.path);
 
       sharePictureProvider.pictureData = pictureData;
-      navigationService.pushNamed(ShareScreen.PATH);
+      navigationService.push(MaterialPageRoute(
+        builder: (context) => SelectUploadType(),
+      ));
     }
   }
 }

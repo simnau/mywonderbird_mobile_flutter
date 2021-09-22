@@ -23,7 +23,8 @@ import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/feedback.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
-import 'package:mywonderbird/services/location.dart';
+import 'package:mywonderbird/services/geo.dart';
+import 'package:mywonderbird/services/system-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/oauth.dart';
 import 'package:mywonderbird/services/onboarding.dart';
@@ -37,6 +38,7 @@ import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/services/tag.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
+import 'package:mywonderbird/services/user-location.dart';
 import 'package:mywonderbird/sharing-intent.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
 
@@ -54,7 +56,7 @@ setupLocator({String env}) {
     retryPolicy: retryPolicy,
   );
   final termsService = TermsService(api: api);
-  final locationService = LocationService(api: api);
+  final geoService = GeoService(api: api);
 
   final profileService = ProfileService(
     api: api,
@@ -80,8 +82,10 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => tokenService);
   locator.registerLazySingleton(() => authenticationService);
   locator.registerLazySingleton(() => termsService);
-  locator.registerLazySingleton(() => locationService);
+  locator.registerLazySingleton(() => geoService);
   locator.registerLazySingleton(() => JourneyService(api: api));
+  locator.registerLazySingleton(() => UserLocationService(api: api));
+  locator.registerLazySingleton(() => SystemLocationService(api: api));
   locator.registerLazySingleton(() => SharingService(api: api));
   locator.registerLazySingleton(() => FeedService(api: api));
   locator.registerLazySingleton(() => LikeService(api: api));
@@ -102,7 +106,7 @@ setupLocator({String env}) {
     () => OnboardingService(storageService: storageService),
   );
   locator.registerLazySingleton(
-    () => PictureDataService(locationService: locationService),
+    () => PictureDataService(locationService: geoService),
   );
   locator.registerLazySingleton(
     () => OAuthService(

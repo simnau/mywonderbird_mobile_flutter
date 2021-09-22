@@ -8,7 +8,7 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/services/location.dart';
+import 'package:mywonderbird/services/geo.dart';
 
 import 'package:mywonderbird/components/showcase-icon.dart';
 import 'package:mywonderbird/util/debouncer.dart';
@@ -271,7 +271,7 @@ class _BottomSheetState extends State<_BottomSheet> {
       setState(() {
         _loading = true;
       });
-      final locationService = locator<LocationService>();
+      final locationService = locator<GeoService>();
       final places = await locationService.searchLocations(
         _searchController.text,
         widget.currentLocation,

@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/share-picture/main.dart';
+import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -44,11 +45,15 @@ class SharingIntent {
 
   _handleShare(String filePath) async {
     final pictureDataService = locator<PictureDataService>();
+    final navigationService = locator<NavigationService>();
     final pictureData = await pictureDataService.extractPictureData(filePath);
 
     final sharePictureProvider = locator<SharePictureProvider>();
 
     sharePictureProvider.pictureData = pictureData;
-    locator<NavigationService>().pushReplacementNamed(ShareScreen.PATH);
+
+    navigationService.push(MaterialPageRoute(
+      builder: (context) => SelectUploadType(),
+    ));
   }
 }

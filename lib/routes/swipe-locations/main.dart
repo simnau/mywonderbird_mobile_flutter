@@ -13,6 +13,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
+import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
 import 'package:mywonderbird/routes/suggested-trip/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/selected-locations.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/swipe-actions.dart';
@@ -29,7 +30,6 @@ import 'package:story_view/story_view.dart';
 
 import 'components/animated-card.dart';
 import 'components/location-card.dart';
-import 'pages/location-details/main.dart';
 
 const LOCATIONS_LOADED = 3;
 const DEFAULT_PAGE_SIZE = 5;
@@ -343,8 +343,8 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => LocationDetails(
-        location: location,
+      builder: (context) => SystemLocationDetails(
+        locationId: location.id,
       ),
     ));
 

@@ -15,7 +15,7 @@ class FeedItem extends StatefulWidget {
   final void Function() onLike;
   final void Function() onBookmark;
   final void Function() onTap;
-  final void Function() onViewJourney;
+  final void Function() onView;
   final void Function() onViewUser;
   final String imageUrl;
   final String userAvatarUrl;
@@ -30,7 +30,7 @@ class FeedItem extends StatefulWidget {
     @required this.onLike,
     @required this.onBookmark,
     @required this.onTap,
-    @required this.onViewJourney,
+    @required this.onView,
     @required this.onViewUser,
     @required this.imageUrl,
     @required this.userAvatarUrl,
@@ -86,7 +86,7 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
                 left: Radius.circular(16.0),
               ),
               child: InkWell(
-                onTap: widget.onViewJourney,
+                onTap: widget.onView,
                 borderRadius: BorderRadius.horizontal(
                   left: Radius.circular(16.0),
                 ),

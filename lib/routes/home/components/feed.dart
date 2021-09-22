@@ -4,6 +4,7 @@ import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/feed-location.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
 import 'package:mywonderbird/routes/other-user/main.dart';
 import 'package:mywonderbird/routes/profile/main.dart';
@@ -105,7 +106,7 @@ class _FeedState extends State<Feed> {
       onBookmark: () =>
           item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
       onTap: () => _onFeedItemTap(item),
-      onViewJourney: () => _onViewJourney(item),
+      onView: () => _onView(item),
       onViewUser: () => _onViewUser(item, context, user),
       userAvatarUrl: item.userAvatarUrl,
     );
@@ -246,14 +247,26 @@ class _FeedState extends State<Feed> {
     }
   }
 
-  _onViewJourney(FeedLocation item) async {
-    locator<NavigationService>().push(
-      MaterialPageRoute(
-        builder: (context) => TripOverview(
-          id: item.journeyId,
+  _onView(FeedLocation item) async {
+    final navigationService = locator<NavigationService>();
+
+    if (item.journeyId == null) {
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (context) => UserLocationDetails(
+            locationId: item.locationId,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (context) => TripOverview(
+            id: item.journeyId,
+          ),
+        ),
+      );
+    }
   }
 
   _controllerChange() {

@@ -13,7 +13,6 @@ import 'routes/home/main.dart';
 import 'routes/profile/main.dart';
 import 'routes/select-picture/main.dart';
 import 'routes/settings/main.dart';
-import 'routes/share-picture/main.dart';
 import 'routes/splash/main.dart';
 import 'routes/functionality-coming-soon/main.dart';
 import 'routes/feedback/form/main.dart';
@@ -47,11 +46,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case SelectPicture.PATH:
       return MaterialPageRoute(
         builder: (_) => SelectPicture(),
-        settings: settings,
-      );
-    case ShareScreen.PATH:
-      return MaterialPageRoute(
-        builder: (_) => ShareScreen(),
         settings: settings,
       );
     case Profile.PATH:

@@ -14,6 +14,7 @@ import 'package:mywonderbird/util/json.dart';
 import 'package:uuid/uuid.dart';
 
 const SHARE_PICTURE_PATH = '/api/pictures';
+const SHARE_SINGLE_PICTURE_PATH = '/api/pictures/single';
 final sharePicturePath = (journeyId) => "/api/pictures/$journeyId";
 final uploadPicturePath = (journeyId) => "/api/pictures/$journeyId/file";
 
@@ -50,6 +51,45 @@ class SharingService {
 
     final response = await api.postMultipartFiles(
       SHARE_PICTURE_PATH,
+      files,
+      fields: fields,
+    );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        'There was an error sharing the picture. Please try again later',
+      );
+    }
+
+    return response;
+  }
+
+  shareSinglePicture(
+    String title,
+    String description,
+    PictureData pictureData,
+    LocationModel locationModel,
+  ) async {
+    final filename = "${Uuid().v4()}.jpg";
+    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
+
+    final files = [
+      http.MultipartFile.fromBytes(
+        filename,
+        fileBytes,
+        filename: filename,
+      ),
+    ];
+    final fields = removeNulls({
+      'title': title,
+      'description': description,
+      'creationDate': formatDateTime(pictureData.creationDate),
+      ...locationModel.toStringJson(),
+    });
+
+    final response = await api.postMultipartFiles(
+      SHARE_SINGLE_PICTURE_PATH,
       files,
       fields: fields,
     );
