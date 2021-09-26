@@ -4,6 +4,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/routes/profile/components/saved-trips-tab.dart';
+import 'package:mywonderbird/routes/profile/components/spots-tab.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/extensions/text-theme.dart';
@@ -27,7 +28,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   TabController _tabController;
 
   _ProfileState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -77,6 +78,12 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                         style: theme.textTheme.tab,
                       ),
                     ),
+                    Tab(
+                      child: Text(
+                        'MY SPOTS',
+                        style: theme.textTheme.tab,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -88,6 +95,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
           children: [
             SavedTripsTab(),
             MyTripsTab(),
+            MySpotsTab(),
           ],
         ),
       ),
