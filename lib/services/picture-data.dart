@@ -7,7 +7,6 @@ import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/services/location.dart';
 import 'package:mywonderbird/types/picture-data.dart';
 import 'package:mywonderbird/util/geo.dart';
-import 'package:mywonderbird/util/location.dart';
 
 class PictureDataService {
   final LocationService locationService;

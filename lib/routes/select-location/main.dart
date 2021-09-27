@@ -27,13 +27,8 @@ class SelectLocation extends StatefulWidget {
 
 class _SelectLocationState extends State<SelectLocation> {
   static const _INITIAL_ZOOM = 14.4746;
-  static const _INITIAL_CAMERA_POSITION = CameraPosition(
-    target: LatLng(
-      37.42796133580664,
-      -122.085749655962,
-    ),
-    zoom: _INITIAL_ZOOM,
-  );
+  static const _INITIAL_LATITUDE = 37.42796133580664;
+  static const _INITIAL_LONGITUDE = -122.085749655962;
 
   Completer<GoogleMapController> _controller = Completer();
   PersistentBottomSheetController _bottomSheetController;
@@ -48,7 +43,10 @@ class _SelectLocationState extends State<SelectLocation> {
   }
 
   void _setCurrentLocation() async {
-    _currentLocation = await getCurrentLocation();
+    final currLocation = await getCurrentLocation();
+    setState(() {
+      _currentLocation = currLocation;
+    });
   }
 
   void _closeSearch() {
@@ -138,9 +136,24 @@ class _SelectLocationState extends State<SelectLocation> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final gesturesEnabled = !_searchModalOpen;
-    final initialCameraPosition = widget.location != null
-        ? CameraPosition(target: widget.location.latLng, zoom: _INITIAL_ZOOM)
-        : _INITIAL_CAMERA_POSITION;
+    final targetLoc = widget.location != null
+        ? widget.location.latLng
+        : LatLng(
+            _currentLocation?.latitude ?? _INITIAL_LATITUDE,
+            _currentLocation?.longitude ?? _INITIAL_LONGITUDE,
+          );
+
+    if (_currentLocation == null && widget.location == null)
+      return Center(
+        child: SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+    final initialCameraPosition =
+        CameraPosition(target: targetLoc, zoom: _INITIAL_ZOOM);
 
     return new Scaffold(
       extendBodyBehindAppBar: true,
