@@ -1,16 +1,11 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/trip/location-item.dart';
 import 'package:mywonderbird/components/trip/location-state.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
-import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/constants/theme.dart';
-import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
-import 'package:mywonderbird/services/navigation.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class TripDetails<T extends LocationModel> extends StatefulWidget {
@@ -241,11 +236,5 @@ class _TripDetailsState<T extends LocationModel> extends State<TripDetails<T>> {
     setState(() {
       showFullTripName = !showFullTripName;
     });
-  }
-
-  _onEditTrip() {
-    final analytics = locator<FirebaseAnalytics>();
-    analytics.logEvent(name: EDIT_TRIP);
-    locator<NavigationService>().pushNamed(ComingSoonScreen.PATH);
   }
 }

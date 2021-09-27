@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.56+84
+version: 0.4.62+90
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -55,6 +55,7 @@ dependencies:
   feature_discovery: ^0.14.0
   split_view: ^3.1.0
   scrollable_positioned_list: ^0.1.10
+  flutter_native_image: ^0.0.6+1
 
 dev_dependencies:
   flutter_test:
@@ -123,5 +124,4 @@ flutter:
     - images/feedback/
     - images/filters/
     - images/questionnaire/
-    - images/map-markers/
     - env/

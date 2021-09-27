@@ -185,7 +185,6 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   void dispose() {
     final swipeProvider = locator<SwipeFiltersProvider>();
     swipeProvider.removeListener(_onFilterChange);
-    swipeProvider.setBounds(null, null);
 
     super.dispose();
   }
@@ -208,6 +207,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
     }
 
     final swipeProvider = Provider.of<SwipeProvider>(context, listen: true);
+    final swipeFiltersProvider = locator<SwipeFiltersProvider>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -217,6 +217,8 @@ class _SwipeLocationsState extends State<SwipeLocations> {
           viewLocations: _onViewLocations,
           filterLocations: _onFilterLocations,
           selectArea: _onSelectArea,
+          selectedFilterCount: swipeFiltersProvider.selectedTags.length,
+          isAreaSelected: swipeFiltersProvider.hasAreaBeenChosen,
         ),
         SizedBox(height: 8.0),
         Expanded(child: _mainContent()),
@@ -397,6 +399,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
         selectedArea.northeast,
         notify: true,
       );
+      swipeFiltersProvider.hasAreaBeenChosen = true;
     }
   }
 

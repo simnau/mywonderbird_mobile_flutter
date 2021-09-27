@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/constants/theme.dart';
+
+enum Layout {
+  vertical,
+  horizontal,
+}
 
 class SquareIconButton extends StatelessWidget {
   final double size;
@@ -9,6 +15,8 @@ class SquareIconButton extends StatelessWidget {
   final Color splashColor;
   final Color focusColor;
   final void Function() onPressed;
+  final Layout layout;
+  final EdgeInsets padding;
 
   const SquareIconButton({
     Key key,
@@ -20,46 +28,81 @@ class SquareIconButton extends StatelessWidget {
     this.side,
     this.splashColor,
     this.focusColor,
+    this.layout,
+    this.padding,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: size,
-      width: size,
-      child: FloatingActionButton(
-        heroTag: null,
-        backgroundColor: backgroundColor,
-        child: _content(),
-        onPressed: onPressed,
-        elevation: 0,
-        highlightElevation: 0,
-        shape: side != null
-            ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                side: side,
-              )
-            : RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+    final theme = Theme.of(context);
+
+    return Theme(
+      data: theme.copyWith(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+      ),
+      child: Container(
+        height: layout != Layout.vertical ? size : null,
+        width: layout != Layout.horizontal ? size : null,
+        child: Container(
+          decoration: BoxDecoration(
+            border: side != null ? Border.fromBorderSide(side) : null,
+            borderRadius: BorderRadius.circular(
+              borderRadiusFactor(2),
+            ),
+            color: backgroundColor,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onPressed,
+              splashColor: splashColor,
+              focusColor: focusColor,
+              child: Padding(
+                padding: padding ?? const EdgeInsets.all(0),
+                child: _content(),
               ),
-        splashColor: splashColor,
-        focusColor: focusColor,
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _content() {
     if (label != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          icon,
-          label,
-        ],
-      );
+      if (layout == Layout.horizontal) {
+        return _horizontalContent();
+      } else {
+        return _verticalContent();
+      }
     }
 
     return icon;
+  }
+
+  Widget _verticalContent() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        icon,
+        label,
+      ],
+    );
+  }
+
+  Widget _horizontalContent() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        icon,
+        SizedBox(width: spacingFactor(0.5)),
+        label,
+      ],
+    );
   }
 }

@@ -5,10 +5,12 @@ class SwipeFiltersProvider with ChangeNotifier {
   List<String> _selectedTags = [];
   LatLng _northEast;
   LatLng _southWest;
+  bool _hasAreaBeenChosen = false;
 
   List<String> get selectedTags => _selectedTags;
   LatLng get northEast => _northEast;
   LatLng get southWest => _southWest;
+  bool get hasAreaBeenChosen => _hasAreaBeenChosen;
 
   set selectedTags(List<String> selectedTags) {
     _selectedTags = selectedTags;
@@ -22,6 +24,11 @@ class SwipeFiltersProvider with ChangeNotifier {
     if (notify) {
       notifyListeners();
     }
+  }
+
+  set hasAreaBeenChosen(bool hasAreaBeenChosen) {
+    _hasAreaBeenChosen = hasAreaBeenChosen;
+    notifyListeners();
   }
 
   clear() {
