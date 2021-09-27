@@ -13,7 +13,7 @@ import 'package:mywonderbird/models/saved-trip.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
-import 'package:mywonderbird/routes/profile/main.dart';
+import 'package:mywonderbird/routes/profile/current-user/main.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
@@ -216,7 +216,9 @@ class _SuggestedTripState extends State<SuggestedTrip>
     });
 
     navigationService.popUntil((route) => route.isFirst);
-    navigationService.pushNamed(Profile.PATH);
+    navigationService.push(MaterialPageRoute(
+      builder: (_) => Profile(),
+    ));
     await navigationService.push(MaterialPageRoute(
       builder: (context) => SavedTripOverview(
         id: savedTrip.id,

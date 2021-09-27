@@ -3,10 +3,11 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
-import 'package:mywonderbird/routes/profile/components/spots-list.dart';
 import 'package:mywonderbird/services/user-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/snackbar.dart';
+
+import '../../components/spots-list.dart';
 
 class MySpotsTab extends StatefulWidget {
   @override
