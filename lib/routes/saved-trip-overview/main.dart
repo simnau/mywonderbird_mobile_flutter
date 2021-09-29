@@ -12,11 +12,10 @@ import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
 import 'package:mywonderbird/routes/saved-trip-finished/main.dart';
-import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
-import 'package:mywonderbird/util/converters/suggested-location.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/util/location.dart';
 import 'package:mywonderbird/util/map-markers.dart';
@@ -262,11 +261,10 @@ class _SavedTripState extends State<SavedTripOverview> {
 
   _onViewLocation(LocationModel location) {
     final navigationService = locator<NavigationService>();
-    final suggestedLocationConverter = locator<SuggestedLocationConverter>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => LocationDetails(
-        location: suggestedLocationConverter.convertFrom(location),
+      builder: (context) => SystemLocationDetails(
+        locationId: location.placeId,
       ),
     ));
 

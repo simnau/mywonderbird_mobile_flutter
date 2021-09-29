@@ -5,11 +5,11 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/suggested-location.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
+import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/area-selection-actions.dart';
 import 'package:mywonderbird/routes/swipe-locations/components/area-selection-location-slider.dart';
 import 'package:mywonderbird/routes/swipe-locations/models/area-selection-suggested-location.dart';
 import 'package:mywonderbird/routes/swipe-locations/models/current-index-update.dart';
-import 'package:mywonderbird/routes/swipe-locations/pages/location-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/util/debouncer.dart';
@@ -331,7 +331,9 @@ class _AreaSelectionState extends State<AreaSelection> {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => LocationDetails(location: currentLocation),
+      builder: (context) => SystemLocationDetails(
+        locationId: currentLocation.id,
+      ),
     ));
 
     final analytics = locator<FirebaseAnalytics>();

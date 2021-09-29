@@ -4,16 +4,16 @@ import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/feed-location.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/image-view/main.dart';
-import 'package:mywonderbird/routes/other-user/main.dart';
-import 'package:mywonderbird/routes/profile/main.dart';
+import 'package:mywonderbird/routes/profile/current-user/main.dart';
+import 'package:mywonderbird/routes/profile/other-user/main.dart';
 import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
 import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/types/other-user-arguments.dart';
 import 'package:provider/provider.dart';
 
 Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
@@ -105,7 +105,7 @@ class _FeedState extends State<Feed> {
       onBookmark: () =>
           item.isBookmarked ? _onUnbookmark(item) : _onBookmark(item),
       onTap: () => _onFeedItemTap(item),
-      onViewJourney: () => _onViewJourney(item),
+      onView: () => _onView(item),
       onViewUser: () => _onViewUser(item, context, user),
       userAvatarUrl: item.userAvatarUrl,
     );
@@ -246,14 +246,26 @@ class _FeedState extends State<Feed> {
     }
   }
 
-  _onViewJourney(FeedLocation item) async {
-    locator<NavigationService>().push(
-      MaterialPageRoute(
-        builder: (context) => TripOverview(
-          id: item.journeyId,
+  _onView(FeedLocation item) async {
+    final navigationService = locator<NavigationService>();
+
+    if (item.journeyId == null) {
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (context) => UserLocationDetails(
+            locationId: item.locationId,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (context) => TripOverview(
+            id: item.journeyId,
+          ),
+        ),
+      );
+    }
   }
 
   _controllerChange() {
@@ -265,14 +277,13 @@ _onViewUser(FeedLocation item, BuildContext context, User user) async {
   final navigationService = locator<NavigationService>();
 
   if (item.userId == user.id) {
-    navigationService.pushNamed(Profile.PATH);
+    navigationService.push(MaterialPageRoute(
+      builder: (_) => Profile(),
+    ));
   } else {
-    navigationService.pushNamed(
-      OtherUser.PATH,
-      arguments: OtherUserArguments(
-        id: item.userId,
-      ),
-    );
+    navigationService.push(MaterialPageRoute(
+      builder: (_) => OtherUser(id: item.userId),
+    ));
   }
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mywonderbird/routes/share-picture/mock.dart';
 import 'package:mywonderbird/types/named-item.dart';
 import 'package:mywonderbird/util/date.dart';
 import 'package:mywonderbird/util/json.dart';
@@ -11,6 +10,7 @@ class LocationModel extends NamedItem {
   final String country;
   final String countryCode;
   final String imageUrl;
+  final List<String> locationImages;
   final LatLng latLng;
   final String provider;
   final int dayIndex;
@@ -24,6 +24,7 @@ class LocationModel extends NamedItem {
     @required this.country,
     @required this.countryCode,
     this.imageUrl,
+    this.locationImages,
     @required this.latLng,
     this.provider,
     this.skipped,
@@ -46,7 +47,9 @@ class LocationModel extends NamedItem {
       name: json['name'],
       country: json['country'],
       countryCode: json['countryCode'],
-      imageUrl: json['imageUrl'] ?? MOCK_IMAGE, // TODO
+      imageUrl: json['imageUrl'],
+      locationImages:
+          json['images']?.map<String>((image) => image.toString())?.toList(),
       latLng: LatLng(lat, lng),
       provider: json['provider'],
       skipped: json['skipped'],

@@ -4,12 +4,12 @@ import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:mywonderbird/services/location.dart';
+import 'package:mywonderbird/services/geo.dart';
 import 'package:mywonderbird/types/picture-data.dart';
 import 'package:mywonderbird/util/geo.dart';
 
 class PictureDataService {
-  final LocationService locationService;
+  final GeoService locationService;
 
   PictureDataService({this.locationService});
 

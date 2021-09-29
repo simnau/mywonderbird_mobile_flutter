@@ -9,6 +9,7 @@ class FeedLocation {
   final DateTime updatedAt;
   final String userId;
   final String userAvatarUrl;
+  final String locationId;
   int likeCount;
   bool isLiked;
   bool isBookmarked;
@@ -25,6 +26,7 @@ class FeedLocation {
     @required this.isBookmarked,
     @required this.userId,
     @required this.userAvatarUrl,
+    @required this.locationId,
   });
 
   factory FeedLocation.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class FeedLocation {
       isBookmarked: json['isBookmarked'],
       userId: json['userId'],
       userAvatarUrl: json['userAvatarUrl'],
+      locationId: json['locationId'],
     );
   }
 }
