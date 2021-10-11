@@ -52,10 +52,114 @@ class PictureDataService {
     }
 
     return PictureData(
-      image: FileImage(File(filePath)),
-      imagePath: filePath,
+      images: [FileImage(File(filePath))],
+      imagePaths: [filePath],
       location: location,
       creationDate: creationDate,
     );
+  }
+
+  Future<List<PictureData>> extractPicturesData(
+    List<String> filePaths,
+    bool isSingle,
+  ) async {
+    final files = filePaths.map<File>((filePath) => File(filePath)).toList();
+    final exifDatas = await Future.wait(
+      files
+          .map<Future<Map<String, IfdTag>>>(
+              (file) async => await readExifFromFile(file))
+          .toList(),
+    );
+    final locations =
+        exifDatas.map((exifData) => extractLocation(exifData)).toList();
+
+    final locationModels = await locationService.multiReverseGeocode(locations);
+    final creationDates = await Future.wait(
+      files.map<Future<DateTime>>((file) => file.lastModified()).toList(),
+    );
+
+    final List<PictureData> pictureDatas = [];
+
+    if (isSingle) {
+      final List<ImageProvider<Object>> images = [];
+      final List<String> imagePaths = [];
+      final creationDate = creationDates[0];
+      var location;
+
+      for (var index = 0; index < locationModels.length; index++) {
+        final locationModel = locationModels[index];
+
+        if (location == null &&
+            locationModel != null &&
+            locationModel.latLng != null) {
+          location = locationModel;
+        }
+        final file = files[index];
+
+        images.add(FileImage(file));
+        imagePaths.add(file.path);
+      }
+
+      pictureDatas.add(
+        PictureData(
+          images: images,
+          imagePaths: imagePaths,
+          location: location,
+          creationDate: creationDate,
+        ),
+      );
+
+      return pictureDatas;
+    } else {
+      for (var index = 0; index < locationModels.length; index++) {
+        final creationDate = creationDates[index];
+        final location = locationModels[index];
+        final file = files[index];
+
+        final pictureData = PictureData(
+          images: [FileImage(file)],
+          imagePaths: [file.path],
+          location: location,
+          creationDate: creationDate,
+        );
+
+        pictureDatas.add(pictureData);
+      }
+
+      return sortByCreationDate(pictureDatas);
+    }
+  }
+
+  LatLng extractLocation(Map<String, IfdTag> exifData) {
+    final latitudeRef = exifData['GPS GPSLatitudeRef']?.toString();
+    final latitudeRatios = exifData['GPS GPSLatitude']?.values;
+    final longitudeRef = exifData['GPS GPSLongitudeRef']?.toString();
+    final longitudeRatios = exifData['GPS GPSLongitude']?.values;
+
+    double latitude;
+    double longitude;
+
+    if (latitudeRatios != null || longitudeRatios != null) {
+      latitude = dmsRatioToDouble(latitudeRatios);
+      latitude = isNegativeRef(latitudeRef) ? -latitude : latitude;
+      longitude = dmsRatioToDouble(longitudeRatios);
+      longitude = isNegativeRef(longitudeRef) ? -longitude : longitude;
+    }
+
+    if (latitude != null && longitude != null) {
+      return LatLng(latitude, longitude);
+    }
+
+    return null;
+  }
+
+  List<PictureData> sortByCreationDate(List<PictureData> pictureDatas) {
+    final pictureDataCopy = [...pictureDatas];
+
+    pictureDataCopy.sort((pictureData1, pictureData2) {
+      return pictureData1.creationDate.compareTo(pictureData2.creationDate);
+    });
+
+    return pictureDataCopy;
   }
 }

@@ -7,7 +7,6 @@ import 'package:mywonderbird/types/terms-arguments.dart';
 import 'routes/authentication/main.dart';
 import 'routes/authentication/select-auth-option.dart';
 import 'routes/home/main.dart';
-import 'routes/select-picture/main.dart';
 import 'routes/settings/main.dart';
 import 'routes/splash/main.dart';
 import 'routes/functionality-coming-soon/main.dart';
@@ -37,11 +36,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case SplashScreen.PATH:
       return MaterialPageRoute(
         builder: (_) => SplashScreen(),
-        settings: settings,
-      );
-    case SelectPicture.PATH:
-      return MaterialPageRoute(
-        builder: (_) => SelectPicture(),
         settings: settings,
       );
     case Settings.PATH:

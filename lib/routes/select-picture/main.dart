@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
+import 'package:mywonderbird/routes/picture-sharing/pages/share-pictures-standalone/main.dart';
+import 'package:mywonderbird/routes/picture-sharing/pages/share-pictures-trip/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class SelectPicture extends StatefulWidget {
-  static const RELATIVE_PATH = 'select-picture';
-  static const PATH = "/$RELATIVE_PATH";
+  final bool isStandalone;
+
+  const SelectPicture({
+    Key key,
+    @required this.isStandalone,
+  }) : super(key: key);
 
   @override
   _SelectPictureState createState() => _SelectPictureState();
@@ -25,7 +29,7 @@ class _SelectPictureState extends State<SelectPicture>
   List<Widget> _photoWidgetList = [];
   int _currentPage = 0;
   int _lastPage;
-  AssetEntity _selectedPhoto;
+  List<AssetEntity> _selectedPhotos = [];
   bool _hasPermission = true;
   bool _isLoading = true;
   bool _isPaused = false;
@@ -122,11 +126,11 @@ class _SelectPictureState extends State<SelectPicture>
         backgroundColor: Colors.transparent,
         actions: [
           TextButton(
-            onPressed: _selectedPhoto != null ? _onNext : null,
+            onPressed: _selectedPhotos.isNotEmpty ? _onNext : null,
             child: Text(
               'NEXT',
               style: TextStyle(
-                color: _selectedPhoto != null
+                color: _selectedPhotos.isNotEmpty
                     ? theme.primaryColor
                     : theme.disabledColor,
               ),
@@ -196,7 +200,7 @@ class _SelectPictureState extends State<SelectPicture>
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (BuildContext context, int index) {
           final photo = _photoList[index];
-          final isSelected = photo == _selectedPhoto;
+          final isSelected = _selectedPhotos.contains(photo);
 
           return GestureDetector(
             onTap: () => _selectPhoto(photo),
@@ -246,30 +250,33 @@ class _SelectPictureState extends State<SelectPicture>
   }
 
   _selectPhoto(AssetEntity photo) {
-    if (photo == _selectedPhoto) {
+    if (_selectedPhotos.contains(photo)) {
       setState(() {
-        _selectedPhoto = null;
+        _selectedPhotos.remove(photo);
       });
     } else {
       setState(() {
-        _selectedPhoto = photo;
+        _selectedPhotos.add(photo);
       });
     }
   }
 
   _onNext() async {
-    if (_selectedPhoto != null) {
+    if (_selectedPhotos.isNotEmpty) {
       final navigationService = locator<NavigationService>();
       final pictureDataService = locator<PictureDataService>();
-      final sharePictureProvider = locator<SharePictureProvider>();
 
-      final selectedFile = await _selectedPhoto.file;
-      final pictureData =
-          await pictureDataService.extractPictureData(selectedFile.path);
+      final filePaths = await Future.wait(
+        _selectedPhotos
+            .map((selectedPhoto) async => (await selectedPhoto.file).path),
+      );
+      final pictureDatas = await pictureDataService.extractPicturesData(
+          filePaths, widget.isStandalone);
 
-      sharePictureProvider.pictureData = pictureData;
       navigationService.push(MaterialPageRoute(
-        builder: (context) => SelectUploadType(),
+        builder: (_) => widget.isStandalone
+            ? SharePicturesStandalone(pictureDatas: pictureDatas)
+            : SharePicturesTrip(pictureDatas: pictureDatas),
       ));
     }
   }

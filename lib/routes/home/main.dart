@@ -8,8 +8,8 @@ import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
+import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/routes/profile/current-user/main.dart';
-import 'package:mywonderbird/routes/select-picture/main.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
@@ -291,7 +291,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   _onAddPicture() {
-    locator<NavigationService>().pushNamed(SelectPicture.PATH);
+    locator<NavigationService>().push(MaterialPageRoute(
+      builder: (_) => SelectUploadType(),
+    ));
 
     final analytics = locator<FirebaseAnalytics>();
     analytics.logEvent(name: INIT_PHOTO_UPLOAD);

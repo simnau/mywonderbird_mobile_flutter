@@ -4,12 +4,13 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/picture-sharing/components/big-action-button.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/share-picture-single/main.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/share-picture-trip/main.dart';
+import 'package:mywonderbird/routes/select-picture/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
 class SelectUploadType extends StatelessWidget {
-  const SelectUploadType({Key key}) : super(key: key);
+  const SelectUploadType({
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +33,16 @@ class SelectUploadType extends StatelessWidget {
             onTap: _onCreateTrip,
             variant: BigActionButtonVariant.primary,
             icon: MaterialCommunityIcons.map_marker_path,
-            title: 'Add photos to your trip',
+            title: 'Create a trip from photos',
             subtitle:
-                'Create your travels from photos to get your unique travel map or add a photo to your existing travels',
+                'Create a trip from photos of your experiences and share it for everyone to see',
           ),
           SizedBox(height: spacingFactor(3)),
           BigActionButton(
             onTap: _onSingleLocation,
             icon: Icons.add_photo_alternate_outlined,
-            title: 'Add photos',
-            subtitle: 'Share your adventure as separate locations',
+            title: 'Share photos of a spot',
+            subtitle: 'Share photos of a single spot that you visited',
           ),
         ],
       ),
@@ -52,7 +53,7 @@ class SelectUploadType extends StatelessWidget {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => SharePictureTripScreen(),
+      builder: (context) => SelectPicture(isStandalone: false),
     ));
   }
 
@@ -60,7 +61,7 @@ class SelectUploadType extends StatelessWidget {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (context) => SharePictureSingleScreen(),
+      builder: (context) => SelectPicture(isStandalone: true),
     ));
   }
 }
