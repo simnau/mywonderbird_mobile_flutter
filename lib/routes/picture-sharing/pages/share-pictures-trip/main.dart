@@ -9,8 +9,6 @@ import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/picture-sharing/components/form-page.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-journey/main.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-location/main.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/types/form-page-data.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/types/picture-share-data.dart';
 import 'package:mywonderbird/routes/picture-sharing/providers/form.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -19,6 +17,9 @@ import 'package:mywonderbird/types/picture-data.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
+
+import '../../types/form-page-data.dart';
+import '../../types/picture-share-data.dart';
 
 class SharePicturesTrip extends StatelessWidget {
   final List<PictureData> pictureDatas;

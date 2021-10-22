@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/journey.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/types/form-page-data.dart';
 import 'package:mywonderbird/types/picture-data.dart';
+
+import '../types/form-page-data.dart';
 
 class FormProvider with ChangeNotifier {
   final List<PictureData> pictureDatas;

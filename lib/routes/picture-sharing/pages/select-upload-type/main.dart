@@ -3,13 +3,20 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/routes/picture-sharing/components/big-action-button.dart';
-import 'package:mywonderbird/routes/select-picture/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/picture-data.dart';
+
+import '../select-picture/main.dart';
+import '../share-pictures-trip/main.dart';
+import '../share-pictures-standalone/main.dart';
+import '../../components/big-action-button.dart';
 
 class SelectUploadType extends StatelessWidget {
+  final List<String> imagePaths;
+
   const SelectUploadType({
     Key key,
+    this.imagePaths,
   }) : super(key: key);
 
   @override
@@ -49,19 +56,49 @@ class SelectUploadType extends StatelessWidget {
     );
   }
 
-  _onCreateTrip() {
+  _onCreateTrip() async {
     final navigationService = locator<NavigationService>();
 
-    navigationService.push(MaterialPageRoute(
-      builder: (context) => SelectPicture(isStandalone: false),
-    ));
+    if (imagePaths != null && imagePaths.isNotEmpty) {
+      final pictureDataService = locator<PictureDataService>();
+
+      final pictureDatas = await pictureDataService.extractPicturesData(
+        imagePaths,
+        false,
+      );
+
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (_) => SharePicturesTrip(pictureDatas: pictureDatas),
+        ),
+      );
+    } else {
+      navigationService.push(MaterialPageRoute(
+        builder: (context) => SelectPicture(isStandalone: false),
+      ));
+    }
   }
 
-  _onSingleLocation() {
+  _onSingleLocation() async {
     final navigationService = locator<NavigationService>();
 
-    navigationService.push(MaterialPageRoute(
-      builder: (context) => SelectPicture(isStandalone: true),
-    ));
+    if (imagePaths != null && imagePaths.isNotEmpty) {
+      final pictureDataService = locator<PictureDataService>();
+
+      final pictureDatas = await pictureDataService.extractPicturesData(
+        imagePaths,
+        true,
+      );
+
+      navigationService.push(
+        MaterialPageRoute(
+          builder: (_) => SharePicturesStandalone(pictureDatas: pictureDatas),
+        ),
+      );
+    } else {
+      navigationService.push(MaterialPageRoute(
+        builder: (context) => SelectPicture(isStandalone: true),
+      ));
+    }
   }
 }

@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/journey.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/types/picture-share-data.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/util/image.dart';
+import 'package:mywonderbird/routes/picture-sharing/types/picture-share-data.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:mywonderbird/util/json.dart';

@@ -146,6 +146,11 @@ class PictureDataService {
       longitude = isNegativeRef(longitudeRef) ? -longitude : longitude;
     }
 
+    if ((latitude != null && latitude.isNaN) ||
+        (longitude != null && longitude.isNaN)) {
+      return null;
+    }
+
     if (latitude != null && longitude != null) {
       return LatLng(latitude, longitude);
     }

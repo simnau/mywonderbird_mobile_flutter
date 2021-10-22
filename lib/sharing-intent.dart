@@ -1,13 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:mywonderbird/providers/share-picture.dart';
-import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
-import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/services/picture-data.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'locator.dart';
+import 'providers/sharing-intent.dart';
 
 class SharingIntent {
   StreamSubscription _intentDataStreamSubscription;
@@ -20,9 +16,14 @@ class SharingIntent {
         return;
       }
 
-      for (var image in value) {
-        _handleShare(image.path);
-      }
+      final imagePaths = value
+          .where((e) => e.type == SharedMediaType.IMAGE)
+          .map((e) => e.path)
+          .toList();
+
+      final sharingIntentProvider = locator<SharingIntentProvider>();
+
+      sharingIntentProvider.handleShareImages(imagePaths);
     }, onError: (err) {
       print("getIntentDataStream error: $err");
     });
@@ -33,27 +34,26 @@ class SharingIntent {
         return;
       }
 
-      for (var image in value) {
-        _handleShare(image.path);
+      final sharingIntentProvider = locator<SharingIntentProvider>();
+
+      final imagePaths = value
+          .where((e) => e.type == SharedMediaType.IMAGE)
+          .map((e) => e.path)
+          .toList();
+
+      if (imagePaths.isEmpty) {
+        return;
+      }
+
+      if (sharingIntentProvider.applicationLoadComplete) {
+        sharingIntentProvider.handleShareImages(imagePaths);
+      } else {
+        sharingIntentProvider.sharedImagePaths = imagePaths;
       }
     });
   }
 
   dispose() {
     _intentDataStreamSubscription.cancel();
-  }
-
-  _handleShare(String filePath) async {
-    final pictureDataService = locator<PictureDataService>();
-    final navigationService = locator<NavigationService>();
-    final pictureData = await pictureDataService.extractPictureData(filePath);
-
-    final sharePictureProvider = locator<SharePictureProvider>();
-
-    sharePictureProvider.pictureData = pictureData;
-
-    navigationService.push(MaterialPageRoute(
-      builder: (context) => SelectUploadType(),
-    ));
   }
 }
