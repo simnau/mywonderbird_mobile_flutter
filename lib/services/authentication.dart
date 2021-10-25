@@ -10,6 +10,7 @@ import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
 import 'package:mywonderbird/routes/home/main.dart';
@@ -279,7 +280,17 @@ class AuthenticationService {
   }
 
   _navigateToHome() async {
-    await navigationService.pushReplacementNamed(HomePage.PATH);
+    final sharingIntentProvider = locator<SharingIntentProvider>();
+
+    navigationService.pushReplacementNamed(HomePage.PATH);
+    sharingIntentProvider.applicationLoadComplete = true;
+
+    if (sharingIntentProvider.sharedImagePaths != null) {
+      sharingIntentProvider.handleShareImages(
+        sharingIntentProvider.sharedImagePaths,
+      );
+      sharingIntentProvider.sharedImagePaths = null;
+    }
   }
 
   _navigateToTerms(bool isUpdate) async {

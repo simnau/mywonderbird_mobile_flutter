@@ -10,6 +10,7 @@ import 'package:mywonderbird/providers/oauth.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
@@ -64,6 +65,9 @@ Widget _app(initialRoute) {
 
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<SharingIntentProvider>(
+        create: (_) => locator<SharingIntentProvider>(),
+      ),
       ChangeNotifierProvider<JourneysProvider>(
         create: (_) => locator<JourneysProvider>(),
       ),

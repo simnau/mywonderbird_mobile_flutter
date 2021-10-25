@@ -51,4 +51,28 @@ class GeoService {
 
     return location;
   }
+
+  Future<List<LocationModel>> multiReverseGeocode(
+      List<LatLng> coordinates) async {
+    final body = Map<String, dynamic>.from({
+      'locations': coordinates
+          .map(
+            (location) => {
+              'latLng': location?.toJson(),
+            },
+          )
+          .toList()
+    });
+    final response = await api.post(REVERSE_GEOCODE_PATH, body);
+    final locationsRaw = response['body']['locations'];
+    final locations = locationsRaw
+        .map<LocationModel>(
+          (location) => location != null
+              ? LocationModel.fromResponseJson(location)
+              : null,
+        )
+        .toList();
+
+    return locations;
+  }
 }

@@ -9,6 +9,7 @@ import 'package:mywonderbird/providers/oauth.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
+import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
@@ -128,6 +129,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => termsProvider);
   locator.registerLazySingleton(() => SwipeProvider());
   locator.registerLazySingleton(() => SwipeFiltersProvider());
+  locator.registerLazySingleton(() => SharingIntentProvider());
 
   // Other
   locator.registerLazySingleton(() => DeepLinks());

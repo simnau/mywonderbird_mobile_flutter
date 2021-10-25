@@ -1,95 +1,69 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/journey.dart';
-import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/services/api.dart';
-import 'package:mywonderbird/util/date.dart';
 import 'package:mywonderbird/util/image.dart';
+import 'package:mywonderbird/routes/picture-sharing/types/picture-share-data.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:mywonderbird/types/picture-data.dart';
 import 'package:mywonderbird/util/json.dart';
 import 'package:uuid/uuid.dart';
 
-const SHARE_PICTURE_PATH = '/api/pictures';
-const SHARE_SINGLE_PICTURE_PATH = '/api/pictures/single';
-final sharePicturePath = (journeyId) => "/api/pictures/$journeyId";
-final uploadPicturePath = (journeyId) => "/api/pictures/$journeyId/file";
+const SHARE_PICTURES_PATH = '/api/pictures/v2';
+
+final Uuid uuid = Uuid();
 
 class SharingService {
   final API api;
 
   SharingService({@required this.api});
 
-  sharePicture(
-    String title,
-    String description,
-    PictureData pictureData,
-    LocationModel locationModel,
-    Journey journey,
-  ) async {
-    final filename = "${Uuid().v4()}.jpg";
-    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
+  shareMultiplePictures(
+    List<PictureShareData> pictures, {
+    Journey trip,
+  }) async {
+    final List<http.MultipartFile> files = [];
+    final pictureDatas = [];
 
-    final files = [
-      http.MultipartFile.fromBytes(
-        filename,
-        fileBytes,
-        filename: filename,
-      ),
-    ];
-    final fields = removeNulls({
-      'title': title,
-      'description': description,
-      'creationDate': formatDateTime(pictureData.creationDate),
-      'journeyId': journey.id,
-      'journeyTitle': journey.name,
-      ...locationModel.toStringJson(),
-    });
+    for (final picture in pictures) {
+      final imageIds = [];
 
-    final response = await api.postMultipartFiles(
-      SHARE_PICTURE_PATH,
-      files,
-      fields: fields,
-    );
-    final rawResponse = response['response'];
+      for (final imagePath in picture.pictureData.imagePaths) {
+        final imageId = uuid.v4();
+        final filename = "$imageId.jpg";
+        final fileBytes = await resizeImageAsBytes(imagePath);
 
-    if (rawResponse.statusCode != HttpStatus.ok) {
-      throw new Exception(
-        'There was an error sharing the picture. Please try again later',
-      );
+        files.add(
+          http.MultipartFile.fromBytes(
+            imageId,
+            fileBytes,
+            filename: filename,
+          ),
+        );
+        imageIds.add(imageId);
+      }
+
+      final pictureData = {
+        ...picture.toStringJson(),
+        'imageIds': imageIds,
+      };
+
+      pictureDatas.add(pictureData);
     }
 
-    return response;
-  }
-
-  shareSinglePicture(
-    String title,
-    String description,
-    PictureData pictureData,
-    LocationModel locationModel,
-  ) async {
-    final filename = "${Uuid().v4()}.jpg";
-    final fileBytes = await resizeImageAsBytes(pictureData.imagePath);
-
-    final files = [
-      http.MultipartFile.fromBytes(
-        filename,
-        fileBytes,
-        filename: filename,
-      ),
-    ];
     final fields = removeNulls({
-      'title': title,
-      'description': description,
-      'creationDate': formatDateTime(pictureData.creationDate),
-      ...locationModel.toStringJson(),
+      'pictureDatas': json.encode(pictureDatas),
+      if (trip != null) ...{
+        'journeyId': trip.id,
+        'journeyTitle': trip.name,
+      },
     });
 
     final response = await api.postMultipartFiles(
-      SHARE_SINGLE_PICTURE_PATH,
+      SHARE_PICTURES_PATH,
       files,
       fields: fields,
     );

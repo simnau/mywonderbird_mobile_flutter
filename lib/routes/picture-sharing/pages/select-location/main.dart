@@ -393,19 +393,21 @@ class _BottomSheetState extends State<_BottomSheet> {
                       vertical: 8.0,
                     ),
                     onTap: () => _onPlaceSelect(place),
-                    leading: Container(
-                      width: 64,
-                      height: 64,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            place.imageUrl,
-                          ),
-                        ),
-                      ),
-                    ),
+                    leading: place.imageUrl != null
+                        ? Container(
+                            width: 64,
+                            height: 64,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  place.imageUrl,
+                                ),
+                              ),
+                            ),
+                          )
+                        : null,
                     title: Subtitle1(place.name),
                     subtitle: Subtitle2(place.country),
                   );
