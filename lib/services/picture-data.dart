@@ -20,9 +20,9 @@ class PictureDataService {
 
     final creationDate = await file.lastModified();
     final latitudeRef = data['GPS GPSLatitudeRef']?.toString();
-    final latitudeRatios = data['GPS GPSLatitude']?.values;
+    final latitudeRatios = data['GPS GPSLatitude']?.values?.toList();
     final longitudeRef = data['GPS GPSLongitudeRef']?.toString();
-    final longitudeRatios = data['GPS GPSLongitude']?.values;
+    final longitudeRatios = data['GPS GPSLongitude']?.values?.toList();
 
     double latitude;
     double longitude;
@@ -132,9 +132,9 @@ class PictureDataService {
 
   LatLng extractLocation(Map<String, IfdTag> exifData) {
     final latitudeRef = exifData['GPS GPSLatitudeRef']?.toString();
-    final latitudeRatios = exifData['GPS GPSLatitude']?.values;
+    final latitudeRatios = exifData['GPS GPSLatitude']?.values?.toList();
     final longitudeRef = exifData['GPS GPSLongitudeRef']?.toString();
-    final longitudeRatios = exifData['GPS GPSLongitude']?.values;
+    final longitudeRatios = exifData['GPS GPSLongitude']?.values?.toList();
 
     double latitude;
     double longitude;

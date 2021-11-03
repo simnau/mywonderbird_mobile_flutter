@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
@@ -26,7 +26,7 @@ import 'locator.dart';
 import 'app.dart';
 
 Future main({String env = 'dev'}) async {
-  await DotEnv.load(fileName: "env/.env-$env");
+  await dotenv.load(fileName: "env/.env-$env");
   setupLocator(env: env);
 
   var initialRoute;
@@ -42,7 +42,7 @@ Future main({String env = 'dev'}) async {
   }
 
   runZonedGuarded<Future<void>>(() async {
-    final sentryDSN = DotEnv.env['SENTRY_DSN'];
+    final sentryDSN = dotenv.env['SENTRY_DSN'];
 
     if (env == 'prod') {
       await sentry.Sentry.init(
