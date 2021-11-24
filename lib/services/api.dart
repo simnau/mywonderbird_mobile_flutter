@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
@@ -14,7 +14,7 @@ import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/token.dart';
 
-final apiBase = DotEnv.env['API_BASE'];
+final apiBase = dotenv.env['API_BASE'];
 
 class API {
   TokenService tokenService;
