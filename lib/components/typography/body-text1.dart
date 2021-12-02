@@ -18,6 +18,7 @@ class BodyText1 extends StatelessWidget {
   final bool isLight;
   final bool noColor;
   final Color color;
+  final TextStyle style;
 
   const BodyText1(
     this.data, {
@@ -35,6 +36,7 @@ class BodyText1 extends StatelessWidget {
     this.textHeightBehavior,
     this.noColor = false,
     this.color,
+    this.style,
   })  : isLight = false,
         super(key: key);
 
@@ -53,6 +55,7 @@ class BodyText1 extends StatelessWidget {
     this.textWidthBasis,
     this.textHeightBehavior,
     this.color,
+    this.style,
   })  : isLight = true,
         noColor = false,
         super(key: key);
@@ -80,16 +83,16 @@ class BodyText1 extends StatelessWidget {
   }
 
   TextStyle _style(BuildContext context) {
-    final style = Theme.of(context).textTheme.bodyText1;
+    final textStyle = Theme.of(context).textTheme.bodyText1.merge(style);
 
     if (isLight) {
-      return style.copyWith(color: Colors.white);
+      return textStyle.copyWith(color: Colors.white);
     } else if (color != null) {
-      return style.copyWith(color: color);
+      return textStyle.copyWith(color: color);
     } else if (noColor) {
-      return style.copyWith(color: null);
+      return textStyle.copyWith(color: null);
     }
 
-    return style;
+    return textStyle;
   }
 }

@@ -1,11 +1,13 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
@@ -25,6 +27,7 @@ import 'package:mywonderbird/services/feedback.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/geo.dart';
+import 'package:mywonderbird/services/stats.dart';
 import 'package:mywonderbird/services/system-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/oauth.dart';
@@ -98,6 +101,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SearchService(api: api));
   locator.registerLazySingleton(() => TagService(api: api));
   locator.registerLazySingleton(() => FeedbackService(api: api));
+  locator.registerLazySingleton(() => StatsService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,
@@ -130,6 +134,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SwipeProvider());
   locator.registerLazySingleton(() => SwipeFiltersProvider());
   locator.registerLazySingleton(() => SharingIntentProvider());
+  locator.registerLazySingleton(() => ProfileProvider());
 
   // Other
   locator.registerLazySingleton(() => DeepLinks());
@@ -138,4 +143,5 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => analytics);
   locator.registerLazySingleton(() => analyticsObserver);
   locator.registerLazySingleton(() => SuggestedLocationConverter());
+  locator.registerLazySingleton(() => RouteObserver<ModalRoute<void>>());
 }

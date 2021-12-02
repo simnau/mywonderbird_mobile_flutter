@@ -35,10 +35,13 @@ class LocationImage extends StatelessWidget {
           color: color,
           width: borderWidth,
         ),
-        image: DecorationImage(
-          image: image,
-          fit: BoxFit.fill,
-        ),
+        image: image != null
+            ? DecorationImage(
+                image: image,
+                fit: BoxFit.fill,
+              )
+            : null,
+        color: image != null ? null : Colors.grey,
       ),
       child: Container(
         decoration: BoxDecoration(

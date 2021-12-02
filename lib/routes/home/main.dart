@@ -10,6 +10,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/routes/profile/current-user/main.dart';
+import 'package:mywonderbird/routes/profile/current-user/test.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
@@ -105,6 +106,7 @@ class _HomePageState extends State<HomePage> {
         height: 60,
         margin: const EdgeInsets.all(2.0),
         child: DescribedFeatureOverlay(
+          barrierDismissible: false,
           featureId: SHARE_PHOTO_FEATURE,
           tapTarget: Icon(
             Icons.add,
@@ -183,6 +185,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: _showComingSoonSearch,
       ),
       DescribedFeatureOverlay(
+        barrierDismissible: false,
         featureId: PROFILE_FEATURE,
         tapTarget: Icon(Icons.person),
         title: H6.light('Your profile'),
@@ -213,7 +216,8 @@ class _HomePageState extends State<HomePage> {
 
   _onNavigateToProfile() {
     locator<NavigationService>().push(MaterialPageRoute(
-      builder: (_) => Profile(),
+      // builder: (_) => Profile(),
+      builder: (_) => ProfileTest(),
     ));
   }
 

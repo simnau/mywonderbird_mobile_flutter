@@ -234,7 +234,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                navigationService.pop();
+                navigationService.pop(true);
               },
               child: Text('Close'),
             ),
@@ -242,7 +242,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
         ),
         barrierDismissible: true,
       );
-      navigationService.pop();
+      navigationService.pop(true);
     } catch (e) {
       setState(() {
         _error = e.message;

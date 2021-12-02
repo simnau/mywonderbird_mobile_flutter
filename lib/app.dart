@@ -48,6 +48,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     final analyticsObserver = locator<FirebaseAnalyticsObserver>();
+    final routeObserver = locator<RouteObserver<ModalRoute<void>>>();
 
     return FeatureDiscovery(
       child: MaterialApp(
@@ -59,6 +60,7 @@ class _AppState extends State<App> {
         onGenerateRoute: generateRoute,
         navigatorObservers: [
           analyticsObserver,
+          routeObserver,
         ],
       ),
     );

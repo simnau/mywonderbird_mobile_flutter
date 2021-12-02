@@ -39,6 +39,7 @@ class SwipeActions extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DescribedFeatureOverlay(
+                  barrierDismissible: false,
                   featureId: SKIP_LOCATION_FEATURE,
                   tapTarget: Icon(
                     Icons.close,
@@ -69,6 +70,7 @@ class SwipeActions extends StatelessWidget {
                 ),
                 SizedBox(width: 16.0),
                 DescribedFeatureOverlay(
+                  barrierDismissible: false,
                   featureId: ADD_LOCATION_FEATURE,
                   tapTarget: Icon(
                     Icons.check,
@@ -103,6 +105,7 @@ class SwipeActions extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: DescribedFeatureOverlay(
+              barrierDismissible: false,
               featureId: COMPLETE_PLANNING_FEATURE,
               tapTarget: Icon(
                 Icons.save,

@@ -65,6 +65,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           Expanded(
             flex: 2,
             child: DescribedFeatureOverlay(
+              barrierDismissible: false,
               featureId: PLANNING_FEATURE,
               tapTarget: Icon(CustomIcons.route),
               title: H6.light('Plan a trip'),

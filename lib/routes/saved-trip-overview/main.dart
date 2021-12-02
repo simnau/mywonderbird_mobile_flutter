@@ -12,6 +12,7 @@ import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/models/location.dart';
+import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
 import 'package:mywonderbird/routes/saved-trip-finished/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -84,6 +85,7 @@ class _SavedTripState extends State<SavedTripOverview> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
+        leading: BackButton(onPressed: _onBack),
       ),
       body: _body(),
       backgroundColor: Colors.white,
@@ -285,6 +287,8 @@ class _SavedTripState extends State<SavedTripOverview> {
     });
 
     await savedTripService.startTrip(_journey.id);
+
+    _setReloadProfile();
     setState(() {
       _journey.startDate = DateTime.now();
       _currentZoom = null;
@@ -319,6 +323,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       'saved_location_id': location.id,
       'saved_location_name': location.name,
     });
+
+    _setReloadProfile();
 
     if (_isLastLocation) {
       _onEnd();
@@ -372,6 +378,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       'saved_location_id': location.id,
       'saved_location_name': location.name,
     });
+
+    _setReloadProfile();
 
     if (_isLastLocation) {
       _onEnd();
@@ -475,6 +483,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       location.placeId,
     );
 
+    _setReloadProfile();
+
     setState(() {
       _journey = suggestedTrip;
       _isRecalculatingRoute = false;
@@ -499,6 +509,8 @@ class _SavedTripState extends State<SavedTripOverview> {
       updatedTrip.locations.map((location) => location.latLng).toList(),
     );
 
+    _setReloadProfile();
+
     setState(() {
       _journey = updatedTrip;
       _tripBounds = tripBounds;
@@ -509,6 +521,19 @@ class _SavedTripState extends State<SavedTripOverview> {
     } else {
       _adjustMapCamera(animateCamera: true);
     }
+  }
+
+  _onBack() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.pop();
+  }
+
+  _setReloadProfile() {
+    final profileProvider = locator<ProfileProvider>();
+
+    // Inform the profile page that the data should be reloaded when navigating back to it
+    profileProvider.reloadProfile = true;
   }
 
   // TODO: either makes this work or remove it if we deem it unnecessary

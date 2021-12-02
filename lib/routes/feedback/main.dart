@@ -62,7 +62,10 @@ class FeedbackScreen extends StatelessWidget {
             child: BodyText1('Skip'),
             onPressed: () {
               final navigationService = locator<NavigationService>();
-              navigationService.pop();
+
+              // Passing true so the previous page (e.g. profile) will know to
+              // reload it's data
+              navigationService.pop(true);
             },
           ),
         ],
