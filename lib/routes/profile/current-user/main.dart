@@ -1,101 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/profile-app-bar.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/user.dart';
-import 'package:mywonderbird/providers/journeys.dart';
+import 'package:mywonderbird/models/trip-stats.dart';
+import 'package:mywonderbird/models/user-profile.dart';
+import 'package:mywonderbird/models/user-stats.dart';
+import 'package:mywonderbird/providers/profile.dart';
+import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/profile/map-model.dart';
+import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
+import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/extensions/text-theme.dart';
-import 'package:provider/provider.dart';
-
-import './components/trips-tab.dart';
-import './components/saved-trips-tab.dart';
-import './components/spots-tab.dart';
-
-const double AVATAR_RADIUS = 50;
-const double PROGRESS_WIDTH = 8;
+import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/snackbar.dart';
+import 'package:syncfusion_flutter_maps/maps.dart';
 
 class Profile extends StatefulWidget {
+  const Profile({
+    Key key,
+  }) : super(key: key);
+
   @override
-  _ProfileState createState() => _ProfileState();
+  State<Profile> createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> with TickerProviderStateMixin {
-  final _tabBarKey = GlobalKey();
-  TabController _tabController;
-
-  _ProfileState() {
-    _tabController = TabController(length: 3, vsync: this);
-  }
+class _ProfileState extends State<Profile> with RouteAware {
+  bool _isLoading = true;
+  MapShapeSource _shapeSource;
+  UserStats _userStats;
+  UserProfile _profile;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await initStats();
+
+      final routeObserver = locator<RouteObserver<ModalRoute<void>>>();
+
+      routeObserver.subscribe(this, ModalRoute.of(context));
+    });
+
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadUserJourneys());
   }
 
   @override
   void dispose() {
+    final routeObserver = locator<RouteObserver<ModalRoute<void>>>();
+
+    routeObserver.unsubscribe(this);
     super.dispose();
-    locator<JourneysProvider>().clearState();
+  }
+
+  @override
+  void didPopNext() {
+    final profileProvider = locator<ProfileProvider>();
+
+    if (profileProvider.reloadProfile) {
+      initStats();
+    }
+  }
+
+  initStats() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final profileProvider = locator<ProfileProvider>();
+      final statsService = locator<StatsService>();
+      final profileService = locator<ProfileService>();
+      final profile = await profileService.getUserProfile();
+      final userStats = await statsService.fetchCurrentUserStats();
+
+      final data = userStats.visitedCountryCodes
+          .map(
+              (visitedCountryCode) => MapModel(countryCode: visitedCountryCode))
+          .toList();
+
+      profileProvider.reloadProfile = false;
+      setState(() {
+        _shapeSource = MapShapeSource.asset(
+          'images/vector-maps/world-map.json',
+          shapeDataField: 'ISO_A3',
+          dataCount: data.length,
+          primaryValueMapper: (index) => data[index].countryCode,
+          shapeColorValueMapper: (_) {
+            final theme = Theme.of(context);
+
+            return theme.accentColor;
+          },
+        );
+        _userStats = userStats;
+        _profile = profile;
+        _isLoading = false;
+      });
+    } catch (error) {
+      final errorSnackbar = createErrorSnackbar(
+        text: "There was an error loading the user profile. Please try again",
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final user = Provider.of<User>(context);
-
     return Scaffold(
-      backgroundColor: Color(0xFFF2F3F7),
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, value) {
-          return [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: ProfileAppBar(
-                collapsedHeight: kToolbarHeight + 72,
-                expandedHeight: 250,
-                onSettings: _onSettings,
-                user: user,
-                tabBar: TabBar(
-                  key: _tabBarKey,
-                  controller: _tabController,
-                  labelColor: theme.accentColor,
-                  unselectedLabelColor: Colors.black45,
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'SAVED TRIPS',
-                        style: theme.textTheme.tab,
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'MY TRIPS',
-                        style: theme.textTheme.tab,
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'MY SPOTS',
-                        style: theme.textTheme.tab,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ];
-        },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            SavedTripsTab(),
-            MyTripsTab(),
-            MySpotsTab(),
-          ],
-        ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: _onSettings,
+          ),
+        ],
       ),
+      backgroundColor: Colors.white,
+      body: _body(),
+    );
+  }
+
+  Widget _body() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return ProfilePage(
+      onViewTrips: _onViewTrips,
+      onViewPlans: _onViewPlans,
+      onViewSpots: _onViewSpots,
+      onOpenMap: _onOpenMap,
+      onViewCurrentTrips: onViewCurrentTrips,
+      onViewTrip: _onViewTrip,
+      userStats: _userStats,
+      profile: _profile,
+      shapeSource: _shapeSource,
     );
   }
 
@@ -104,8 +147,36 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
     navigationService.pushNamed(Settings.PATH);
   }
 
-  _loadUserJourneys() async {
-    final journeysProvider = locator<JourneysProvider>();
-    await journeysProvider.loadUserJourneys();
+  _onViewTrip(TripStats tripStats) async {
+    final navigationService = locator<NavigationService>();
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => tripStats.tripType == TripType.SAVED_TRIP
+            ? SavedTripOverview(
+                id: tripStats.id,
+              )
+            : TripOverview(id: tripStats.id),
+      ),
+    );
+  }
+
+  _onViewTrips() {
+    print("view trips");
+  }
+
+  _onViewPlans() {
+    print("view plans");
+  }
+
+  onViewCurrentTrips() {
+    print("view current trips");
+  }
+
+  _onViewSpots() {
+    print("view spots");
+  }
+
+  _onOpenMap() {
+    print("open map");
   }
 }

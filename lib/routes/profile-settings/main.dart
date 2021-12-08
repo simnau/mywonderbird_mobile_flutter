@@ -9,10 +9,12 @@ import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/crop-image/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -24,6 +26,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   final _usernameController = TextEditingController();
   final _picker = ImagePicker();
 
+  bool _isSaving = false;
   List<int> _newAvatarImage;
 
   @override
@@ -76,10 +79,16 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         actions: [
           TextButton(
             onPressed: _onSave,
-            child: Text(
-              'SAVE',
-              style: TextStyle(color: theme.primaryColor),
-            ),
+            child: _isSaving
+                ? SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(),
+                  )
+                : BodyText1(
+                    'SAVE',
+                    color: theme.primaryColor,
+                  ),
           ),
         ],
       ),
@@ -181,21 +190,38 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       return;
     }
 
-    final profileService = locator<ProfileService>();
-    UserProfile profileUpdate = UserProfile(username: username);
+    try {
+      setState(() {
+        _isSaving = true;
+      });
 
-    final authService = locator<AuthenticationService>();
-    final navigationService = locator<NavigationService>();
+      final profileProvider = locator<ProfileProvider>();
+      final profileService = locator<ProfileService>();
+      UserProfile profileUpdate = UserProfile(username: username);
 
-    final user = Provider.of<User>(context, listen: false);
-    final updatedProfile = await profileService.updateUserProfile(
-      profileUpdate,
-      _newAvatarImage,
-    );
+      final authService = locator<AuthenticationService>();
+      final navigationService = locator<NavigationService>();
 
-    user.profile = updatedProfile;
-    authService.addUser(user);
+      final user = Provider.of<User>(context, listen: false);
+      final updatedProfile = await profileService.updateUserProfile(
+        profileUpdate,
+        _newAvatarImage,
+      );
 
-    navigationService.pop();
+      profileProvider.reloadProfile = true;
+      user.profile = updatedProfile;
+      authService.addUser(user);
+
+      navigationService.pop();
+    } catch (e) {
+      final snackBar = createErrorSnackbar(
+        text: 'An unexpected error has occurred. Please try again later.',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
+    }
   }
 }

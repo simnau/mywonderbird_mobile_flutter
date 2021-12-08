@@ -10,7 +10,6 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/functionality-coming-soon/main.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/routes/profile/current-user/main.dart';
-import 'package:mywonderbird/routes/profile/current-user/test.dart';
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
@@ -216,8 +215,7 @@ class _HomePageState extends State<HomePage> {
 
   _onNavigateToProfile() {
     locator<NavigationService>().push(MaterialPageRoute(
-      // builder: (_) => Profile(),
-      builder: (_) => ProfileTest(),
+      builder: (_) => Profile(),
     ));
   }
 
