@@ -199,11 +199,21 @@ class ProfilePage extends StatelessWidget {
     return Column(
       children: [
         ..._renderTripHighlightCard(
-            userStats.currentTrip, 'Current trip', onViewCurrentTrips),
+          userStats.currentTrip,
+          'Current trip',
+          onViewCurrentTrips,
+          renderProgress: true,
+        ),
         ..._renderTripHighlightCard(
-            userStats.upcomingTrip, 'Upcoming trip', onViewPlans),
+          userStats.upcomingTrip,
+          'Upcoming trip',
+          onViewPlans,
+        ),
         ..._renderTripHighlightCard(
-            userStats.lastTrip, 'Last trip', onViewTrips),
+          userStats.lastTrip,
+          'Last trip',
+          onViewTrips,
+        ),
         ..._renderTripSpots(context),
       ],
     );
@@ -212,8 +222,9 @@ class ProfilePage extends StatelessWidget {
   List<Widget> _renderTripHighlightCard(
     TripStats tripStats,
     String title,
-    Function() onViewAll,
-  ) {
+    Function() onViewAll, {
+    bool renderProgress = false,
+  }) {
     if (tripStats == null) {
       return [];
     }
@@ -224,6 +235,7 @@ class ProfilePage extends StatelessWidget {
         tripStats: tripStats,
         onViewTrip: onViewTrip,
         onViewAll: onViewAll,
+        renderProgress: renderProgress,
       ),
     ];
   }

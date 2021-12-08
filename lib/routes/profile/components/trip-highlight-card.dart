@@ -6,11 +6,16 @@ import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 
+import 'trip-progress.dart';
+
+const double CARD_HEIGHT = 215;
+
 class TripHighlightCard extends StatelessWidget {
   final String title;
   final TripStats tripStats;
   final Function(TripStats tripStats) onViewTrip;
   final Function() onViewAll;
+  final bool renderProgress;
 
   const TripHighlightCard({
     Key key,
@@ -18,19 +23,54 @@ class TripHighlightCard extends StatelessWidget {
     @required this.tripStats,
     @required this.onViewTrip,
     @required this.onViewAll,
+    @required this.renderProgress,
   }) : super(key: key);
+
+  int get _currentStep => tripStats.currentStep;
+  int get _totalSteps => tripStats.spotCount;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Subtitle2(
           title,
           color: Color(0xFF484242),
         ),
         SizedBox(height: spacingFactor(1)),
-        _card(),
+        Container(
+          height: CARD_HEIGHT,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius:
+                BorderRadius.all(Radius.circular(borderRadiusFactor(4))),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 4,
+                offset: Offset(0, 4),
+                color: Colors.black26,
+              ),
+            ],
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _card(),
+              if (renderProgress && _currentStep != 0)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: TripProgress(
+                    currentStep: _currentStep,
+                    totalSteps: _totalSteps,
+                  ),
+                ),
+            ],
+          ),
+        ),
         SizedBox(height: spacingFactor(1)),
         TextButton(
           onPressed: onViewAll,
@@ -46,22 +86,13 @@ class TripHighlightCard extends StatelessWidget {
 
   Widget _card() {
     return Container(
-      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(tripStats.imageUrl),
           fit: BoxFit.cover,
         ),
-        borderRadius: BorderRadius.all(Radius.circular(borderRadiusFactor(4))),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 4,
-            offset: Offset(0, 4),
-            color: Colors.black26,
-          ),
-        ],
       ),
-      height: 215,
+      height: CARD_HEIGHT,
       child: Container(
         color: Colors.black26,
         child: Column(
