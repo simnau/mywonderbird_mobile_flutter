@@ -42,6 +42,7 @@ import 'package:mywonderbird/services/suggestion.dart';
 import 'package:mywonderbird/services/tag.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
+import 'package:mywonderbird/services/trip-stats.dart';
 import 'package:mywonderbird/services/user-location.dart';
 import 'package:mywonderbird/sharing-intent.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
@@ -102,6 +103,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => TagService(api: api));
   locator.registerLazySingleton(() => FeedbackService(api: api));
   locator.registerLazySingleton(() => StatsService(api: api));
+  locator.registerLazySingleton(() => TripStatsService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,

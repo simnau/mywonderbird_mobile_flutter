@@ -5,6 +5,9 @@ import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/profile/other-user/other-user-current-trips.dart';
+import 'package:mywonderbird/routes/profile/other-user/other-user-planned-trips.dart';
+import 'package:mywonderbird/routes/profile/other-user/other-user-trips.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/trip-overview/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -133,15 +136,33 @@ class _OtherUserState extends State<OtherUser> {
   }
 
   _onViewTrips() {
-    print("view trips");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => OtherUserTrips(userProfile: _profile),
+      ),
+    );
   }
 
   _onViewPlans() {
-    print("view plans");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => OtherUserPlannedTrips(userProfile: _profile),
+      ),
+    );
   }
 
   onViewCurrentTrips() {
-    print("view current trips");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => OtherUserCurrentTrips(userProfile: _profile),
+      ),
+    );
   }
 
   _onViewSpots() {

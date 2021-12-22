@@ -5,6 +5,9 @@ import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/profile/current-user/my-current-trips.dart';
+import 'package:mywonderbird/routes/profile/current-user/my-planned-trips.dart';
+import 'package:mywonderbird/routes/profile/current-user/my-trips.dart';
 import 'package:mywonderbird/routes/profile/map-model.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
@@ -134,7 +137,7 @@ class _ProfileState extends State<Profile> with RouteAware {
       onViewPlans: _onViewPlans,
       onViewSpots: _onViewSpots,
       onOpenMap: _onOpenMap,
-      onViewCurrentTrips: onViewCurrentTrips,
+      onViewCurrentTrips: _onViewCurrentTrips,
       onViewTrip: _onViewTrip,
       userStats: _userStats,
       profile: _profile,
@@ -161,15 +164,27 @@ class _ProfileState extends State<Profile> with RouteAware {
   }
 
   _onViewTrips() {
-    print("view trips");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(builder: (_) => MyTrips()),
+    );
   }
 
   _onViewPlans() {
-    print("view plans");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(builder: (_) => MyPlannedTrips()),
+    );
   }
 
-  onViewCurrentTrips() {
-    print("view current trips");
+  _onViewCurrentTrips() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(builder: (_) => MyCurrentTrips()),
+    );
   }
 
   _onViewSpots() {
