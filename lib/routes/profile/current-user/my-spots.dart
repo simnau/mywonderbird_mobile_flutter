@@ -3,26 +3,30 @@ import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/trip-stats.dart';
+import 'package:mywonderbird/models/spot-stats.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
-import 'package:mywonderbird/routes/profile/components/trip-screen.dart';
+import 'package:mywonderbird/routes/profile/components/spot-screen.dart';
 import 'package:mywonderbird/services/navigation.dart';
-import 'package:mywonderbird/services/trip-stats.dart';
+import 'package:mywonderbird/services/spot-stats.dart';
 
-class MyTrips extends StatelessWidget {
-  const MyTrips({
+class MySpots extends StatelessWidget {
+  const MySpots({
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TripScreen(
-      title: 'My finished trips',
-      fetchTripsFunction: _fetchTrips,
-      renderTripProgress: false,
-      actionButton: _shareExperiencesButton(context),
+    return SpotScreen(
+      title: 'My spots',
+      fetchSpotsFunction: _fetchSpots,
       emptyListPlaceholder: _emptyListPlaceholder(context),
     );
+  }
+
+  Future<List<SpotStats>> _fetchSpots() async {
+    final spotStatsService = locator<SpotStatsService>();
+
+    return spotStatsService.findMySpots();
   }
 
   Widget _shareExperiencesButton(BuildContext context) {
@@ -46,16 +50,10 @@ class MyTrips extends StatelessWidget {
 
   Widget _emptyListPlaceholder(BuildContext context) {
     return EmptyListPlaceholder(
-      title: "You have no finished trips",
+      title: "You haven't shared any spots",
       subtitle: "Would you like to share your previous experiences?",
       action: _shareExperiencesButton(context),
     );
-  }
-
-  Future<List<TripStats>> _fetchTrips() async {
-    final tripStatsService = locator<TripStatsService>();
-
-    return tripStatsService.findMyTrips();
   }
 
   _onShareExperiences() {

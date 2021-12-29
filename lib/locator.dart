@@ -27,6 +27,7 @@ import 'package:mywonderbird/services/feedback.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/geo.dart';
+import 'package:mywonderbird/services/spot-stats.dart';
 import 'package:mywonderbird/services/stats.dart';
 import 'package:mywonderbird/services/system-location.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -104,6 +105,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => FeedbackService(api: api));
   locator.registerLazySingleton(() => StatsService(api: api));
   locator.registerLazySingleton(() => TripStatsService(api: api));
+  locator.registerLazySingleton(() => SpotStatsService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,

@@ -7,6 +7,7 @@ import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-current-trips.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-planned-trips.dart';
+import 'package:mywonderbird/routes/profile/current-user/my-spots.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-trips.dart';
 import 'package:mywonderbird/routes/profile/map-model.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
@@ -188,7 +189,11 @@ class _ProfileState extends State<Profile> with RouteAware {
   }
 
   _onViewSpots() {
-    print("view spots");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(builder: (_) => MySpots()),
+    );
   }
 
   _onOpenMap() {

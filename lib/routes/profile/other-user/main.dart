@@ -7,6 +7,7 @@ import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-current-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-planned-trips.dart';
+import 'package:mywonderbird/routes/profile/other-user/other-user-spots.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-trips.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/trip-overview/main.dart';
@@ -166,7 +167,13 @@ class _OtherUserState extends State<OtherUser> {
   }
 
   _onViewSpots() {
-    print("view spots");
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => OtherUserSpots(userProfile: _profile),
+      ),
+    );
   }
 
   _onOpenMap() {
