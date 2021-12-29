@@ -65,26 +65,25 @@ class _TripScreenState extends State<TripScreen> {
       );
     }
 
-    return Column(
-      children: [
-        Expanded(
-          child: TripList(
-            trips: _trips,
-            renderProgress: widget.renderTripProgress,
-            onViewTrip: _onViewTrip,
-            padding: EdgeInsets.symmetric(
-              horizontal: spacingFactor(2),
-              vertical: spacingFactor(1),
-            ),
-            actionButton: widget.actionButton,
-            emptyListPlaceholder: widget.emptyListPlaceholder,
+    return RefreshIndicator(
+      onRefresh: _fetchTrips,
+      child: Expanded(
+        child: TripList(
+          trips: _trips,
+          renderProgress: widget.renderTripProgress,
+          onViewTrip: _onViewTrip,
+          padding: EdgeInsets.symmetric(
+            horizontal: spacingFactor(2),
+            vertical: spacingFactor(1),
           ),
+          actionButton: widget.actionButton,
+          emptyListPlaceholder: widget.emptyListPlaceholder,
         ),
-      ],
+      ),
     );
   }
 
-  _fetchTrips() async {
+  Future<void> _fetchTrips() async {
     setState(() {
       _isLoading = true;
     });

@@ -124,15 +124,19 @@ class _SpotScreenState extends State<SpotScreen> {
       }
     }
 
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(
-        horizontal: spacingFactor(2),
-        vertical: spacingFactor(1),
+    return RefreshIndicator(
+      onRefresh: _fetchSpots,
+      child: ListView.separated(
+        padding: EdgeInsets.symmetric(
+          horizontal: spacingFactor(2),
+          vertical: spacingFactor(1),
+        ),
+        itemBuilder: _spotGrid,
+        separatorBuilder: (context, index) =>
+            SizedBox(height: spacingFactor(3)),
+        itemCount: _groupedSpots.length,
+        shrinkWrap: true,
       ),
-      itemBuilder: _spotGrid,
-      separatorBuilder: (context, index) => SizedBox(height: spacingFactor(3)),
-      itemCount: _groupedSpots.length,
-      shrinkWrap: true,
     );
   }
 
@@ -187,7 +191,7 @@ class _SpotScreenState extends State<SpotScreen> {
     return matchingTiles[index % matchingTiles.length];
   }
 
-  _fetchSpots() async {
+  Future<void> _fetchSpots() async {
     setState(() {
       _isLoading = true;
     });
