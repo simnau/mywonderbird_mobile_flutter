@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/routes/profile/components/trip-progress.dart';
@@ -13,12 +14,16 @@ class TripCard extends StatelessWidget {
   final bool renderProgress;
   final bool roundedBorders;
   final Function(TripStats tripStats) onViewTrip;
+  final Function(TripStats tripStats) onDeleteTrip;
+  final bool showActions;
 
   const TripCard({
     Key key,
     @required this.tripStats,
     @required this.renderProgress,
     @required this.onViewTrip,
+    @required this.showActions,
+    this.onDeleteTrip,
     bool roundedBorders,
   })  : this.roundedBorders = roundedBorders ?? true,
         super(key: key);
@@ -47,6 +52,12 @@ class TripCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           _card(),
+          if (showActions)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: _actions(),
+            ),
           if (renderProgress && _currentStep != 0)
             Positioned(
               bottom: 0,
@@ -116,7 +127,44 @@ class TripCard extends StatelessWidget {
     );
   }
 
+  Widget _actions() {
+    return Material(
+      color: Colors.transparent,
+      child: PopupMenuButton(
+        icon: Icon(
+          Icons.more_horiz,
+          color: Colors.white,
+        ),
+        iconSize: 24,
+        tooltip: "Action menu",
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            borderRadiusFactor(2),
+          ),
+        ),
+        itemBuilder: (_) {
+          return <PopupMenuEntry>[
+            PopupMenuItem(
+              child: Subtitle2(
+                "Delete",
+                color: Colors.black87,
+              ),
+              onTap: _delete,
+            ),
+          ];
+        },
+      ),
+    );
+  }
+
   _viewTrip() {
     onViewTrip(tripStats);
+  }
+
+  _delete() {
+    // This makes sure that the item is closed when onDelete is invoked
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onDeleteTrip(tripStats);
+    });
   }
 }

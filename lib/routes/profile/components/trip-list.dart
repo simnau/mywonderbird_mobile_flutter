@@ -7,18 +7,22 @@ class TripList extends StatelessWidget {
   final List<TripStats> trips;
   final bool renderProgress;
   final Function(TripStats tripStats) onViewTrip;
+  final Function(TripStats tripStats) onDeleteTrip;
   final EdgeInsetsGeometry padding;
   final Widget actionButton;
   final Widget emptyListPlaceholder;
+  final bool showItemActions;
 
   const TripList({
     Key key,
     @required this.trips,
     @required this.renderProgress,
     @required this.onViewTrip,
+    @required this.showItemActions,
     this.padding,
     this.actionButton,
     this.emptyListPlaceholder,
+    this.onDeleteTrip,
   }) : super(key: key);
 
   @override
@@ -56,6 +60,8 @@ class TripList extends StatelessWidget {
       renderProgress: renderProgress,
       tripStats: tripStats,
       roundedBorders: true,
+      showActions: showItemActions,
+      onDeleteTrip: onDeleteTrip,
     );
   }
 }

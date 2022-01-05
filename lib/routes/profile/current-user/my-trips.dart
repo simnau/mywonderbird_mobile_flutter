@@ -22,6 +22,7 @@ class MyTrips extends StatelessWidget {
       renderTripProgress: false,
       actionButton: _shareExperiencesButton(context),
       emptyListPlaceholder: _emptyListPlaceholder(context),
+      showItemActions: true,
     );
   }
 

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
-import 'package:mywonderbird/routes/profile/components/trip-list/trip-list.dart';
+import 'package:mywonderbird/routes/profile/components/trip-list.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 class TripScreen extends StatefulWidget {
@@ -17,6 +21,7 @@ class TripScreen extends StatefulWidget {
   final Widget emptyListPlaceholder;
   final bool renderTripProgress;
   final bool refetchOnPop;
+  final bool showItemActions;
 
   const TripScreen({
     Key key,
@@ -26,8 +31,10 @@ class TripScreen extends StatefulWidget {
     this.emptyListPlaceholder,
     bool renderTripProgress,
     bool refetchOnPop,
+    bool showItemActions,
   })  : renderTripProgress = renderTripProgress ?? false,
         refetchOnPop = refetchOnPop ?? true,
+        showItemActions = showItemActions ?? false,
         super(key: key);
 
   @override
@@ -67,18 +74,18 @@ class _TripScreenState extends State<TripScreen> {
 
     return RefreshIndicator(
       onRefresh: _fetchTrips,
-      child: Expanded(
-        child: TripList(
-          trips: _trips,
-          renderProgress: widget.renderTripProgress,
-          onViewTrip: _onViewTrip,
-          padding: EdgeInsets.symmetric(
-            horizontal: spacingFactor(2),
-            vertical: spacingFactor(1),
-          ),
-          actionButton: widget.actionButton,
-          emptyListPlaceholder: widget.emptyListPlaceholder,
+      child: TripList(
+        trips: _trips,
+        renderProgress: widget.renderTripProgress,
+        onViewTrip: _onViewTrip,
+        padding: EdgeInsets.symmetric(
+          horizontal: spacingFactor(2),
+          vertical: spacingFactor(1),
         ),
+        actionButton: widget.actionButton,
+        emptyListPlaceholder: widget.emptyListPlaceholder,
+        showItemActions: widget.showItemActions,
+        onDeleteTrip: _onDeleteTrip,
       ),
     );
   }
@@ -120,6 +127,85 @@ class _TripScreenState extends State<TripScreen> {
 
     if (widget.refetchOnPop && profileProvider.reloadProfile) {
       await _fetchTrips();
+    }
+  }
+
+  _onDeleteTrip(TripStats tripStats) async {
+    final navigationService = locator<NavigationService>();
+    final theme = Theme.of(context);
+
+    final result = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => AlertDialog(
+        title: Subtitle1("Are you sure?"),
+        content: Subtitle2("You cannot undo this action"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              navigationService.pop(false);
+            },
+            child: BodyText1(
+              'Cancel',
+              color: theme.primaryColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              navigationService.pop(true);
+            },
+            child: BodyText1(
+              'Delete',
+              color: theme.errorColor,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result) {
+      await _deleteTrip(tripStats);
+    }
+  }
+
+  _deleteTrip(TripStats tripStats) async {
+    if (tripStats.tripType != TripType.SAVED_TRIP &&
+        tripStats.tripType != TripType.SHARED_TRIP) {
+      return;
+    }
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (tripStats.tripType == TripType.SAVED_TRIP) {
+        final savedTripService = locator<SavedTripService>();
+
+        await savedTripService.deleteTrip(tripStats.id);
+      } else {
+        final sharedTripService = locator<JourneyService>();
+
+        await sharedTripService.deleteJourney(tripStats.id);
+      }
+
+      setState(() {
+        _trips.remove(tripStats);
+        _isLoading = false;
+      });
+
+      final profileProvider = locator<ProfileProvider>();
+      profileProvider.reloadProfile = true;
+
+      final snackBar = createSuccessSnackbar(
+        text: 'The trip has been deleted',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      final snackBar = createErrorSnackbar(
+        text: 'An unexpected error has occurred. Please try again later.',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

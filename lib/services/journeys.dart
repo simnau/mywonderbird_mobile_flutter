@@ -10,6 +10,7 @@ const CREATE_JOURNEY_PATH = '/api/journeys';
 const MY_JOURNEYS_PATH = '/api/journeys/v2/my';
 const LAST_JOURNEY_PATH = '/api/journeys/last';
 final getJourneyPath = (journeyId) => "/api/journeys/v2/$journeyId";
+final deleteJourneyPath = (journeyId) => "/api/journeys/$journeyId";
 final journeysByUserIdPath = (userId) => "/api/journeys/users/$userId";
 
 class JourneyService {
@@ -77,5 +78,14 @@ class JourneyService {
     final journey = FullJourney.fromJson(journeyRaw);
 
     return journey;
+  }
+
+  Future<void> deleteJourney(String id) async {
+    final response = await api.delete(deleteJourneyPath(id));
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw Exception('There was an error deleting the journey');
+    }
   }
 }

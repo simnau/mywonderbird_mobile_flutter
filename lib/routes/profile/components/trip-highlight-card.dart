@@ -39,6 +39,7 @@ class TripHighlightCard extends StatelessWidget {
           onViewTrip: onViewTrip,
           renderProgress: renderProgress,
           tripStats: tripStats,
+          showActions: false,
         ),
         SizedBox(height: spacingFactor(1)),
         TextButton(

@@ -20,6 +20,7 @@ class MySpots extends StatelessWidget {
       title: 'My spots',
       fetchSpotsFunction: _fetchSpots,
       emptyListPlaceholder: _emptyListPlaceholder(context),
+      showItemActions: true,
     );
   }
 

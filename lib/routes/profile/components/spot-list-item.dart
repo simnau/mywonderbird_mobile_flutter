@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/spot-stats.dart';
 
 class SpotListItem extends StatelessWidget {
   final SpotStats spot;
   final Function(SpotStats spot) onTap;
+  final Function(SpotStats spot) onDelete;
+  final bool showActions;
 
   const SpotListItem({
     Key key,
     @required this.spot,
     @required this.onTap,
+    @required this.showActions,
+    this.onDelete,
   }) : super(key: key);
 
   String get likeCount =>
@@ -39,6 +44,12 @@ class SpotListItem extends StatelessWidget {
             ),
           ),
         ),
+        if (showActions)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: _actions(context),
+          ),
         Positioned(
           bottom: spacingFactor(1),
           right: spacingFactor(1),
@@ -73,7 +84,48 @@ class SpotListItem extends StatelessWidget {
     );
   }
 
+  Widget _actions(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: PopupMenuButton(
+        icon: Icon(
+          Icons.more_horiz,
+          color: Colors.white,
+        ),
+        iconSize: 24,
+        tooltip: "Action menu",
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            borderRadiusFactor(2),
+          ),
+        ),
+        itemBuilder: (_) {
+          return <PopupMenuEntry>[
+            PopupMenuItem(
+              child: Subtitle2(
+                "Delete",
+                color: Colors.black87,
+              ),
+              onTap: _delete,
+            ),
+          ];
+        },
+      ),
+    );
+  }
+
   _onTap() {
     onTap(spot);
+  }
+
+  _delete() {
+    if (!showActions) {
+      return;
+    }
+
+    // This makes sure that the item is closed when onDelete is invoked
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onDelete(spot);
+    });
   }
 }

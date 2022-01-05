@@ -89,7 +89,7 @@ class SavedTripService {
     return savedTrip;
   }
 
-  deleteTrip(String id) async {
+  Future<void> deleteTrip(String id) async {
     final response = await api.delete(deleteSavedTripPath(id));
     final rawResponse = response['response'];
 
@@ -98,7 +98,7 @@ class SavedTripService {
     }
   }
 
-  startTrip(String id) async {
+  Future<void> startTrip(String id) async {
     final response = await api.post(startTripPath(id), {});
     final rawResponse = response['response'];
 
@@ -107,7 +107,7 @@ class SavedTripService {
     }
   }
 
-  skipLocation(String id, String locationId) async {
+  Future<void> skipLocation(String id, String locationId) async {
     final response = await api.post(
       skipLocationPath(id, locationId),
       {},
@@ -119,7 +119,7 @@ class SavedTripService {
     }
   }
 
-  visitLocation(String id, String locationId) async {
+  Future<void> visitLocation(String id, String locationId) async {
     final response = await api.post(
       visitLocationPath(id, locationId),
       {},
@@ -131,7 +131,7 @@ class SavedTripService {
     }
   }
 
-  endTrip(String id) async {
+  Future<void> endTrip(String id) async {
     final response = await api.post(
       endTripPath(id),
       {},

@@ -5,9 +5,11 @@ import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/spot-stats.dart';
+import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/profile/components/spot-list-item.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/services/user-location.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -72,13 +74,16 @@ class SpotScreen extends StatefulWidget {
   final String title;
   final Future<List<SpotStats>> Function() fetchSpotsFunction;
   final Widget emptyListPlaceholder;
+  final bool showItemActions;
 
   const SpotScreen({
     Key key,
     @required this.title,
     this.fetchSpotsFunction,
     this.emptyListPlaceholder,
-  }) : super(key: key);
+    bool showItemActions,
+  })  : showItemActions = showItemActions ?? false,
+        super(key: key);
 
   @override
   _SpotScreenState createState() => _SpotScreenState();
@@ -178,6 +183,8 @@ class _SpotScreenState extends State<SpotScreen> {
             return SpotListItem(
               spot: spot,
               onTap: _onViewSpot,
+              showActions: widget.showItemActions,
+              onDelete: _onDeleteSpot,
             );
           },
         ),
@@ -198,7 +205,7 @@ class _SpotScreenState extends State<SpotScreen> {
 
     try {
       final spots = await widget.fetchSpotsFunction();
-      final groupedSpots = _groupSpots(spots);
+      final groupedSpots = groupSpots(spots);
 
       setState(() {
         _spots = spots;
@@ -222,40 +229,72 @@ class _SpotScreenState extends State<SpotScreen> {
     ));
   }
 
-  List<GroupedSpot> _groupSpots(List<SpotStats> spots) {
-    if (spots.isEmpty) {
-      return [];
+  _onDeleteSpot(SpotStats spot) async {
+    final navigationService = locator<NavigationService>();
+    final theme = Theme.of(context);
+
+    final result = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => AlertDialog(
+        title: Subtitle1("Are you sure?"),
+        content: Subtitle2("You cannot undo this action"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              navigationService.pop(false);
+            },
+            child: BodyText1(
+              'Cancel',
+              color: theme.primaryColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              navigationService.pop(true);
+            },
+            child: BodyText1(
+              'Delete',
+              color: theme.errorColor,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result) {
+      await _deleteSpot(spot);
     }
+  }
 
-    final List<GroupedSpot> result = [];
-    String currentCountry = spots.first.country;
-    String currentCountryCode = spots.first.countryCode;
-    List<SpotStats> currentCountrySpots = [spots.first];
+  _deleteSpot(SpotStats spot) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
 
-    for (var i = 1; i < spots.length; i++) {
-      final spot = spots[i];
+      final userLocationService = locator<UserLocationService>();
+      await userLocationService.deleteById(spot.id);
 
-      if (spot.countryCode == currentCountryCode) {
-        currentCountrySpots.add(spot);
-      } else {
-        result.add(GroupedSpot(
-          country: currentCountry,
-          countryCode: currentCountryCode,
-          spots: currentCountrySpots,
-        ));
-        currentCountry = spot.country;
-        currentCountryCode = spot.countryCode;
-        currentCountrySpots = [spot];
-      }
+      setState(() {
+        _spots.remove(spot);
+        _groupedSpots = groupSpots(_spots);
+        _isLoading = false;
+      });
+
+      final profileProvider = locator<ProfileProvider>();
+      profileProvider.reloadProfile = true;
+
+      final snackBar = createSuccessSnackbar(
+        text: 'The spot has been deleted',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      final snackBar = createErrorSnackbar(
+        text: 'An unexpected error has occurred. Please try again later.',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-
-    result.add(GroupedSpot(
-      country: currentCountry,
-      countryCode: currentCountryCode,
-      spots: currentCountrySpots,
-    ));
-
-    return result;
   }
 }
 
@@ -269,4 +308,40 @@ class GroupedSpot {
     @required this.countryCode,
     @required this.spots,
   });
+}
+
+List<GroupedSpot> groupSpots(List<SpotStats> spots) {
+  if (spots.isEmpty) {
+    return [];
+  }
+
+  final List<GroupedSpot> result = [];
+  String currentCountry = spots.first.country;
+  String currentCountryCode = spots.first.countryCode;
+  List<SpotStats> currentCountrySpots = [spots.first];
+
+  for (var i = 1; i < spots.length; i++) {
+    final spot = spots[i];
+
+    if (spot.countryCode == currentCountryCode) {
+      currentCountrySpots.add(spot);
+    } else {
+      result.add(GroupedSpot(
+        country: currentCountry,
+        countryCode: currentCountryCode,
+        spots: currentCountrySpots,
+      ));
+      currentCountry = spot.country;
+      currentCountryCode = spot.countryCode;
+      currentCountrySpots = [spot];
+    }
+  }
+
+  result.add(GroupedSpot(
+    country: currentCountry,
+    countryCode: currentCountryCode,
+    spots: currentCountrySpots,
+  ));
+
+  return result;
 }
