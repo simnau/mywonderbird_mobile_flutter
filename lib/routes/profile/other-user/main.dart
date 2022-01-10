@@ -9,8 +9,8 @@ import 'package:mywonderbird/routes/profile/other-user/other-user-current-trips.
 import 'package:mywonderbird/routes/profile/other-user/other-user-planned-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-spots.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-trips.dart';
-import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
+import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/stats.dart';
@@ -127,11 +127,9 @@ class _OtherUserState extends State<OtherUser> {
 
     navigationService.push(
       MaterialPageRoute(
-        builder: (context) => tripStats.tripType == TripType.SAVED_TRIP
-            ? SavedTripOverview(
-                id: tripStats.id,
-              )
-            : TripOverview(id: tripStats.id),
+        builder: (context) => tripStats.tripType == TripType.SHARED_TRIP
+            ? SharedTripOverviewGeneric(id: tripStats.id)
+            : SavedTripOverviewGeneric(id: tripStats.id),
       ),
     );
   }

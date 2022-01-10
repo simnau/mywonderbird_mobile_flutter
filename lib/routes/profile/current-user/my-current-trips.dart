@@ -22,7 +22,7 @@ class MyCurrentTrips extends StatelessWidget {
       renderTripProgress: true,
       actionButton: _planTripButton(context),
       emptyListPlaceholder: _emptyListPlaceholder(context),
-      showItemActions: true,
+      isCurrentUser: true,
     );
   }
 

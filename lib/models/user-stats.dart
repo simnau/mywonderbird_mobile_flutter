@@ -33,7 +33,6 @@ class UserStats {
       tripCount: json['tripCount'],
       plannedTripCount: json['plannedTripCount'],
       spotCount: json['spotCount'],
-      // spotCount: 19,
       currentTrip: json['currentTrip'] != null
           ? TripStats.fromJson(json['currentTrip'])
           : null,

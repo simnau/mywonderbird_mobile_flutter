@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
@@ -9,25 +10,24 @@ import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/routes/trip-details/main.dart';
-import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/util/map-markers.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class TripOverview extends StatefulWidget {
-  final String id;
+class TripOverviewScreen extends StatefulWidget {
+  final Future<FullJourney> Function() loadTrip;
 
-  const TripOverview({
+  const TripOverviewScreen({
     Key key,
-    @required this.id,
+    @required this.loadTrip,
   }) : super(key: key);
 
   @override
-  _TripOverviewState createState() => _TripOverviewState();
+  _TripOverviewScreenState createState() => _TripOverviewScreenState();
 }
 
-class _TripOverviewState extends State<TripOverview> {
+class _TripOverviewScreenState extends State<TripOverviewScreen> {
   static const _INITIAL_ZOOM = 3.0;
   static const _INITIAL_CAMERA_POSITION = CameraPosition(
     target: LatLng(
@@ -166,13 +166,20 @@ class _TripOverviewState extends State<TripOverview> {
       height: 72,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
+        color: Colors.grey,
       ),
       clipBehavior: Clip.antiAlias,
-      child: FadeInImage.memoryNetwork(
-        placeholder: kTransparentImage,
-        image: url,
-        fit: BoxFit.cover,
-      ),
+      child: url != null
+          ? FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              image: url,
+              fit: BoxFit.cover,
+            )
+          : Icon(
+              FontAwesome.image,
+              size: 48,
+              color: Colors.grey.shade200,
+            ),
     );
   }
 
@@ -238,8 +245,7 @@ class _TripOverviewState extends State<TripOverview> {
         _isLoading = true;
       });
 
-      final journeyService = locator<JourneyService>();
-      final journey = await journeyService.getJourney(widget.id);
+      final journey = await widget.loadTrip();
 
       final tripBounds = journey.locations.isEmpty
           ? null

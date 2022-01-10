@@ -8,7 +8,8 @@ import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/trip-list.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
+import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
@@ -21,7 +22,7 @@ class TripScreen extends StatefulWidget {
   final Widget emptyListPlaceholder;
   final bool renderTripProgress;
   final bool refetchOnPop;
-  final bool showItemActions;
+  final bool isCurrentUser;
 
   const TripScreen({
     Key key,
@@ -31,10 +32,10 @@ class TripScreen extends StatefulWidget {
     this.emptyListPlaceholder,
     bool renderTripProgress,
     bool refetchOnPop,
-    bool showItemActions,
+    bool isCurrentUser,
   })  : renderTripProgress = renderTripProgress ?? false,
         refetchOnPop = refetchOnPop ?? true,
-        showItemActions = showItemActions ?? false,
+        isCurrentUser = isCurrentUser ?? false,
         super(key: key);
 
   @override
@@ -84,7 +85,7 @@ class _TripScreenState extends State<TripScreen> {
         ),
         actionButton: widget.actionButton,
         emptyListPlaceholder: widget.emptyListPlaceholder,
-        showItemActions: widget.showItemActions,
+        showItemActions: widget.isCurrentUser,
         onDeleteTrip: _onDeleteTrip,
       ),
     );
@@ -115,11 +116,12 @@ class _TripScreenState extends State<TripScreen> {
     final navigationService = locator<NavigationService>();
     await navigationService.push(
       MaterialPageRoute(
-        builder: (context) => tripStats.tripType == TripType.SAVED_TRIP
-            ? SavedTripOverview(
-                id: tripStats.id,
-              )
-            : TripOverview(id: tripStats.id),
+        builder: (context) => tripStats.tripType == TripType.SHARED_TRIP
+            ? SharedTripOverviewGeneric(id: tripStats.id)
+            : widget.isCurrentUser &&
+                    tripStats.tripStatus != TripStatus.FINISHED
+                ? SavedTripOverview(id: tripStats.id)
+                : SavedTripOverviewGeneric(id: tripStats.id),
       ),
     );
 

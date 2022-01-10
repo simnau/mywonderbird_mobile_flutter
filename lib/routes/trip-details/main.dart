@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
@@ -168,11 +169,17 @@ class _TripDetailsState extends State<TripDetails> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
               ),
-              child: FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: location.imageUrl,
-                fit: BoxFit.cover,
-              ),
+              child: location.imageUrl != null
+                  ? FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: location.imageUrl,
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(
+                      FontAwesome.image,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
             ),
           ),
           title: Subtitle1(location.name),

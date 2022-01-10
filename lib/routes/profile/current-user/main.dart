@@ -12,7 +12,8 @@ import 'package:mywonderbird/routes/profile/current-user/my-trips.dart';
 import 'package:mywonderbird/routes/profile/map-model.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
+import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/stats.dart';
@@ -155,11 +156,11 @@ class _ProfileState extends State<Profile> with RouteAware {
     final navigationService = locator<NavigationService>();
     navigationService.push(
       MaterialPageRoute(
-        builder: (context) => tripStats.tripType == TripType.SAVED_TRIP
-            ? SavedTripOverview(
-                id: tripStats.id,
-              )
-            : TripOverview(id: tripStats.id),
+        builder: (context) => tripStats.tripType == TripType.SHARED_TRIP
+            ? SharedTripOverviewGeneric(id: tripStats.id)
+            : tripStats.tripStatus == TripStatus.FINISHED
+                ? SavedTripOverviewGeneric(id: tripStats.id)
+                : SavedTripOverview(id: tripStats.id),
       ),
     );
   }

@@ -9,7 +9,7 @@ import 'package:mywonderbird/routes/image-view/main.dart';
 import 'package:mywonderbird/routes/profile/current-user/main.dart';
 import 'package:mywonderbird/routes/profile/other-user/main.dart';
 import 'package:mywonderbird/routes/select-bookmark-group/main.dart';
-import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/like.dart';
@@ -260,7 +260,7 @@ class _FeedState extends State<Feed> {
     } else {
       navigationService.push(
         MaterialPageRoute(
-          builder: (context) => TripOverview(
+          builder: (context) => SharedTripOverviewGeneric(
             id: item.journeyId,
           ),
         ),
