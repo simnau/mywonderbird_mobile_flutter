@@ -43,9 +43,12 @@ class TripStats extends NamedItem {
           json['distance'] != null ? Distance.fromJson(json['distance']) : null,
       country: json['country'],
       countryCode: json['countryCode'],
-      tripType: EnumToString.fromString(TripType.values, json['tripType']),
-      tripStatus:
-          EnumToString.fromString(TripStatus.values, json['tripStatus']),
+      tripType: json['tripType'] != null
+          ? EnumToString.fromString(TripType.values, json['tripType'])
+          : null,
+      tripStatus: json['tripStatus'] != null
+          ? EnumToString.fromString(TripStatus.values, json['tripStatus'])
+          : null,
     );
   }
 }

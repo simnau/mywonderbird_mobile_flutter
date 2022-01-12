@@ -1,5 +1,4 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mywonderbird/deep-links.dart';
@@ -76,7 +75,7 @@ setupLocator({String env}) {
     termsService: termsService,
     navigationService: navigationService,
   );
-  FirebaseAnalytics analytics = FirebaseAnalytics();
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   FirebaseAnalyticsObserver analyticsObserver =
       FirebaseAnalyticsObserver(analytics: analytics);
 

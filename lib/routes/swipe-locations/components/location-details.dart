@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
@@ -12,7 +12,7 @@ import 'package:mywonderbird/util/geo.dart';
 
 class LocationDetails extends StatelessWidget {
   final SuggestedLocation item;
-  final LocationData userLocation;
+  final Position userLocation;
   final void Function() onTap;
 
   const LocationDetails({

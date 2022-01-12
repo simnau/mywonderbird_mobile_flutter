@@ -27,14 +27,13 @@ import 'locator.dart';
 import 'app.dart';
 
 Future main({String env = 'dev'}) async {
-  await dotenv.load(fileName: "env/.env-$env");
-  setupLocator(env: env);
-
   var initialRoute;
 
   try {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
+    await dotenv.load(fileName: "env/.env-$env");
+    setupLocator(env: env);
     await _initOAuthUrl();
     await _initTags();
     await initMarkers();

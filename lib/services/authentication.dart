@@ -127,7 +127,7 @@ class AuthenticationService {
     await auth.FirebaseAuth.instance.signOut();
 
     final analytics = locator<FirebaseAnalytics>();
-    analytics.setUserId(null);
+    analytics.setUserId(id: null);
   }
 
   Future<User> checkAuth() async {
@@ -247,7 +247,7 @@ class AuthenticationService {
     }
 
     final analytics = locator<FirebaseAnalytics>();
-    analytics.setUserId(user?.id);
+    analytics.setUserId(id: user?.id);
   }
 
   onStartup(User user) async {

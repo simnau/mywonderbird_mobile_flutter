@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/components/search-input.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
@@ -13,7 +14,6 @@ import 'package:mywonderbird/services/geo.dart';
 import 'package:mywonderbird/components/showcase-icon.dart';
 import 'package:mywonderbird/util/debouncer.dart';
 import 'package:mywonderbird/util/location.dart';
-import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
 
 class SelectLocation extends StatefulWidget {
@@ -34,7 +34,7 @@ class _SelectLocationState extends State<SelectLocation> {
   PersistentBottomSheetController _bottomSheetController;
   bool _searchModalOpen = false;
   LocationModel _selectedLocation;
-  LocationData _currentLocation;
+  Position _currentLocation;
 
   @override
   void initState() {
@@ -228,7 +228,7 @@ class _SelectLocationState extends State<SelectLocation> {
 
 class _BottomSheet extends StatefulWidget {
   final ValueChanged<LocationModel> onSelect;
-  final LocationData currentLocation;
+  final Position currentLocation;
 
   _BottomSheet({
     @required this.onSelect,

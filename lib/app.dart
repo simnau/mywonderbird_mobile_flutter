@@ -1,5 +1,5 @@
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/deep-links.dart';

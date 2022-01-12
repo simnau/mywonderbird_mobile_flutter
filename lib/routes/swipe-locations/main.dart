@@ -4,8 +4,8 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/analytics-events.dart';
@@ -55,7 +55,7 @@ class _SwipeLocationsState extends State<SwipeLocations> {
   final _storyController = StoryController();
   List<SuggestedLocation> _allLocations;
   List<SuggestedLocation> _locations;
-  LocationData _userLocation;
+  Position _userLocation;
   var _currentLocationIndex = 0;
   var _isLoading = true;
 

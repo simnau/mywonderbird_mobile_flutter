@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mywonderbird/models/location.dart';
-import 'package:location/location.dart';
 
 import 'api.dart';
 
@@ -19,7 +19,7 @@ class GeoService {
 
   Future<List<LocationModel>> searchLocations(
     String query,
-    LocationData currentLocation,
+    Position currentLocation,
   ) async {
     final location = currentLocation != null
         ? "${currentLocation.latitude},${currentLocation.longitude}"

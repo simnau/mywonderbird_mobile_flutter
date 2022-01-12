@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/util/snackbar.dart';
 
 class PdfPage extends StatefulWidget {
   final String url;
@@ -19,64 +20,68 @@ class PdfPage extends StatefulWidget {
 }
 
 class _PdfPageState extends State<PdfPage> {
-  File _pdfFile;
+  File _tempFile;
+  PDFDocument _pdfFile;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initPdf();
-  }
-
-  @override
-  void dispose() {
-    _deletePdf();
-    super.dispose();
-  }
-
-  _initPdf() async {
-    final pdfFile = await _createFileOfPdfUrl(widget.url);
-    setState(() {
-      _pdfFile = pdfFile;
+    WidgetsBinding.instance?.addPostFrameCallback((timestamp) {
+      _initPdf();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_pdfFile == null) {
-      return Container(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-        color: Colors.white,
-      );
-    }
+  void dispose() {
+    _deleteTempFile();
+    super.dispose();
+  }
 
-    return PDFViewerScaffold(
+  _initPdf() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final pdfFile = await PDFDocument.fromURL(widget.url.trim());
+
+      setState(() {
+        _pdfFile = pdfFile;
+        _isLoading = false;
+      });
+    } catch (e) {
+      final snackBar = createErrorSnackbar(
+          text: "There was an error loading the PDF. Please try again later");
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Text(
-          widget.title,
-          style: TextStyle(
-            color: Colors.black87,
-          ),
-        ),
+        backgroundColor: Colors.transparent,
+        title: widget.title != null ? Subtitle1(widget.title) : null,
       ),
-      path: _pdfFile?.path,
+      body: _body(),
+      backgroundColor: Colors.white,
     );
   }
 
-  Future<File> _createFileOfPdfUrl(url) async {
-    final filename = url.substring(url.lastIndexOf('/') + 1);
-    var request = await HttpClient().getUrl(Uri.parse(url));
-    var response = await request.close();
-    var bytes = await consolidateHttpClientResponseBytes(response);
-    String dir = (await Directory.systemTemp.createTemp()).path;
-    File file = new File('$dir/$filename');
-    await file.writeAsBytes(bytes);
-    return file;
+  Widget _body() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return PDFViewer(
+      document: _pdfFile,
+      zoomSteps: 1,
+    );
   }
 
-  _deletePdf() {
-    _pdfFile?.delete();
+  _deleteTempFile() {
+    _tempFile?.delete();
   }
 }

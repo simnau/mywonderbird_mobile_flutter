@@ -76,10 +76,12 @@ class TripCard extends StatelessWidget {
   Widget _card() {
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(tripStats.imageUrl),
-          fit: BoxFit.cover,
-        ),
+        image: tripStats.imageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(tripStats.imageUrl),
+                fit: BoxFit.cover,
+              )
+            : null,
       ),
       height: CARD_HEIGHT,
       child: Container(
@@ -90,17 +92,19 @@ class TripCard extends StatelessWidget {
             Expanded(
               child: ListTile(
                 title: H6.light(tripStats.name),
-                subtitle: Row(
-                  children: [
-                    Icon(
-                      MaterialCommunityIcons.map_marker,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                    SizedBox(width: spacingFactor(1)),
-                    Subtitle1.light(tripStats.country),
-                  ],
-                ),
+                subtitle: tripStats.country != null
+                    ? Row(
+                        children: [
+                          Icon(
+                            MaterialCommunityIcons.map_marker,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          SizedBox(width: spacingFactor(1)),
+                          Subtitle1.light(tripStats.country),
+                        ],
+                      )
+                    : null,
               ),
             ),
             Align(
