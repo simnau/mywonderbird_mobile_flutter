@@ -21,7 +21,7 @@ class StatsService {
 
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw new Exception(
-        'There was an error sharing the picture. Please try again later',
+        'There was an error fetching the user stats. Please try again later',
       );
     }
 
@@ -36,7 +36,7 @@ class StatsService {
 
     if (rawResponse.statusCode != HttpStatus.ok) {
       throw new Exception(
-        'There was an error sharing the picture. Please try again later',
+        'There was an error fetching the user stats. Please try again later',
       );
     }
 

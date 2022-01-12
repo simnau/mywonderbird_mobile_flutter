@@ -96,7 +96,7 @@ class _SelectUploadTypeState extends State<SelectUploadType> {
         );
       } else {
         final images = await ImagePicker().pickMultiImage();
-        final paths = images.map((image) => image.path).toList();
+        final paths = images?.map((image) => image.path)?.toList();
 
         pictureDatas = await pictureDataService.extractPicturesData(
           paths,
@@ -104,13 +104,15 @@ class _SelectUploadTypeState extends State<SelectUploadType> {
         );
       }
 
-      navigationService.push(
-        MaterialPageRoute(
-          builder: (_) => isSingle
-              ? SharePicturesStandalone(pictureDatas: pictureDatas)
-              : SharePicturesTrip(pictureDatas: pictureDatas),
-        ),
-      );
+      if (pictureDatas != null) {
+        navigationService.push(
+          MaterialPageRoute(
+            builder: (_) => isSingle
+                ? SharePicturesStandalone(pictureDatas: pictureDatas)
+                : SharePicturesTrip(pictureDatas: pictureDatas),
+          ),
+        );
+      }
     } catch (e) {
       final snackBar = createErrorSnackbar(
         text: "There was an error selecting pictures. Please try again",

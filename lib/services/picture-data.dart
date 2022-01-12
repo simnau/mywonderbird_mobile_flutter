@@ -63,6 +63,10 @@ class PictureDataService {
     List<String> filePaths,
     bool isSingle,
   ) async {
+    if (filePaths == null) {
+      return null;
+    }
+
     final files = filePaths.map<File>((filePath) => File(filePath)).toList();
     final exifDatas = await Future.wait(
       files
