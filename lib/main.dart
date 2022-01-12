@@ -7,6 +7,7 @@ import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
 import 'package:mywonderbird/providers/share-picture.dart';
@@ -96,6 +97,9 @@ Widget _app(initialRoute) {
       ChangeNotifierProvider<SwipeProvider>(
         create: (_) => locator<SwipeProvider>(),
       ),
+      ChangeNotifierProvider<ProfileProvider>(
+        create: (context) => locator<ProfileProvider>(),
+      )
     ],
     child: App(initialRoute: initialRoute),
   );

@@ -125,9 +125,11 @@ class LocationItem<T extends LocationModel> extends StatelessWidget {
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(0),
                       leading: LocationImage(
-                        image: NetworkImage(
-                          location?.imageUrl,
-                        ),
+                        image: location?.imageUrl != null
+                            ? NetworkImage(
+                                location.imageUrl,
+                              )
+                            : null,
                         number: number,
                         state: state,
                       ),

@@ -105,6 +105,7 @@ class _HomePageState extends State<HomePage> {
         height: 60,
         margin: const EdgeInsets.all(2.0),
         child: DescribedFeatureOverlay(
+          barrierDismissible: false,
           featureId: SHARE_PHOTO_FEATURE,
           tapTarget: Icon(
             Icons.add,
@@ -183,6 +184,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: _showComingSoonSearch,
       ),
       DescribedFeatureOverlay(
+        barrierDismissible: false,
         featureId: PROFILE_FEATURE,
         tapTarget: Icon(Icons.person),
         title: H6.light('Your profile'),

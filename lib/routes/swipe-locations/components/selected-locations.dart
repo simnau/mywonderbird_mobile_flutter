@@ -72,6 +72,7 @@ class SelectedLocations extends StatelessWidget {
         ),
         SizedBox(width: 16.0),
         DescribedFeatureOverlay(
+          barrierDismissible: false,
           featureId: FILTER_LOCATIONS_FEATURE,
           tapTarget: Icon(FontAwesome.sliders),
           title: H6.light('Filter locations'),
@@ -96,6 +97,7 @@ class SelectedLocations extends StatelessWidget {
         ),
         SizedBox(width: 8.0),
         DescribedFeatureOverlay(
+          barrierDismissible: false,
           featureId: SELECT_AREA_FEATURE,
           tapTarget: Icon(MaterialCommunityIcons.map_marker),
           title: H6.light('Select area'),

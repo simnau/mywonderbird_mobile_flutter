@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/profile-app-bar.dart';
 import 'package:mywonderbird/locator.dart';
-import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/models/trip-stats.dart';
+import 'package:mywonderbird/models/user-profile.dart';
+import 'package:mywonderbird/models/user-stats.dart';
+import 'package:mywonderbird/providers/profile.dart';
+import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
+import 'package:mywonderbird/routes/trip-overview/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
-import 'package:mywonderbird/extensions/text-theme.dart';
+import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/snackbar.dart';
+import 'package:syncfusion_flutter_maps/maps.dart';
 
-import 'components/trips-tab.dart';
-import 'components/saved-trips-tab.dart';
-import 'components/spots-tab.dart';
+import '../map-model.dart';
 
 class OtherUser extends StatefulWidget {
   final String id;
@@ -21,33 +27,73 @@ class OtherUser extends StatefulWidget {
   _OtherUserState createState() => _OtherUserState();
 }
 
-class _OtherUserState extends State<OtherUser> with TickerProviderStateMixin {
-  final _tabBarKey = GlobalKey();
-  TabController _tabController;
-
+class _OtherUserState extends State<OtherUser> {
   bool _isLoading = true;
-  User _user;
-
-  _OtherUserState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
-  }
+  MapShapeSource _shapeSource;
+  UserStats _userStats;
+  UserProfile _profile;
 
   @override
   void initState() {
-    super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _loadUser();
+      await initStats();
     });
+
+    super.initState();
+  }
+
+  initStats() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final profileProvider = locator<ProfileProvider>();
+      final statsService = locator<StatsService>();
+      final profileService = locator<ProfileService>();
+      final user = await profileService.getUserById(widget.id);
+      final userStats = await statsService.fetchUserStats(widget.id);
+
+      final data = userStats.visitedCountryCodes
+          .map(
+              (visitedCountryCode) => MapModel(countryCode: visitedCountryCode))
+          .toList();
+
+      profileProvider.reloadProfile = false;
+      setState(() {
+        _shapeSource = MapShapeSource.asset(
+          'images/vector-maps/world-map.json',
+          shapeDataField: 'ISO_A3',
+          dataCount: data.length,
+          primaryValueMapper: (index) => data[index].countryCode,
+          shapeColorValueMapper: (_) {
+            final theme = Theme.of(context);
+
+            return theme.accentColor;
+          },
+        );
+        _userStats = userStats;
+        _profile = user.profile;
+        _isLoading = false;
+      });
+    } catch (error) {
+      final errorSnackbar = createErrorSnackbar(
+        text: "There was an error loading the user profile. Please try again",
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackbar);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF2F3F7),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      backgroundColor: Colors.white,
       body: _body(),
     );
   }
@@ -59,76 +105,50 @@ class _OtherUserState extends State<OtherUser> with TickerProviderStateMixin {
       );
     }
 
-    final theme = Theme.of(context);
+    return ProfilePage(
+      onViewTrips: _onViewTrips,
+      onViewPlans: _onViewPlans,
+      onViewSpots: _onViewSpots,
+      onOpenMap: _onOpenMap,
+      onViewCurrentTrips: onViewCurrentTrips,
+      onViewTrip: _onViewTrip,
+      userStats: _userStats,
+      profile: _profile,
+      shapeSource: _shapeSource,
+    );
+  }
 
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, value) {
-        return [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: ProfileAppBar(
-              collapsedHeight: kToolbarHeight + 72,
-              expandedHeight: 250,
-              user: _user,
-              tabBar: TabBar(
-                key: _tabBarKey,
-                controller: _tabController,
-                labelColor: theme.accentColor,
-                unselectedLabelColor: Colors.black45,
-                tabs: [
-                  Tab(
-                    child: Text(
-                      'SAVED TRIPS',
-                      style: theme.textTheme.tab,
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'TRIPS',
-                      style: theme.textTheme.tab,
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'SPOTS',
-                      style: theme.textTheme.tab,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          SavedTripsTab(userId: widget.id),
-          TripsTab(userId: widget.id),
-          SpotsTab(userId: widget.id),
-        ],
+  _onViewTrip(TripStats tripStats) async {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (context) => tripStats.tripType == TripType.SAVED_TRIP
+            ? SavedTripOverview(
+                id: tripStats.id,
+              )
+            : TripOverview(id: tripStats.id),
       ),
     );
   }
 
-  _loadUser() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
+  _onViewTrips() {
+    print("view trips");
+  }
 
-      final profileService = locator<ProfileService>();
-      final user = await profileService.getUserById(widget.id);
+  _onViewPlans() {
+    print("view plans");
+  }
 
-      setState(() {
-        _isLoading = false;
-        _user = user;
-      });
-    } catch (e) {
-      print(e);
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  onViewCurrentTrips() {
+    print("view current trips");
+  }
+
+  _onViewSpots() {
+    print("view spots");
+  }
+
+  _onOpenMap() {
+    print("open map");
   }
 }
