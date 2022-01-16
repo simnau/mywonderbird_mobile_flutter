@@ -248,12 +248,15 @@ class _FeedState extends State<Feed> {
 
   _onView(FeedLocation item) async {
     final navigationService = locator<NavigationService>();
-
     if (item.journeyId == null) {
       navigationService.push(
         MaterialPageRoute(
           builder: (context) => UserLocationDetails(
             locationId: item.locationId,
+            userAvatar: item.userAvatarUrl,
+            userName: item.userName,
+            userBio: item.userBio,
+            userId: item.userId,
           ),
         ),
       );

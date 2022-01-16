@@ -69,6 +69,7 @@ class _SystemLocationDetailsState extends State<SystemLocationDetails> {
     return SafeArea(
       child: LocationDetails(
         location: location,
+        isUserLocationView: false,
       ),
     );
   }
