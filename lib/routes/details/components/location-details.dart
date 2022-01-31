@@ -7,16 +7,15 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/routes/details/pages/system-location-details.dart';
 import 'package:mywonderbird/routes/profile/current-user/main.dart';
 import 'package:mywonderbird/routes/profile/other-user/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:provider/provider.dart';
-import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/story_view.dart';
-
-import '../../../locator.dart';
 
 class LocationDetails<T extends LocationModel> extends StatefulWidget {
   final T location;
@@ -48,6 +47,8 @@ class _LocationDetailsState extends State<LocationDetails> {
   bool get hasImage => widget.location.imageUrl != null;
   LatLng get getLoc => widget.location.latLng;
   String get getDescription => widget.location.description;
+  bool get hasSystemLocation =>
+      widget.isUserLocationView && widget.location.placeId != null;
 
   @override
   Widget build(BuildContext context) {
@@ -161,13 +162,39 @@ class _LocationDetailsState extends State<LocationDetails> {
   }
 
   Widget _imageDetails() {
-    return ClipRRect(
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        child: Column(children: [
-          Expanded(child: _image(), flex: 3),
-          Expanded(child: _details(), flex: 2)
-        ]));
+          topLeft: Radius.circular(borderRadiusFactor(4)),
+          topRight: Radius.circular(borderRadiusFactor(4)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 4,
+            color: Colors.black26,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: LayoutBuilder(builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  Expanded(child: _image(), flex: 3),
+                  Expanded(child: _details(), flex: 2),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
   }
 
   Widget _image() {
@@ -203,6 +230,17 @@ class _LocationDetailsState extends State<LocationDetails> {
             ),
           ),
           _locationName(),
+          if (hasSystemLocation)
+            Positioned(
+              bottom: spacingFactor(1),
+              right: spacingFactor(1),
+              child: IconButton(
+                onPressed: _onViewSystemLocation,
+                icon: Icon(Icons.info_outline),
+                color: Colors.white,
+                iconSize: 24,
+              ),
+            ),
         ],
       ),
     );
@@ -238,7 +276,7 @@ class _LocationDetailsState extends State<LocationDetails> {
 
   Widget _locationName() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+      padding: EdgeInsets.all(spacingFactor(2)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -247,14 +285,14 @@ class _LocationDetailsState extends State<LocationDetails> {
             softWrap: true,
             color: Colors.white,
           ),
-          Padding(padding: const EdgeInsets.only(bottom: 4.0)),
+          Padding(padding: EdgeInsets.only(bottom: spacingFactor(0.5))),
           Row(
             children: [
               Icon(
                 Icons.location_on,
                 color: Colors.white,
               ),
-              Padding(padding: const EdgeInsets.only(right: 4.0)),
+              Padding(padding: EdgeInsets.only(right: spacingFactor(0.5))),
               Subtitle2(
                 widget.location.country,
                 softWrap: true,
@@ -274,7 +312,12 @@ class _LocationDetailsState extends State<LocationDetails> {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+        padding: EdgeInsets.fromLTRB(
+          spacingFactor(2),
+          spacingFactor(1),
+          spacingFactor(2),
+          spacingFactor(2),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -282,7 +325,7 @@ class _LocationDetailsState extends State<LocationDetails> {
               widget.isUserLocationView ? 'What they are saying' : 'About',
               softWrap: true,
             ),
-            Padding(padding: const EdgeInsets.only(bottom: 8.0)),
+            Padding(padding: EdgeInsets.only(bottom: spacingFactor(1))),
             Row(
               children: [
                 Container(
@@ -298,70 +341,74 @@ class _LocationDetailsState extends State<LocationDetails> {
             ),
             if (widget.isUserLocationView)
               Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlue.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              width: 60,
-                              height: 70,
-                              margin:
-                                  const EdgeInsets.only(left: 8.0, right: 16.0),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: widget.userAvatar != null
-                                        ? CircleAvatar(
-                                            backgroundImage:
-                                                NetworkImage(widget.userAvatar),
-                                          )
-                                        : Icon(
-                                            Icons.person,
-                                            size: 40,
-                                            color: Colors.black38,
-                                          ),
-                                  ),
-                                  Positioned.fill(
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(60),
-                                        onTap: _onViewUser,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
+                padding: EdgeInsets.only(top: spacingFactor(3)),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlue.shade50,
+                    borderRadius: BorderRadius.circular(borderRadiusFactor(4)),
+                  ),
+                  child: Row(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 60,
+                          height: 70,
+                          margin: EdgeInsets.only(
+                            left: spacingFactor(1),
+                            right: spacingFactor(2),
                           ),
-                          Expanded(
-                            child: Column(
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: widget.userAvatar != null
+                                    ? CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(widget.userAvatar),
+                                      )
+                                    : Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.black38,
+                                      ),
+                              ),
+                              Positioned.fill(
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(60),
+                                    onTap: _onViewUser,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Subtitle1(
-                                      widget.userName ?? '',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    BodyText1(
-                                      widget.userBio ?? 'No biography',
-                                    ),
-                                  ],
+                                Subtitle1(
+                                  widget.userName ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                BodyText1(
+                                  widget.userBio ?? 'No biography',
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ))),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -404,7 +451,7 @@ class _LocationDetailsState extends State<LocationDetails> {
 
   _onViewUser() async {
     final navigationService = locator<NavigationService>();
-    final user = Provider.of<User>(context);
+    final user = Provider.of<User>(context, listen: false);
 
     if (widget.userId == user.id) {
       navigationService.push(MaterialPageRoute(
@@ -415,5 +462,18 @@ class _LocationDetailsState extends State<LocationDetails> {
         builder: (_) => OtherUser(id: widget.userId),
       ));
     }
+  }
+
+  _onViewSystemLocation() {
+    if (!hasSystemLocation) {
+      return;
+    }
+
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(MaterialPageRoute(
+      builder: (_) =>
+          SystemLocationDetails(locationId: widget.location.placeId),
+    ));
   }
 }
