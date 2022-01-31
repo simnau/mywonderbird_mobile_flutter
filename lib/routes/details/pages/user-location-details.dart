@@ -62,27 +62,14 @@ class _UserLocationDetailsState extends State<UserLocationDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
-    );
-  }
-
-  Widget _body() {
-    if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return SafeArea(
-      child: LocationDetails(
-        location: location,
-        isUserLocationView: true,
-        userAvatar: widget.userAvatar,
-        userBio: widget.userBio,
-        userName: widget.userName,
-        userId: widget.userId,
-      ),
+    return LocationDetails(
+      location: location,
+      isUserLocationView: true,
+      userAvatar: widget.userAvatar,
+      userBio: widget.userBio,
+      userName: widget.userName,
+      userId: widget.userId,
+      isLoading: isLoading,
     );
   }
 }

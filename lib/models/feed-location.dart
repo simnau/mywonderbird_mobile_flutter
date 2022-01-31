@@ -34,7 +34,6 @@ class FeedLocation {
   });
 
   factory FeedLocation.fromJson(Map<String, dynamic> json) {
-    print(json);
     return FeedLocation(
       id: json['id'],
       journeyId: json['journeyId'],

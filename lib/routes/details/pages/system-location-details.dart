@@ -54,23 +54,10 @@ class _SystemLocationDetailsState extends State<SystemLocationDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
-    );
-  }
-
-  Widget _body() {
-    if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return SafeArea(
-      child: LocationDetails(
-        location: location,
-        isUserLocationView: false,
-      ),
+    return LocationDetails(
+      location: location,
+      isUserLocationView: false,
+      isLoading: isLoading,
     );
   }
 }

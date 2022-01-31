@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
@@ -24,6 +25,7 @@ class LocationDetails<T extends LocationModel> extends StatefulWidget {
   final String userName;
   final String userBio;
   final String userId;
+  final bool isLoading;
 
   const LocationDetails({
     Key key,
@@ -33,6 +35,7 @@ class LocationDetails<T extends LocationModel> extends StatefulWidget {
     this.userName,
     this.userBio,
     this.userId,
+    @required this.isLoading,
   }) : super(key: key);
 
   @override
@@ -52,18 +55,32 @@ class _LocationDetailsState extends State<LocationDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _locationMap(),
-        if (!isZoomedIn)
-          Positioned(
-            height: MediaQuery.of(context).size.height / 2,
-            bottom: 0.0,
-            right: 0.0,
-            left: 0.0,
-            child: _imageDetails(),
-          )
-      ],
+    return Scaffold(
+      body: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    if (widget.isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return SafeArea(
+      child: Stack(
+        children: [
+          _locationMap(),
+          if (!isZoomedIn)
+            Positioned(
+              height: MediaQuery.of(context).size.height / 2,
+              bottom: 0.0,
+              right: 0.0,
+              left: 0.0,
+              child: _imageDetails(),
+            )
+        ],
+      ),
     );
   }
 
@@ -127,6 +144,9 @@ class _LocationDetailsState extends State<LocationDetails> {
             iconTheme: IconThemeData(
               color: Colors.white,
             ),
+            actions: [
+              _actions(),
+            ],
           ),
         ),
         Positioned.directional(
@@ -239,6 +259,7 @@ class _LocationDetailsState extends State<LocationDetails> {
                 icon: Icon(Icons.info_outline),
                 color: Colors.white,
                 iconSize: 24,
+                tooltip: "More about the spot",
               ),
             ),
         ],
@@ -415,6 +436,36 @@ class _LocationDetailsState extends State<LocationDetails> {
     );
   }
 
+  Widget _actions() {
+    return Material(
+      color: Colors.transparent,
+      child: PopupMenuButton(
+        icon: Icon(
+          Icons.more_horiz,
+          color: Colors.white,
+        ),
+        iconSize: 24,
+        tooltip: "Action menu",
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            borderRadiusFactor(2),
+          ),
+        ),
+        itemBuilder: (_) {
+          return <PopupMenuEntry>[
+            PopupMenuItem(
+              child: Subtitle2(
+                "Open in Maps",
+                color: Colors.black87,
+              ),
+              onTap: _onOpenInMaps,
+            ),
+          ];
+        },
+      ),
+    );
+  }
+
   _onExpand() {
     setState(() {
       isZoomedIn = !isZoomedIn;
@@ -475,5 +526,13 @@ class _LocationDetailsState extends State<LocationDetails> {
       builder: (_) =>
           SystemLocationDetails(locationId: widget.location.placeId),
     ));
+  }
+
+  _onOpenInMaps() async {
+    await MapsLauncher.launchCoordinates(
+      widget.location.latLng.latitude,
+      widget.location.latLng.longitude,
+      widget.location.name,
+    );
   }
 }
