@@ -8,6 +8,8 @@ class FeedLocation {
   final String country;
   final DateTime updatedAt;
   final String userId;
+  final String userName;
+  final String userBio;
   final String userAvatarUrl;
   final String locationId;
   int likeCount;
@@ -25,6 +27,8 @@ class FeedLocation {
     @required this.isLiked,
     @required this.isBookmarked,
     @required this.userId,
+    @required this.userName,
+    @required this.userBio,
     @required this.userAvatarUrl,
     @required this.locationId,
   });
@@ -41,6 +45,8 @@ class FeedLocation {
       isLiked: json['isLiked'],
       isBookmarked: json['isBookmarked'],
       userId: json['userId'],
+      userName: json['userName'],
+      userBio: json['userBio'],
       userAvatarUrl: json['userAvatarUrl'],
       locationId: json['locationId'],
     );

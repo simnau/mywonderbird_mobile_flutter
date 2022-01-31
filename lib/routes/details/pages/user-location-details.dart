@@ -7,10 +7,18 @@ import 'package:mywonderbird/util/snackbar.dart';
 
 class UserLocationDetails extends StatefulWidget {
   final String locationId;
+  final String userAvatar;
+  final String userName;
+  final String userBio;
+  final String userId;
 
   const UserLocationDetails({
     Key key,
     @required this.locationId,
+    this.userAvatar,
+    this.userName,
+    this.userBio,
+    this.userId,
   }) : super(key: key);
 
   @override
@@ -54,22 +62,14 @@ class _UserLocationDetailsState extends State<UserLocationDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
-    );
-  }
-
-  Widget _body() {
-    if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return SafeArea(
-      child: LocationDetails(
-        location: location,
-      ),
+    return LocationDetails(
+      location: location,
+      isUserLocationView: true,
+      userAvatar: widget.userAvatar,
+      userBio: widget.userBio,
+      userName: widget.userName,
+      userId: widget.userId,
+      isLoading: isLoading,
     );
   }
 }
