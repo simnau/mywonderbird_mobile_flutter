@@ -88,7 +88,8 @@ class _ProfileState extends State<Profile> with RouteAware {
           'images/vector-maps/world-map.json',
           shapeDataField: 'ISO_A3',
           dataCount: data.length,
-          primaryValueMapper: (index) => data[index].countryCode,
+          primaryValueMapper:
+              data.isNotEmpty ? (index) => data[index].countryCode : null,
           shapeColorValueMapper: (_) {
             final theme = Theme.of(context);
 
