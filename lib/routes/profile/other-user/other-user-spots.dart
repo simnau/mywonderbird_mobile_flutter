@@ -20,6 +20,7 @@ class OtherUserSpots extends StatelessWidget {
       title: 'My spots',
       fetchSpotsFunction: _fetchSpots,
       emptyListPlaceholder: _emptyListPlaceholder(context),
+      userProfile: userProfile,
     );
   }
 

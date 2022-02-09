@@ -15,10 +15,10 @@ class UserLocationDetails extends StatefulWidget {
   const UserLocationDetails({
     Key key,
     @required this.locationId,
-    this.userAvatar,
-    this.userName,
-    this.userBio,
-    this.userId,
+    @required this.userAvatar,
+    @required this.userName,
+    @required this.userBio,
+    @required this.userId,
   }) : super(key: key);
 
   @override

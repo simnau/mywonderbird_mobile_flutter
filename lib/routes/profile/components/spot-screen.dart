@@ -5,6 +5,7 @@ import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/spot-stats.dart';
+import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/profile/components/spot-list-item.dart';
@@ -75,6 +76,7 @@ class SpotScreen extends StatefulWidget {
   final Future<List<SpotStats>> Function() fetchSpotsFunction;
   final Widget emptyListPlaceholder;
   final bool showItemActions;
+  final UserProfile userProfile;
 
   const SpotScreen({
     Key key,
@@ -82,6 +84,7 @@ class SpotScreen extends StatefulWidget {
     this.fetchSpotsFunction,
     this.emptyListPlaceholder,
     bool showItemActions,
+    @required this.userProfile,
   })  : showItemActions = showItemActions ?? false,
         super(key: key);
 
@@ -225,7 +228,13 @@ class _SpotScreenState extends State<SpotScreen> {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (_) => UserLocationDetails(locationId: spot.id),
+      builder: (_) => UserLocationDetails(
+        locationId: spot.id,
+        userAvatar: widget.userProfile.avatarUrl,
+        userBio: widget.userProfile.bio,
+        userId: widget.userProfile.providerId,
+        userName: widget.userProfile.username,
+      ),
     ));
   }
 

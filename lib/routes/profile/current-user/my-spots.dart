@@ -4,14 +4,18 @@ import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/spot-stats.dart';
+import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/routes/picture-sharing/pages/select-upload-type/main.dart';
 import 'package:mywonderbird/routes/profile/components/spot-screen.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/spot-stats.dart';
 
 class MySpots extends StatelessWidget {
+  final UserProfile userProfile;
+
   const MySpots({
     Key key,
+    this.userProfile,
   }) : super(key: key);
 
   @override
@@ -21,6 +25,7 @@ class MySpots extends StatelessWidget {
       fetchSpotsFunction: _fetchSpots,
       emptyListPlaceholder: _emptyListPlaceholder(context),
       showItemActions: true,
+      userProfile: userProfile,
     );
   }
 
