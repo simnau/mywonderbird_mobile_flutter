@@ -237,6 +237,7 @@ class ProfilePage extends StatelessWidget {
         onViewAll: onViewAll,
         renderProgress: renderProgress,
       ),
+      SizedBox(height: spacingFactor(3)),
     ];
   }
 
@@ -248,13 +249,15 @@ class ProfilePage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return [
-      TripSpots(
+      SizedBox(height: spacingFactor(1)),
+      Spots(
         title: 'Visited spots',
         spots: userStats.spots,
         allSpotCount: userStats.spotCount,
         spotSize:
             (screenWidth - spacingFactor(2.5) * 2 - spacingFactor(1) * 3) / 4,
         onViewAllSpots: onViewSpots,
+        userProfile: profile,
       ),
     ];
   }

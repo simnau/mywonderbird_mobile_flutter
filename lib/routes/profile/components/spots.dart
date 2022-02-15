@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
-import 'package:mywonderbird/components/typography/subtitle2.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/spot.dart';
+import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/profile/components/spot-item.dart';
 import 'package:mywonderbird/services/navigation.dart';
 
-class TripSpots extends StatelessWidget {
+class Spots extends StatelessWidget {
   final String title;
   final List<Spot> spots;
   final int allSpotCount;
   final double spotSize;
   final Function() onViewAllSpots;
+  final UserProfile userProfile;
 
-  const TripSpots({
+  const Spots({
     Key key,
     @required this.title,
     @required this.spots,
     @required this.allSpotCount,
     @required this.spotSize,
     @required this.onViewAllSpots,
+    @required this.userProfile,
   }) : super(key: key);
 
   @override
@@ -29,7 +32,7 @@ class TripSpots extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Subtitle2(
+        Subtitle1(
           title,
           color: Color(0xFF484242),
         ),
@@ -104,7 +107,13 @@ class TripSpots extends StatelessWidget {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(MaterialPageRoute(
-      builder: (_) => UserLocationDetails(locationId: spot.id),
+      builder: (_) => UserLocationDetails(
+        locationId: spot.id,
+        userAvatar: userProfile.avatarUrl,
+        userBio: userProfile.bio,
+        userId: userProfile.providerId,
+        userName: userProfile.username,
+      ),
     ));
   }
 }

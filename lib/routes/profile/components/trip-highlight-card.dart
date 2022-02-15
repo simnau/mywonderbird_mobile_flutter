@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/components/typography/h6.dart';
+import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
@@ -30,9 +30,31 @@ class TripHighlightCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Subtitle2(
-          title,
-          color: Color(0xFF484242),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Subtitle1(
+              title,
+              color: Color(0xFF484242),
+            ),
+            TextButton(
+              onPressed: onViewAll,
+              child: Row(
+                children: [
+                  Subtitle2(
+                    "View all",
+                    color: Colors.black45,
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: Colors.black45,
+                  )
+                ],
+              ),
+              style: TextButton.styleFrom(alignment: Alignment.centerLeft),
+            ),
+          ],
         ),
         SizedBox(height: spacingFactor(1)),
         TripCard(
@@ -40,15 +62,6 @@ class TripHighlightCard extends StatelessWidget {
           renderProgress: renderProgress,
           tripStats: tripStats,
           showActions: false,
-        ),
-        SizedBox(height: spacingFactor(1)),
-        TextButton(
-          onPressed: onViewAll,
-          child: H6(
-            "View all >",
-            color: Color(0xFF484242),
-          ),
-          style: TextButton.styleFrom(alignment: Alignment.centerLeft),
         ),
       ],
     );
