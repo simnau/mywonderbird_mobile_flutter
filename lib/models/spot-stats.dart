@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/models/stats.dart';
 
-class SpotStats {
+class SpotStats implements IStats {
   final String id;
+  final String name;
   final String imageUrl;
   final String country;
   final String countryCode;
@@ -11,6 +13,7 @@ class SpotStats {
 
   SpotStats({
     @required this.id,
+    @required this.name,
     @required this.imageUrl,
     @required this.country,
     @required this.countryCode,
@@ -25,6 +28,7 @@ class SpotStats {
 
     return SpotStats(
       id: json['id'],
+      name: json['name'],
       imageUrl: json['imageUrl'],
       country: json['country'],
       countryCode: json['countryCode'],

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/models/country-geo-stats.dart';
 import 'package:mywonderbird/models/spot.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 
 class UserStats {
   final List<String> visitedCountryCodes;
+  final List<CountryGeoStats> visitedCountries;
   final int tripCount;
   final int plannedTripCount;
   final int spotCount;
@@ -14,6 +16,7 @@ class UserStats {
 
   UserStats({
     @required this.visitedCountryCodes,
+    @required this.visitedCountries,
     @required this.tripCount,
     @required this.plannedTripCount,
     @required this.spotCount,
@@ -30,6 +33,12 @@ class UserStats {
               .map<String>((countryCode) => countryCode.toString())
               .toList()
           : [],
+      visitedCountries: json['visitedCountries'] != null
+          ? json['visitedCountries']
+              .map<CountryGeoStats>(
+                  (visitedCountry) => CountryGeoStats.fromJson(visitedCountry))
+              .toList()
+          : null,
       tripCount: json['tripCount'],
       plannedTripCount: json['plannedTripCount'],
       spotCount: json['spotCount'],
