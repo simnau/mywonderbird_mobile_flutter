@@ -42,7 +42,7 @@ class _SignInState extends State<SignIn> {
               onForgotDetails: _navigateToForgotDetails,
               onSubmit: ({email, password}) => _onSignIn(
                 context: context,
-                email: email,
+                email: email.trim(),
                 password: password,
               ),
               email: widget.email,

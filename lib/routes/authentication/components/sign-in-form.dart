@@ -120,9 +120,9 @@ class _SignInFormState extends State<SignInForm> {
   }
 
   String _validateEmail(String value) {
-    if (value.isEmpty) {
+    if (value.trim().isEmpty) {
       return 'Email is required';
-    } else if (!EmailValidator.validate(value)) {
+    } else if (!EmailValidator.validate(value.trim())) {
       return 'Email address is invalid';
     }
 

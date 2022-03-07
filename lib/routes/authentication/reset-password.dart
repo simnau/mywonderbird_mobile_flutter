@@ -139,9 +139,9 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   String _validateEmail(value) {
-    if (value.isEmpty) {
+    if (value.trim().isEmpty) {
       return 'Email is required';
-    } else if (!EmailValidator.validate(value)) {
+    } else if (!EmailValidator.validate(value.trim())) {
       return 'Email address is invalid';
     }
 
@@ -177,7 +177,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         final authenticationService = locator<AuthenticationService>();
 
         await authenticationService.resetPassword(
-          _emailController.text,
+          _emailController.text.trim(),
           _codeController.text,
           _passwordController.text,
         );
@@ -211,13 +211,13 @@ class _ResetPasswordState extends State<ResetPassword> {
         _message = null;
       });
 
-      String emailError = _validateEmail(_emailController.text);
+      String emailError = _validateEmail(_emailController.text.trim());
 
       if (emailError == null) {
         final authenticationService = locator<AuthenticationService>();
 
         await authenticationService.sendPasswordResetCode(
-          _emailController.text,
+          _emailController.text.trim(),
         );
 
         setState(() {

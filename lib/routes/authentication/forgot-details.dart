@@ -104,9 +104,9 @@ class _ForgotDetailsState extends State<ForgotDetails> {
   }
 
   String _validateEmail(value) {
-    if (value.isEmpty) {
+    if (value.trim().isEmpty) {
       return 'Email is required';
-    } else if (!EmailValidator.validate(value)) {
+    } else if (!EmailValidator.validate(value.trim())) {
       return 'Email address is invalid';
     }
 
@@ -119,7 +119,7 @@ class _ForgotDetailsState extends State<ForgotDetails> {
         final authenticationService = locator<AuthenticationService>();
 
         await authenticationService.sendPasswordResetEmail(
-          _emailController.text,
+          _emailController.text.trim(),
         );
 
         final snackBar = createSuccessSnackbar(

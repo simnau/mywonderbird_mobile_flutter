@@ -110,9 +110,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   String _validateEmail(value) {
-    if (value.isEmpty) {
+    if (value.trim().isEmpty) {
       return 'Email is required';
-    } else if (!EmailValidator.validate(value)) {
+    } else if (!EmailValidator.validate(value.trim())) {
       return 'Email address is invalid';
     }
 
@@ -130,7 +130,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onSignUp() async {
-    final email = _emailController.text;
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     try {
