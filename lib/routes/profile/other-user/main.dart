@@ -9,7 +9,6 @@ import 'package:mywonderbird/routes/profile/other-user/other-user-current-trips.
 import 'package:mywonderbird/routes/profile/other-user/other-user-planned-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-spots.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-trips.dart';
-import 'package:mywonderbird/routes/profile/other-user/other-user-visited-locations-map.dart';
 import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
 import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -176,15 +175,6 @@ class _OtherUserState extends State<OtherUser> {
   }
 
   _onOpenMap() {
-    final navigationService = locator<NavigationService>();
-
-    navigationService.push(
-      MaterialPageRoute(
-        builder: (_) => OtherUserVisitedLocationsMap(
-          visitedCountries: _userStats.visitedCountries,
-          userProfile: _profile,
-        ),
-      ),
-    );
+    print("open map");
   }
 }

@@ -9,7 +9,6 @@ import 'package:mywonderbird/routes/profile/current-user/my-current-trips.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-planned-trips.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-spots.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-trips.dart';
-import 'package:mywonderbird/routes/profile/current-user/my-visited-locations-map.dart';
 import 'package:mywonderbird/routes/profile/map-model.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
@@ -200,15 +199,6 @@ class _ProfileState extends State<Profile> with RouteAware {
   }
 
   _onOpenMap() {
-    final navigationService = locator<NavigationService>();
-
-    navigationService.push(
-      MaterialPageRoute(
-        builder: (_) => MyVisitedLocationsMap(
-          visitedCountries: _userStats.visitedCountries,
-          userProfile: _profile,
-        ),
-      ),
-    );
+    print("open map");
   }
 }

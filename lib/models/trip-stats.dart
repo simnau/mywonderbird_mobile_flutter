@@ -1,6 +1,5 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
-import 'package:mywonderbird/models/stats.dart';
 import 'package:mywonderbird/types/named-item.dart';
 
 import 'distance.dart';
@@ -9,7 +8,7 @@ enum TripType { SHARED_TRIP, SAVED_TRIP }
 
 enum TripStatus { PLANNED, IN_PROGRESS, FINISHED }
 
-class TripStats extends NamedItem implements IStats {
+class TripStats extends NamedItem {
   final String id;
   final int spotCount;
   final int currentStep;

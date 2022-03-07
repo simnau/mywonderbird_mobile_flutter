@@ -173,26 +173,22 @@ class ProfilePage extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: Hero(
-            tag: 'visited_country_map',
-            child: SfMaps(
-              layers: <MapShapeLayer>[
-                MapShapeLayer(
-                  source: shapeSource,
-                  color: Colors.white,
-                  loadingBuilder: (_) => Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
+          child: SfMaps(
+            layers: <MapShapeLayer>[
+              MapShapeLayer(
+                source: shapeSource,
+                color: Colors.white,
+                loadingBuilder: (_) => Center(
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onOpenMap,
-            onScaleStart: (_) => onOpenMap(),
           ),
         ),
       ],

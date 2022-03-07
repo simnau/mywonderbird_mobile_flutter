@@ -1,6 +1,6 @@
 name: mywonderbird
 description: MyWonderbird travel app
-version: 0.4.80+108
+version: 0.4.79+107
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
@@ -57,11 +57,10 @@ dependencies:
   back_button_interceptor: ^5.0.2
   carousel_slider: ^4.0.0
   smooth_page_indicator: ^1.0.0+2
-  syncfusion_flutter_maps: ^19.4.54-beta
+  syncfusion_flutter_maps: ^19.3.46-beta
   enum_to_string: ^2.0.1
   flutter_staggered_grid_view: ^0.4.1
   advance_pdf_viewer: ^2.0.0
-  syncfusion_flutter_core: ^19.4.54
 
 dev_dependencies:
   flutter_test:
