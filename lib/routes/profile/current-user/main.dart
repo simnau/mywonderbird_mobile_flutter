@@ -197,7 +197,11 @@ class _ProfileState extends State<Profile> with RouteAware {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(
-      MaterialPageRoute(builder: (_) => MySpots()),
+      MaterialPageRoute(
+        builder: (_) => MySpots(
+          userProfile: _profile,
+        ),
+      ),
     );
   }
 
