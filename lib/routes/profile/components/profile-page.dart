@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mywonderbird/components/horizontal-separator.dart';
+import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
@@ -19,6 +21,7 @@ class ProfilePage extends StatelessWidget {
   final Function() onOpenMap;
   final Function() onViewCurrentTrips;
   final Function(TripStats tripStats) onViewTrip;
+  final Function() onShareVisitedCountries;
 
   final UserStats userStats;
   final UserProfile profile;
@@ -35,6 +38,7 @@ class ProfilePage extends StatelessWidget {
     @required this.userStats,
     @required this.profile,
     @required this.shapeSource,
+    this.onShareVisitedCountries,
   }) : super(key: key);
 
   @override
@@ -195,6 +199,20 @@ class ProfilePage extends StatelessWidget {
             onScaleStart: (_) => onOpenMap(),
           ),
         ),
+        if (onShareVisitedCountries != null)
+          Positioned(
+              bottom: 0,
+              right: 0,
+              child: SquareIconButton(
+                icon: Icon(
+                  MaterialCommunityIcons.share,
+                  size: 24,
+                  color: Colors.white,
+                ),
+                onPressed: onShareVisitedCountries,
+                size: 40,
+                backgroundColor: Colors.grey.shade300.withOpacity(0.5),
+              )),
       ],
     );
   }

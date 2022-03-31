@@ -102,9 +102,7 @@ class _MyVisitedLocationsMapState extends State<MyVisitedLocationsMap> {
               ? (index) => widget.visitedCountries[index].countryCode
               : null,
           shapeColorValueMapper: (index) {
-            final theme = Theme.of(context);
-
-            return theme.accentColor;
+            return Colors.grey.shade300;
           },
         );
         _countryStats = countryStats;

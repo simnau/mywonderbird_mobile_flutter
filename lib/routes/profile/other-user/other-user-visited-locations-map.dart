@@ -79,6 +79,7 @@ class _OtherUserVisitedLocationsMapState
       onViewSpot: _onViewSpot,
       onViewTrip: _onViewTrip,
       visitedCountries: widget.visitedCountries,
+      isOfCurrentUser: false,
     );
   }
 
@@ -104,9 +105,7 @@ class _OtherUserVisitedLocationsMapState
               ? (index) => widget.visitedCountries[index].countryCode
               : null,
           shapeColorValueMapper: (index) {
-            final theme = Theme.of(context);
-
-            return theme.accentColor;
+            return Colors.grey.shade300;
           },
         );
         _countryStats = countryStats;

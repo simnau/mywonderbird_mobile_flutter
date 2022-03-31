@@ -18,6 +18,7 @@ class Subtitle2 extends StatelessWidget {
   final bool isLight;
   final bool noColor;
   final Color color;
+  final FontWeight fontWeight;
 
   const Subtitle2(
     this.data, {
@@ -35,6 +36,7 @@ class Subtitle2 extends StatelessWidget {
     this.textHeightBehavior,
     this.noColor = false,
     this.color,
+    this.fontWeight,
   })  : isLight = false,
         super(key: key);
 
@@ -53,6 +55,7 @@ class Subtitle2 extends StatelessWidget {
     this.textWidthBasis,
     this.textHeightBehavior,
     this.color,
+    this.fontWeight,
   })  : isLight = true,
         noColor = false,
         super(key: key);
@@ -83,11 +86,11 @@ class Subtitle2 extends StatelessWidget {
     final style = Theme.of(context).textTheme.subtitle2;
 
     if (isLight) {
-      return style.copyWith(color: Colors.white);
+      return style.copyWith(color: Colors.white, fontWeight: fontWeight);
     } else if (color != null) {
-      return style.copyWith(color: color);
+      return style.copyWith(color: color, fontWeight: fontWeight);
     } else if (noColor) {
-      return style.copyWith(color: null);
+      return style.copyWith(color: null, fontWeight: fontWeight);
     }
 
     return style;

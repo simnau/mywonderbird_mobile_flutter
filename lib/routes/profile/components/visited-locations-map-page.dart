@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/country-geo-stats.dart';
 import 'package:mywonderbird/models/country-stats.dart';
 import 'package:mywonderbird/models/spot-stats.dart';
@@ -8,6 +11,8 @@ import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/routes/profile/components/country-switch.dart';
 import 'package:mywonderbird/routes/profile/components/spot-card.dart';
 import 'package:mywonderbird/routes/profile/components/trip-card.dart';
+import 'package:mywonderbird/routes/social-sharing/visited-countries/main.dart';
+import 'package:mywonderbird/services/navigation.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 
@@ -27,6 +32,7 @@ class VisitedLocationsMapPage extends StatelessWidget {
   final MapZoomPanBehavior mapZoomPanBehavior;
   final List<CountryStats> selectedCountryStats;
   final List<CountryGeoStats> visitedCountries;
+  final bool isOfCurrentUser;
 
   const VisitedLocationsMapPage({
     Key key,
@@ -43,7 +49,9 @@ class VisitedLocationsMapPage extends StatelessWidget {
     @required this.mapZoomPanBehavior,
     @required this.selectedCountryStats,
     @required this.visitedCountries,
-  }) : super(key: key);
+    bool isOfCurrentUser,
+  })  : isOfCurrentUser = isOfCurrentUser ?? true,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +60,19 @@ class VisitedLocationsMapPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black54,
+                Colors.black26,
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
       ),
       body: _body(),
     );
@@ -93,6 +114,21 @@ class VisitedLocationsMapPage extends StatelessWidget {
                     child: _map(context),
                   ),
                 ),
+                if (isOfCurrentUser)
+                  Positioned(
+                    right: spacingFactor(2),
+                    bottom: LOCATIONS_HEIGHT + spacingFactor(2),
+                    child: SquareIconButton(
+                      icon: Icon(
+                        MaterialCommunityIcons.share,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                      onPressed: _share,
+                      size: 40,
+                      backgroundColor: Colors.grey.withOpacity(0.75),
+                    ),
+                  ),
                 if (visitedCountries.isNotEmpty)
                   Positioned(
                     child: _countryLocations(),
@@ -109,12 +145,10 @@ class VisitedLocationsMapPage extends StatelessWidget {
   }
 
   Widget _map(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Hero(
       tag: 'visited_country_map',
       child: SfMapsTheme(
-        data: SfMapsThemeData(selectionColor: theme.primaryColorDark),
+        data: SfMapsThemeData(selectionColor: Colors.green),
         child: SfMaps(
           layers: <MapShapeLayer>[
             MapShapeLayer(
@@ -250,6 +284,16 @@ class VisitedLocationsMapPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  _share() async {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => VisitedCountriesSharing(),
       ),
     );
   }
