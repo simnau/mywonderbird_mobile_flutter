@@ -12,12 +12,14 @@ class UserNotificationProvider with ChangeNotifier {
     if (!notification.read) {
       // TODO: add request to mark as read
       _notificationCount--;
+      notifyListeners();
     }
   }
 
   markAllNotificationsAsRead() async {
     // TODO: add request to mark all as read
     _notificationCount = 0;
+    notifyListeners();
   }
 
   fetchNotificationCount() async {

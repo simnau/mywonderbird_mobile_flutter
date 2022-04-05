@@ -14,7 +14,9 @@ class UserNotificationService {
     @required this.api,
   });
 
-  Future<List<Notification>> fetchNotifications(DateTime lastDatetime) async {
+  Future<List<UserNotification>> fetchNotifications(
+    DateTime lastDatetime,
+  ) async {
     final formattedtLastDateTime = lastDatetime?.toUtc()?.toIso8601String();
 
     final response = await api.get(
