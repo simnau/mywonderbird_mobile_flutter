@@ -10,6 +10,7 @@ const USER_STATS_PATH = '/api/stats/user';
 final userStatsByIdPath = (String userId) => '$USER_STATS_PATH/$userId';
 const COUNTRY_STATS_PATH = '/api/stats/country';
 final countryStatsByIdPath = (String userId) => '$COUNTRY_STATS_PATH/$userId';
+const VISITED_COUNTRY_CODES_PATH = '/api/stats/visited-countries';
 
 class StatsService {
   final API api;
@@ -89,5 +90,28 @@ class StatsService {
     return stats.map<CountryStats>((stats) {
       return CountryStats.fromJson(stats);
     }).toList();
+  }
+
+  Future<List<String>> fetchVisitedCountryCodes({
+    DateTime startDate,
+    DateTime endDate,
+  }) async {
+    final response = await api.get(VISITED_COUNTRY_CODES_PATH, params: {
+      'startDate': startDate?.toUtc()?.toIso8601String(),
+      'endDate': endDate?.toUtc()?.toIso8601String(),
+    });
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        'There was an error fetching the visited countries. Please try again later',
+      );
+    }
+
+    return response['body']['visitedCountries']
+        .map<String>(
+          (visitedCountry) => visitedCountry as String,
+        )
+        .toList();
   }
 }

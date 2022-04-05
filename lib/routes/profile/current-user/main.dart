@@ -13,6 +13,7 @@ import 'package:mywonderbird/routes/profile/current-user/my-visited-locations-ma
 import 'package:mywonderbird/routes/profile/map-model.dart';
 import 'package:mywonderbird/routes/saved-trip-overview/main.dart';
 import 'package:mywonderbird/routes/settings/main.dart';
+import 'package:mywonderbird/routes/social-sharing/visited-countries/main.dart';
 import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
 import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/navigation.dart';
@@ -146,6 +147,7 @@ class _ProfileState extends State<Profile> with RouteAware {
       userStats: _userStats,
       profile: _profile,
       shapeSource: _shapeSource,
+      onShareVisitedCountries: _onShareVisitedCountries,
     );
   }
 
@@ -195,7 +197,11 @@ class _ProfileState extends State<Profile> with RouteAware {
     final navigationService = locator<NavigationService>();
 
     navigationService.push(
-      MaterialPageRoute(builder: (_) => MySpots()),
+      MaterialPageRoute(
+        builder: (_) => MySpots(
+          userProfile: _profile,
+        ),
+      ),
     );
   }
 
@@ -208,6 +214,16 @@ class _ProfileState extends State<Profile> with RouteAware {
           visitedCountries: _userStats.visitedCountries,
           userProfile: _profile,
         ),
+      ),
+    );
+  }
+
+  _onShareVisitedCountries() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => VisitedCountriesSharing(),
       ),
     );
   }

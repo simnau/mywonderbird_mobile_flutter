@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/components/typography/subtitle2.dart';
 import 'package:mywonderbird/constants/theme.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/spot.dart';
@@ -32,9 +33,31 @@ class Spots extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Subtitle1(
-          title,
-          color: Color(0xFF484242),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Subtitle1(
+              title,
+              color: Color(0xFF484242),
+            ),
+            TextButton(
+              onPressed: onViewAllSpots,
+              child: Row(
+                children: [
+                  Subtitle2(
+                    "View all",
+                    color: Colors.black45,
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: Colors.black45,
+                  )
+                ],
+              ),
+              style: TextButton.styleFrom(alignment: Alignment.centerLeft),
+            ),
+          ],
         ),
         SizedBox(height: spacingFactor(1)),
         Container(

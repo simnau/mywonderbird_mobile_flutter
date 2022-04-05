@@ -17,6 +17,7 @@ class SquareIconButton extends StatelessWidget {
   final void Function() onPressed;
   final Layout layout;
   final EdgeInsets padding;
+  final Gradient gradient;
 
   const SquareIconButton({
     Key key,
@@ -30,6 +31,7 @@ class SquareIconButton extends StatelessWidget {
     this.focusColor,
     this.layout,
     this.padding,
+    this.gradient,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class SquareIconButton extends StatelessWidget {
               borderRadiusFactor(2),
             ),
             color: backgroundColor,
+            gradient: gradient,
           ),
           clipBehavior: Clip.antiAlias,
           child: Material(
