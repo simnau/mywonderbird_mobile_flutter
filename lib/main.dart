@@ -15,6 +15,7 @@ import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
+import 'package:mywonderbird/providers/user-notification.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
@@ -98,6 +99,9 @@ Widget _app(initialRoute) {
       ),
       ChangeNotifierProvider<ProfileProvider>(
         create: (context) => locator<ProfileProvider>(),
+      ),
+      ChangeNotifierProvider<UserNotificationProvider>(
+        create: (context) => locator<UserNotificationProvider>(),
       )
     ],
     child: App(initialRoute: initialRoute),

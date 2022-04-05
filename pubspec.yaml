@@ -66,6 +66,7 @@ dependencies:
   path_provider: ^2.0.9
   image_gallery_saver: ^1.7.1
   date_format: ^2.0.5
+  badges: ^2.0.2
 
 dev_dependencies:
   flutter_test:
