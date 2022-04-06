@@ -116,6 +116,7 @@ class _NotificationsState extends State<Notifications> {
         : 'Notifications';
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: H6(

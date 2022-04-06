@@ -10,14 +10,18 @@ class UserNotificationProvider with ChangeNotifier {
 
   markNotificationAsRead(UserNotification notification) async {
     if (!notification.read) {
-      // TODO: add request to mark as read
+      final userNotificationService = locator<UserNotificationService>();
+
+      userNotificationService.markAsRead(notification.id);
       _notificationCount--;
       notifyListeners();
     }
   }
 
   markAllNotificationsAsRead() async {
-    // TODO: add request to mark all as read
+    final userNotificationService = locator<UserNotificationService>();
+
+    userNotificationService.markAllAsRead();
     _notificationCount = 0;
     notifyListeners();
   }

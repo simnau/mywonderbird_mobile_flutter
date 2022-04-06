@@ -45,35 +45,41 @@ class NotificationItem extends StatelessWidget {
     final username =
         userNotification.relatedUserProfile?.username ?? 'Anonymous';
 
-    return ListTile(
-      onTap: () => _onViewLocationDetails(context),
-      selected: !userNotification.read,
-      selectedTileColor: Colors.black.withOpacity(0.05),
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(
           borderRadiusFactor(2),
         ),
+        color: !userNotification.read ? Colors.black.withOpacity(0.05) : null,
       ),
-      contentPadding: EdgeInsets.symmetric(
-        vertical: spacingFactor(1),
-        horizontal: spacingFactor(1),
-      ),
-      leading: _userAvatar(context),
-      title: Text.rich(
-        TextSpan(children: [
-          TextSpan(
-            text: username,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
+      child: ListTile(
+        onTap: () => _onViewLocationDetails(context),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            borderRadiusFactor(2),
           ),
-          TextSpan(text: " liked your photo")
-        ]),
-        style: theme.textTheme.subtitle1,
-      ),
-      subtitle: BodyText1(
-        timeago.format(userNotification.updatedAt),
-        color: Colors.black45,
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: spacingFactor(1),
+          horizontal: spacingFactor(1),
+        ),
+        leading: _userAvatar(context),
+        title: Text.rich(
+          TextSpan(children: [
+            TextSpan(
+              text: username,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            TextSpan(text: " liked your photo")
+          ]),
+          style: theme.textTheme.subtitle1,
+        ),
+        subtitle: BodyText1(
+          timeago.format(userNotification.updatedAt),
+          color: Colors.black45,
+        ),
       ),
     );
   }
