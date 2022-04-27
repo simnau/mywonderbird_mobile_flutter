@@ -13,17 +13,14 @@ class _SplashScreenState extends State<SplashScreen>
   AnimationController _controller;
   Animation<Color> _loaderColor;
 
-  _SplashScreenState() {
-    _controller = AnimationController(
-      duration: const Duration(seconds: 5),
-      vsync: this,
-    );
-  }
-
   @override
   void initState() {
     super.initState();
 
+    _controller = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    );
     final Animation curve = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mywonderbird/constants/error-codes.dart';
@@ -17,6 +18,7 @@ import 'package:mywonderbird/routes/home/main.dart';
 import 'package:mywonderbird/routes/terms/main.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/services/push-notifications.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/types/terms-arguments.dart';
@@ -61,7 +63,7 @@ class AuthenticationService {
           .signInWithEmailAndPassword(email: email, password: password);
 
       final analytics = locator<FirebaseAnalytics>();
-      analytics.logLogin();
+      await analytics.logLogin(loginMethod: "email+password");
 
       return credentials;
     } on auth.FirebaseAuthException catch (e) {
@@ -123,6 +125,10 @@ class AuthenticationService {
     } catch (e) {
       // TODO: should only disconnect if signed in with google
     }
+
+    final deviceToken = await FirebaseMessaging.instance.getToken();
+    final pushNotificationService = locator<PushNotificationService>();
+    await pushNotificationService.deleteUserDeviceToken(deviceToken);
 
     await auth.FirebaseAuth.instance.signOut();
 
@@ -241,9 +247,13 @@ class AuthenticationService {
     }
   }
 
-  afterSignIn(User user) {
+  afterSignIn(User user) async {
     if (user != null) {
       _handleTerms(user.profile?.acceptedTermsAt);
+
+      final deviceToken = await FirebaseMessaging.instance.getToken();
+      final pushNotificationService = locator<PushNotificationService>();
+      await pushNotificationService.saveUserDeviceToken(deviceToken);
     }
 
     final analytics = locator<FirebaseAnalytics>();

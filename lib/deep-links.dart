@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
 import 'package:uni_links/uni_links.dart';
@@ -26,6 +27,7 @@ class DeepLinks {
 
     try {
       Uri initialUri = await getInitialUri();
+
       if (initialUri == null) {
         return;
       }
@@ -43,6 +45,11 @@ class DeepLinks {
   }
 
   _handleDeepLink(route, code) async {
+    if (route == "notifications") {
+      final sharingIntentProvider = locator<SharingIntentProvider>();
+      return sharingIntentProvider.deepLink = "notifications";
+    }
+
     try {
       final oauthService = locator<OAuthService>();
       final authenticationService = locator<AuthenticationService>();
@@ -58,7 +65,7 @@ class DeepLinks {
           break;
       }
 
-      authenticationService.afterSignIn(user);
+      await authenticationService.afterSignIn(user);
     } on AuthenticationException catch (e) {
       // TODO show exceptions
       switch (e.errorCode) {

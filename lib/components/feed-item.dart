@@ -44,11 +44,21 @@ class FeedItem extends StatefulWidget {
 class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
   AnimationController _controller;
 
-  _FeedItemState() {
+  @override
+  void initState() {
+    super.initState();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
   }
 
   @override

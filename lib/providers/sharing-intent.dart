@@ -5,7 +5,26 @@ import 'package:mywonderbird/services/navigation.dart';
 
 class SharingIntentProvider with ChangeNotifier {
   List<String> sharedImagePaths;
-  bool applicationLoadComplete = false;
+  bool _applicationLoadComplete = false;
+  String _deepLink;
+
+  set applicationLoadComplete(bool value) {
+    _applicationLoadComplete = value;
+    notifyListeners();
+  }
+
+  get applicationLoadComplete {
+    return _applicationLoadComplete;
+  }
+
+  set deepLink(String value) {
+    _deepLink = value;
+    notifyListeners();
+  }
+
+  get deepLink {
+    return _deepLink;
+  }
 
   handleShareImages(List<String> imagePaths) {
     final navigationService = locator<NavigationService>();

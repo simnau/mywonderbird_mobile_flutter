@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/empty-list-placeholder.dart';
 import 'package:mywonderbird/components/infinite-list.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/h6.dart';
@@ -135,6 +136,12 @@ class _NotificationsState extends State<Notifications> {
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(),
+      );
+    }
+
+    if (_items.isEmpty) {
+      return EmptyListPlaceholder(
+        title: 'You have no notifications',
       );
     }
 

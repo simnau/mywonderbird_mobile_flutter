@@ -30,6 +30,10 @@ const TIMEFRAME_LABELS = {
   ShareTimeframe.THIS_MONTH: 'This month',
 };
 
+const SHARE_TIMEFRAME_LABELS = {
+  ShareTimeframe.ALL_TIME: 'So far',
+};
+
 const INSTAGRAM_GRADIENT_COLORS = [
   Colors.purple,
   Colors.pink,
@@ -56,7 +60,8 @@ class _VisitedCountriesSharingState extends State<VisitedCountriesSharing> {
 
   ShareTimeframe timeframe = ShareTimeframe.ALL_TIME;
 
-  String get timeframeLabel => TIMEFRAME_LABELS[timeframe];
+  String get timeframeLabel =>
+      SHARE_TIMEFRAME_LABELS[timeframe] ?? TIMEFRAME_LABELS[timeframe];
 
   @override
   void initState() {
@@ -345,7 +350,7 @@ class _VisitedCountriesSharingState extends State<VisitedCountriesSharing> {
   _shareMore() async {
     final file = await _createSharedImageFromWidget();
     await SocialShare.shareOptions(
-      "My visited countries",
+      "Countries I visited",
       imagePath: file.path,
     );
     await file.delete();

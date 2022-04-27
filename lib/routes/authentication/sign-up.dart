@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/auth-text-field.dart';
@@ -23,6 +24,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final analytics = locator<FirebaseAnalytics>();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -142,6 +144,7 @@ class _SignUpState extends State<SignUp> {
         final authenticationService = locator<AuthenticationService>();
 
         await authenticationService.signUp(email, password);
+        await analytics.logSignUp(signUpMethod: "email+password");
       }
     } on AuthenticationException catch (e) {
       switch (e.errorCode) {
