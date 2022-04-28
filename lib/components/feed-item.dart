@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mywonderbird/components/avatar.dart';
 import 'package:mywonderbird/components/small-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text2.dart';
 import 'package:mywonderbird/components/typography/subtitle2.dart';
@@ -43,11 +44,21 @@ class FeedItem extends StatefulWidget {
 class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
   AnimationController _controller;
 
-  _FeedItemState() {
+  @override
+  void initState() {
+    super.initState();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -133,15 +144,9 @@ class _FeedItemState extends State<FeedItem> with TickerProviderStateMixin {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: widget.userAvatarUrl != null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(widget.userAvatarUrl),
-                        )
-                      : Icon(
-                          Icons.person,
-                          size: 40,
-                          color: Colors.black38,
-                        ),
+                  child: Avatar(
+                    url: widget.userAvatarUrl,
+                  ),
                 ),
                 Positioned.fill(
                   child: Material(

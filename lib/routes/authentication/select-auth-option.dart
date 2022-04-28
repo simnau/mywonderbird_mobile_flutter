@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:mywonderbird/components/link-account-dialog.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
+import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/sign-in.dart';
 import 'package:mywonderbird/routes/authentication/sign-up.dart';
 import 'package:mywonderbird/util/apple.dart';
@@ -21,6 +23,7 @@ class SelectAuthOption extends StatefulWidget {
 }
 
 class _SelectAuthOptionState extends State<SelectAuthOption> {
+  final analytics = locator<FirebaseAnalytics>();
   String _error;
 
   @override
@@ -138,6 +141,7 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
 
   _onFacebookFlow(BuildContext context) async {
     final result = await FacebookAuth.instance.login();
+    final analytics = locator<FirebaseAnalytics>();
 
     var error;
 
@@ -156,7 +160,12 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
             FacebookAuthProvider.credential(result.accessToken.token);
 
         try {
-          return await FirebaseAuth.instance.signInWithCredential(credential);
+          final credentials =
+              await FirebaseAuth.instance.signInWithCredential(credential);
+
+          await analytics.logLogin(loginMethod: "facebook");
+
+          return credentials;
         } on FirebaseAuthException catch (e) {
           switch (e.code) {
             case 'account-exists-with-different-credential':
@@ -164,6 +173,11 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
                 email: e.email,
                 credential: credential,
               );
+
+              if (error == null) {
+                await analytics.logLogin(loginMethod: "facebook");
+              }
+
               break;
             default:
               error = 'There was an error signing you in';
@@ -215,10 +229,18 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
           await FirebaseAuth.instance.signInWithCredential(oldCredential);
           await FirebaseAuth.instance.currentUser
               .linkWithCredential(credential);
+
+          await analytics.logLogin(loginMethod: "google");
+
           return;
         }
       } else {
-        return await FirebaseAuth.instance.signInWithCredential(credential);
+        final credentials =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        await analytics.logLogin(loginMethod: "google");
+
+        return credentials;
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -269,7 +291,12 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
     );
 
     try {
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      final credentials =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      await analytics.logLogin(loginMethod: "apple");
+
+      return credentials;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'account-exists-with-different-credential':
@@ -277,6 +304,11 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
             email: e.email,
             credential: credential,
           );
+
+          if (error == null) {
+            await analytics.logLogin(loginMethod: "apple");
+          }
+
           break;
         default:
           error = 'There was an error signing you in';

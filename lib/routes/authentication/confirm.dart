@@ -148,7 +148,7 @@ class _ConfirmState extends State<Confirm> {
         final user =
             await authenticationService.signIn(widget.email, widget.password);
 
-        authenticationService.afterSignIn(user);
+        await authenticationService.afterSignIn(user);
       }
     } on AuthenticationException catch (e) {
       setState(() {

@@ -96,7 +96,7 @@ class _VisitedCountryMapState extends State<VisitedCountryMap> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "My visited countries ${widget.timeframeLabel}",
+                    "Countries I visited ${widget.timeframeLabel}",
                     style: TextStyle(
                       color: Colors.black45,
                       fontWeight: FontWeight.w600,

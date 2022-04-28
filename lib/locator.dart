@@ -15,6 +15,7 @@ import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
 import 'package:mywonderbird/providers/terms.dart';
+import 'package:mywonderbird/providers/user-notification.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
@@ -26,6 +27,7 @@ import 'package:mywonderbird/services/feedback.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/geo.dart';
+import 'package:mywonderbird/services/push-notifications.dart';
 import 'package:mywonderbird/services/spot-stats.dart';
 import 'package:mywonderbird/services/stats.dart';
 import 'package:mywonderbird/services/system-location.dart';
@@ -44,6 +46,7 @@ import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/services/trip-stats.dart';
 import 'package:mywonderbird/services/user-location.dart';
+import 'package:mywonderbird/services/user-notification.dart';
 import 'package:mywonderbird/sharing-intent.dart';
 import 'package:mywonderbird/util/converters/suggested-location.dart';
 
@@ -105,6 +108,8 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => StatsService(api: api));
   locator.registerLazySingleton(() => TripStatsService(api: api));
   locator.registerLazySingleton(() => SpotStatsService(api: api));
+  locator.registerLazySingleton(() => UserNotificationService(api: api));
+  locator.registerLazySingleton(() => PushNotificationService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,
@@ -138,6 +143,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SwipeFiltersProvider());
   locator.registerLazySingleton(() => SharingIntentProvider());
   locator.registerLazySingleton(() => ProfileProvider());
+  locator.registerLazySingleton(() => UserNotificationProvider());
 
   // Other
   locator.registerLazySingleton(() => DeepLinks());

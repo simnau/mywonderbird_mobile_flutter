@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/deep-links.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
+import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/routes.dart';
 import 'package:mywonderbird/routes/authentication/select-auth-option.dart';
+import 'package:mywonderbird/routes/notifications/main.dart';
 import 'package:mywonderbird/routes/onboarding/main.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
@@ -29,12 +31,16 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  final sharingIntentProvider = locator<SharingIntentProvider>();
+
   String initialRoute;
 
   @override
   void initState() {
     super.initState();
     initialRoute = widget.initialRoute ?? SplashScreen.PATH;
+    sharingIntentProvider.addListener(_handleSharingProviderChange);
+
     _onStartup();
   }
 
@@ -42,6 +48,8 @@ class _AppState extends State<App> {
   void dispose() {
     locator<DeepLinks>().dispose();
     locator<SharingIntent>().dispose();
+    sharingIntentProvider.removeListener(_handleSharingProviderChange);
+
     super.dispose();
   }
 
@@ -123,6 +131,27 @@ class _AppState extends State<App> {
       authenticationService.addUser(appUser);
 
       await authenticationService.afterSignIn(appUser);
+    }
+  }
+
+  _handleSharingProviderChange() {
+    if (!sharingIntentProvider.applicationLoadComplete ||
+        sharingIntentProvider.deepLink == null) {
+      return;
+    }
+
+    switch (sharingIntentProvider.deepLink) {
+      case "notifications":
+        {
+          final navigationService = locator<NavigationService>();
+
+          navigationService.push(
+            MaterialPageRoute(builder: (_) => Notifications()),
+          );
+          break;
+        }
+      default:
+        break;
     }
   }
 }

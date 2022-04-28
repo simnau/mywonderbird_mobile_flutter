@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
@@ -15,9 +16,11 @@ import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/providers/swipe-filters.dart';
 import 'package:mywonderbird/providers/swipe.dart';
 import 'package:mywonderbird/providers/tags.dart';
+import 'package:mywonderbird/providers/user-notification.dart';
 import 'package:mywonderbird/routes/splash/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
+import 'package:mywonderbird/services/push-notifications.dart';
 import 'package:mywonderbird/util/map-markers.dart';
 import 'package:mywonderbird/util/sentry.dart';
 import 'package:provider/provider.dart';
@@ -34,9 +37,14 @@ Future main({String env = 'dev'}) async {
     await Firebase.initializeApp();
     await dotenv.load(fileName: "env/.env-$env");
     setupLocator(env: env);
+    await _askNotificationPermissions();
     await _initOAuthUrl();
     await _initTags();
     await initMarkers();
+    FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
+      final pushNotificationService = locator<PushNotificationService>();
+      pushNotificationService.saveUserDeviceToken(token);
+    });
   } on UnauthorizedException {
     initialRoute = SplashScreen.PATH;
   }
@@ -98,6 +106,9 @@ Widget _app(initialRoute) {
       ),
       ChangeNotifierProvider<ProfileProvider>(
         create: (context) => locator<ProfileProvider>(),
+      ),
+      ChangeNotifierProvider<UserNotificationProvider>(
+        create: (context) => locator<UserNotificationProvider>(),
       )
     ],
     child: App(initialRoute: initialRoute),
@@ -113,4 +124,18 @@ _initOAuthUrl() async {
 _initTags() async {
   final tagsProvider = locator<TagsProvider>();
   await tagsProvider.loadTags();
+}
+
+_askNotificationPermissions() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: false,
+  );
 }
