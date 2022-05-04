@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,14 @@ class ProfileService {
     final response = await api.get(
       PROFILE_PATH,
     );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        "There was an error fetching the user profile. Cause: ${rawResponse?.reasonPhrase}",
+      );
+    }
+
     final profile = UserProfile.fromJson(response['body']);
     return profile;
   }
@@ -34,6 +44,13 @@ class ProfileService {
       profileByIdPath(id),
     );
     final profile = UserProfile.fromJson(response['body']);
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        "There was an error fetching the user with id $id profile. Cause: ${rawResponse?.reasonPhrase}",
+      );
+    }
 
     return User(
       id: id,
@@ -62,6 +79,14 @@ class ProfileService {
       files,
       fields: userProfileUpdate.toFieldData(),
     );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        "There was an error updating the user profile. Cause: ${rawResponse?.reasonPhrase}",
+      );
+    }
+
     final profile = UserProfile.fromJson(response['body']);
     return profile;
   }
@@ -73,6 +98,14 @@ class ProfileService {
       UPDATE_COMMUNICATIONS_PATH,
       {'acceptedNewsletter': acceptedNewsletter},
     );
+    final rawResponse = response['response'];
+
+    if (rawResponse.statusCode != HttpStatus.ok) {
+      throw new Exception(
+        "There was an error updating the user communication preferences. Cause: ${rawResponse?.reasonPhrase}",
+      );
+    }
+
     final profile = UserProfile.fromJson(response['body']);
     return profile;
   }

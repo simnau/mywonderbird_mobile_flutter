@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/badge.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/profile/other-user/other-user-badges.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-current-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-planned-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-spots.dart';
@@ -12,6 +14,7 @@ import 'package:mywonderbird/routes/profile/other-user/other-user-trips.dart';
 import 'package:mywonderbird/routes/profile/other-user/other-user-visited-locations-map.dart';
 import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
 import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
+import 'package:mywonderbird/services/badge.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/stats.dart';
@@ -37,6 +40,7 @@ class _OtherUserState extends State<OtherUser> {
   MapShapeSource _shapeSource;
   UserStats _userStats;
   UserProfile _profile;
+  List<Badge> _badges;
 
   @override
   void initState() {
@@ -56,8 +60,10 @@ class _OtherUserState extends State<OtherUser> {
       final profileProvider = locator<ProfileProvider>();
       final statsService = locator<StatsService>();
       final profileService = locator<ProfileService>();
+      final badgeService = locator<BadgeService>();
       final user = await profileService.getUserById(widget.id);
       final userStats = await statsService.fetchUserStats(widget.id);
+      final badges = await badgeService.fetchBadgesByUserId(widget.id);
 
       final data = userStats.visitedCountryCodes
           .map(
@@ -79,6 +85,7 @@ class _OtherUserState extends State<OtherUser> {
         );
         _userStats = userStats;
         _profile = user.profile;
+        _badges = badges;
         _isLoading = false;
       });
     } catch (error) {
@@ -119,7 +126,9 @@ class _OtherUserState extends State<OtherUser> {
       onViewTrip: _onViewTrip,
       userStats: _userStats,
       profile: _profile,
+      badges: _badges,
       shapeSource: _shapeSource,
+      onViewAllBadges: _onViewAllBadges,
     );
   }
 
@@ -184,6 +193,16 @@ class _OtherUserState extends State<OtherUser> {
           visitedCountries: _userStats.visitedCountries,
           userProfile: _profile,
         ),
+      ),
+    );
+  }
+
+  _onViewAllBadges() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => OtherUserBadges(badges: _badges),
       ),
     );
   }

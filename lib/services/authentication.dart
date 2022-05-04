@@ -22,6 +22,7 @@ import 'package:mywonderbird/services/push-notifications.dart';
 import 'package:mywonderbird/services/terms.dart';
 import 'package:mywonderbird/services/token.dart';
 import 'package:mywonderbird/types/terms-arguments.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 import 'navigation.dart';
 
@@ -146,6 +147,9 @@ class AuthenticationService {
     } on UnauthorizedException {
       _userController.add(null);
       return null;
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+      throw error;
     }
   }
 

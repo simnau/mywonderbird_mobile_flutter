@@ -18,6 +18,7 @@ import 'package:mywonderbird/providers/terms.dart';
 import 'package:mywonderbird/providers/user-notification.dart';
 import 'package:mywonderbird/services/api.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/services/badge.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/country.dart';
@@ -110,6 +111,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SpotStatsService(api: api));
   locator.registerLazySingleton(() => UserNotificationService(api: api));
   locator.registerLazySingleton(() => PushNotificationService(api: api));
+  locator.registerLazySingleton(() => BadgeService(api: api));
   locator.registerLazySingleton(
     () => DefaultsService(
       storageService: storageService,
