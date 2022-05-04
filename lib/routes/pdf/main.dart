@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 class PdfPage extends StatefulWidget {
@@ -49,7 +50,8 @@ class _PdfPageState extends State<PdfPage> {
         _pdfFile = pdfFile;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
           text: "There was an error loading the PDF. Please try again later");
       ScaffoldMessenger.of(context).showSnackBar(snackBar);

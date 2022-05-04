@@ -5,6 +5,7 @@ import 'package:mywonderbird/routes/feedback/form/steps.dart';
 import 'package:mywonderbird/services/feedback.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:im_stepper/stepper.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 import '../../../locator.dart';
 
@@ -243,7 +244,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
         barrierDismissible: true,
       );
       navigationService.pop(true);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await reportError(e, stackTrace);
       setState(() {
         _error = e.message;
       });

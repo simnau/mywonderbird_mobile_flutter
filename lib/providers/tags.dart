@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/tag.dart';
 import 'package:mywonderbird/services/tag.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class TagsProvider with ChangeNotifier {
   List<Tag> _tags;
@@ -24,7 +25,8 @@ class TagsProvider with ChangeNotifier {
       notifyListeners();
 
       return tags;
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       _loading = false;
       notifyListeners();
       return null;

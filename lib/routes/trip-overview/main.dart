@@ -13,6 +13,7 @@ import 'package:mywonderbird/routes/trip-details/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/util/map-markers.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TripOverviewScreen extends StatefulWidget {
@@ -258,8 +259,9 @@ class _TripOverviewScreenState extends State<TripOverviewScreen> {
         _journey = journey;
         _tripBounds = tripBounds;
       });
-    } catch (e) {
-      print(e);
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
         _isLoading = false;
       });

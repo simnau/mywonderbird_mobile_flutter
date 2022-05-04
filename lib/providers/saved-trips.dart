@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class SavedTripsProvider with ChangeNotifier {
   bool _loading = true;
@@ -27,7 +28,8 @@ class SavedTripsProvider with ChangeNotifier {
       notifyListeners();
 
       return trips;
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       _loading = false;
       notifyListeners();
       return [];

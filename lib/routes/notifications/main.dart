@@ -9,6 +9,7 @@ import 'package:mywonderbird/models/user-notification.dart';
 import 'package:mywonderbird/providers/user-notification.dart';
 import 'package:mywonderbird/routes/notifications/components/notification-item.dart';
 import 'package:mywonderbird/services/user-notification.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -49,7 +50,8 @@ class _NotificationsState extends State<Notifications> {
         _items = newEntries;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );
@@ -69,7 +71,8 @@ class _NotificationsState extends State<Notifications> {
         _items = newEntries;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );
@@ -98,7 +101,8 @@ class _NotificationsState extends State<Notifications> {
             _items = List.from(_items)..addAll(newEntries);
           }
         });
-      } catch (e) {
+      } catch (error, stackTrace) {
+        await reportError(error, stackTrace);
         final snackBar = createErrorSnackbar(
           text: 'An unexpected error has occurred. Please try again later.',
         );

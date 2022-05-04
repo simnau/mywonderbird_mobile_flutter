@@ -10,6 +10,7 @@ import 'package:mywonderbird/routes/suggest-trip-questionnaire/wizard-step.dart'
 import 'package:mywonderbird/routes/swipe-locations/main.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 import 'steps.dart';
 
@@ -234,8 +235,8 @@ class _SuggestTripQuestionnaireState extends State<SuggestTripQuestionnaire> {
           builder: (context) => SwipeLocations(),
         ),
       );
-    } catch (e) {
-      print(e);
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
     } finally {
       setState(() {
         _isLoading = false;

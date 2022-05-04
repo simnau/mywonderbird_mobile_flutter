@@ -6,6 +6,7 @@ import 'package:mywonderbird/routes/terms/components/initial.dart';
 import 'package:mywonderbird/routes/terms/components/updated.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/terms.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class TermsPage extends StatefulWidget {
   static const RELATIVE_PATH = 'terms';
@@ -107,9 +108,11 @@ class _TermsPageState extends State<TermsPage> {
       final navigationService = locator<NavigationService>();
       navigationService.popUntil((route) => route.isFirst);
       navigationService.pushReplacementNamed(HomePage.PATH);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
-        _error = e.message;
+        _error = error.message;
       });
     }
   }
@@ -124,9 +127,11 @@ class _TermsPageState extends State<TermsPage> {
       final navigationService = locator<NavigationService>();
       navigationService.popUntil((route) => route.isFirst);
       navigationService.pushReplacementNamed(HomePage.PATH);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
-        _error = e.message;
+        _error = error.message;
       });
     }
   }

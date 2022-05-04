@@ -14,6 +14,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/social-sharing/visited-countries/components/share-provider-button.dart';
 import 'package:mywonderbird/routes/social-sharing/visited-countries/components/visited-country-map.dart';
 import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:social_share/social_share.dart';
@@ -275,11 +276,12 @@ class _VisitedCountriesSharingState extends State<VisitedCountriesSharing> {
         _isLoading = false;
         _visitedCountries = visitedCountryCodes;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }

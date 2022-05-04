@@ -7,6 +7,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/picture-data.dart';
 import 'package:mywonderbird/types/picture-data.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 import '../share-pictures-trip/main.dart';
@@ -113,7 +114,8 @@ class _SelectUploadTypeState extends State<SelectUploadType> {
           ),
         );
       }
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: "There was an error selecting pictures. Please try again",
       );

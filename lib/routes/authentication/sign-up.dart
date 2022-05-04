@@ -12,6 +12,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/confirm-account-arguments.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 import 'confirm.dart';
 
@@ -183,7 +184,8 @@ class _SignUpState extends State<SignUp> {
           });
           break;
       }
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         _error = 'We were unable to sign you up';
       });

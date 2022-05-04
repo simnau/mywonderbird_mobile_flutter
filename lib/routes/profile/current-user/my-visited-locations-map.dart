@@ -12,6 +12,7 @@ import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
 import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 
@@ -109,7 +110,9 @@ class _MyVisitedLocationsMapState extends State<MyVisitedLocationsMap> {
         _isLoading = false;
         _isLoadingStats = false;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );
@@ -133,7 +136,9 @@ class _MyVisitedLocationsMapState extends State<MyVisitedLocationsMap> {
         _isLoadingStats = false;
         _countryStats = countryStats;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

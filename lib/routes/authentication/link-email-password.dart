@@ -6,6 +6,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
 import 'package:mywonderbird/routes/authentication/components/sign-in-form.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 import 'forgot-details.dart';
@@ -61,7 +62,7 @@ class _LinkEmailPasswordState extends State<LinkEmailPassword> {
       final navigationService = locator<NavigationService>();
 
       navigationService.pop(credential);
-    } on AuthenticationException catch (e) {
+    } on AuthenticationException catch (e, stackTrace) {
       var error;
 
       switch (e.errorCode) {
@@ -74,6 +75,7 @@ class _LinkEmailPasswordState extends State<LinkEmailPassword> {
           break;
       }
 
+      await reportError(e, stackTrace);
       final snackBar = createErrorSnackbar(text: error);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }

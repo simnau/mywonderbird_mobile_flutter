@@ -6,6 +6,7 @@ import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/change-password/components/change-password-form.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 class ChangePassword extends StatefulWidget {
@@ -131,7 +132,8 @@ class _ChangePasswordState extends State<ChangePassword> {
 
       final snackBar = createErrorSnackbar(text: error);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: 'There was an error changing your password',
       );

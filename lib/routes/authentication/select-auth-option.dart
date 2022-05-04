@@ -11,6 +11,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/sign-in.dart';
 import 'package:mywonderbird/routes/authentication/sign-up.dart';
 import 'package:mywonderbird/util/apple.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -183,7 +184,8 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
               error = 'There was an error signing you in';
               break;
           }
-        } catch (e) {
+        } catch (e, stackTrace) {
+          await reportError(e, stackTrace);
           error = 'There was an error signing you in';
         }
     }
@@ -254,7 +256,8 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
           error = 'There was an error signing you in';
           break;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await reportError(e, stackTrace);
       error = 'There was an error signing you in';
     }
 
@@ -314,7 +317,8 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
           error = 'There was an error signing you in';
           break;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await reportError(e, stackTrace);
       error = 'There was an error signing you in';
     }
 
@@ -357,7 +361,8 @@ class _SelectAuthOptionState extends State<SelectAuthOption> {
           default:
             return 'There was an error signing you in';
         }
-      } catch (e) {
+      } catch (error, stackTrace) {
+        await reportError(error, stackTrace);
         return 'There was an error signing you in';
       }
     }

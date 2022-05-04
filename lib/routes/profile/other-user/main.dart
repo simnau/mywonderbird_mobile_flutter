@@ -18,6 +18,7 @@ import 'package:mywonderbird/services/badge.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 
@@ -88,7 +89,9 @@ class _OtherUserState extends State<OtherUser> {
         _badges = badges;
         _isLoading = false;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final errorSnackbar = createErrorSnackbar(
         text: "There was an error loading the user profile. Please try again",
       );

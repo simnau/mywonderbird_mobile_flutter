@@ -13,6 +13,7 @@ import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
 import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/saved-trip.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 class TripScreen extends StatefulWidget {
@@ -103,7 +104,9 @@ class _TripScreenState extends State<TripScreen> {
         _isLoading = false;
         _trips = trips;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final errorSnackbar = createErrorSnackbar(
         text: "There was an error loading the trips. Please try again",
       );
@@ -203,7 +206,9 @@ class _TripScreenState extends State<TripScreen> {
         text: 'The trip has been deleted',
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

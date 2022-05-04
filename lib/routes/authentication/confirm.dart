@@ -6,6 +6,7 @@ import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/routes/authentication/components/screen-layout.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class Confirm extends StatefulWidget {
   static const RELATIVE_PATH = 'confirm';
@@ -164,7 +165,8 @@ class _ConfirmState extends State<Confirm> {
             break;
         }
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         _error = 'An unexpected error occurred. Try again later';
       });
@@ -185,7 +187,8 @@ class _ConfirmState extends State<Confirm> {
       setState(() {
         _message = 'A confirmation code has been sent to your email.';
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         _error = 'There was an error sending the code';
       });

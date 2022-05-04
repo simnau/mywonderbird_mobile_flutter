@@ -6,6 +6,7 @@ import 'package:mywonderbird/routes/authentication/components/screen-layout.dart
 import 'package:mywonderbird/routes/authentication/forgot-details.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/forgot-details-arguments.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 import 'components/sign-in-form.dart';
@@ -79,6 +80,8 @@ class _SignInState extends State<SignIn> {
 
       final snackBar = createErrorSnackbar(text: error);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
     }
   }
 

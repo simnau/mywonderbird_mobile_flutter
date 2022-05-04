@@ -25,6 +25,7 @@ import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/defaults.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/util/apple.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -604,7 +605,9 @@ class _SettingsState extends State<Settings> {
           default:
             return 'There was an error linking accounts';
         }
-      } catch (e) {
+      } catch (error, stackTrace) {
+        await reportError(error, stackTrace);
+
         return 'There was an error linking accounts';
       }
     }
