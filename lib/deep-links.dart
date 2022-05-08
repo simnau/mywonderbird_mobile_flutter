@@ -5,6 +5,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/providers/sharing-intent.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/oauth.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DeepLinks {
@@ -35,8 +36,8 @@ class DeepLinks {
       _handleDeepLink(initialUri.host, initialUri.queryParameters['code']);
       // Use the uri and warn the user, if it is not correct,
       // but keep in mind it could be `null`.
-    } on FormatException catch (e) {
-      print(e);
+    } on FormatException catch (error, stackTrace) {
+      await reportError(error, stackTrace);
     }
   }
 
@@ -45,9 +46,13 @@ class DeepLinks {
   }
 
   _handleDeepLink(route, code) async {
-    if (route == "notifications") {
-      final sharingIntentProvider = locator<SharingIntentProvider>();
-      return sharingIntentProvider.deepLink = "notifications";
+    switch (route) {
+      case "notifications":
+        final sharingIntentProvider = locator<SharingIntentProvider>();
+        return sharingIntentProvider.deepLink = "notifications";
+      case "achievements":
+        final sharingIntentProvider = locator<SharingIntentProvider>();
+        return sharingIntentProvider.deepLink = "achievements";
     }
 
     try {

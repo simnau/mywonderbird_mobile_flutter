@@ -14,6 +14,7 @@ import 'package:mywonderbird/routes/crop-image/main.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -213,7 +214,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       authService.addUser(user);
 
       navigationService.pop();
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

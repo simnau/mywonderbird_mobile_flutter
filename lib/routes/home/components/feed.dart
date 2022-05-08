@@ -14,6 +14,7 @@ import 'package:mywonderbird/services/bookmark.dart';
 import 'package:mywonderbird/services/feed.dart';
 import 'package:mywonderbird/services/like.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:provider/provider.dart';
 
 Future<List<FeedLocation>> fetchFeedItems({DateTime lastDatetime}) async {
@@ -177,7 +178,8 @@ class _FeedState extends State<Feed> {
       });
 
       await likeService.likeGemCapture(item.id);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         item.isLiked = false;
         item.likeCount -= 1;
@@ -195,7 +197,8 @@ class _FeedState extends State<Feed> {
       });
 
       await likeService.unlikeGemCapture(item.id);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         item.isLiked = true;
         item.likeCount += 1;
@@ -223,7 +226,8 @@ class _FeedState extends State<Feed> {
       });
 
       await bookmarkService.bookmarkGemCapture(item.id, bookmarkGroup.id);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         item.isBookmarked = false;
       });
@@ -239,7 +243,8 @@ class _FeedState extends State<Feed> {
       });
 
       await bookmarkService.unbookmarkGemCapture(item.id);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         item.isBookmarked = true;
       });

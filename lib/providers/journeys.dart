@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/journey.dart';
 import 'package:mywonderbird/services/journeys.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class JourneysProvider with ChangeNotifier {
   bool _loading = true;
@@ -26,7 +27,8 @@ class JourneysProvider with ChangeNotifier {
       notifyListeners();
 
       return journeys;
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       _loading = false;
       notifyListeners();
       return [];

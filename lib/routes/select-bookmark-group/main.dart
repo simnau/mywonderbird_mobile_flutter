@@ -9,6 +9,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SelectBookmarkGroup extends StatefulWidget {
@@ -147,7 +148,9 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
         _isLoading = false;
         _items = bookmarkGroups;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
         _isLoading = false;
       });
@@ -182,7 +185,9 @@ class _SelectBookmarkGroupState extends State<SelectBookmarkGroup> {
       setState(() {
         _items.insert(1, bookmarkGroup);
       });
-    } catch (e) {}
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+    }
   }
 
   _onSelect(BookmarkGroupModel bookmarkGroup) {

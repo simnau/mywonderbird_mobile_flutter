@@ -7,6 +7,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/routes/set-password/components/set-password-form.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -138,7 +139,9 @@ class _SetPasswordState extends State<SetPassword> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
         _error = 'There was an error setting the password';
       });

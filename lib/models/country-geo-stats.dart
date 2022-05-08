@@ -21,18 +21,21 @@ class CountryGeoStats {
       countryCode: json['countryCode'],
       country: json['country'],
       center: json['center'] != null
-          ? LatLng(json['center']['lat'], json['center']['lng'])
+          ? LatLng(
+              json['center']['lat'] + 0.0,
+              json['center']['lng'] + 0.0,
+            )
           : null,
       boundTopLeft: json['boundaries'] != null
           ? LatLng(
-              json['boundaries']['topLeft']['lat'],
-              json['boundaries']['topLeft']['lng'],
+              json['boundaries']['topLeft']['lat'] + 0.0,
+              json['boundaries']['topLeft']['lng'] + 0.0,
             )
           : null,
       boundBottomRight: json['boundaries'] != null
           ? LatLng(
-              json['boundaries']['bottomRight']['lat'],
-              json['boundaries']['bottomRight']['lng'],
+              json['boundaries']['bottomRight']['lat'] + 0.0,
+              json['boundaries']['bottomRight']['lng'] + 0.0,
             )
           : null,
     );

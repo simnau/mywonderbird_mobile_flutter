@@ -5,9 +5,11 @@ import 'package:mywonderbird/components/square-icon-button.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/components/typography/subtitle1.dart';
 import 'package:mywonderbird/constants/theme.dart';
+import 'package:mywonderbird/models/badge.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user-stats.dart';
+import 'package:mywonderbird/routes/profile/components/achievements.dart';
 import 'package:mywonderbird/routes/profile/components/stats.dart';
 import 'package:mywonderbird/routes/profile/components/trip-highlight-card.dart';
 import 'package:mywonderbird/routes/profile/components/spots.dart';
@@ -22,24 +24,28 @@ class ProfilePage extends StatelessWidget {
   final Function() onViewCurrentTrips;
   final Function(TripStats tripStats) onViewTrip;
   final Function() onShareVisitedCountries;
+  final Function() onViewAllBadges;
 
   final UserStats userStats;
   final UserProfile profile;
+  final List<Badge> badges;
   final MapShapeSource shapeSource;
 
-  const ProfilePage({
-    Key key,
-    @required this.onViewTrips,
-    @required this.onViewPlans,
-    @required this.onViewSpots,
-    @required this.onOpenMap,
-    @required this.onViewCurrentTrips,
-    @required this.onViewTrip,
-    @required this.userStats,
-    @required this.profile,
-    @required this.shapeSource,
-    this.onShareVisitedCountries,
-  }) : super(key: key);
+  const ProfilePage(
+      {Key key,
+      @required this.onViewTrips,
+      @required this.onViewPlans,
+      @required this.onViewSpots,
+      @required this.onOpenMap,
+      @required this.onViewCurrentTrips,
+      @required this.onViewTrip,
+      @required this.userStats,
+      @required this.profile,
+      @required this.badges,
+      @required this.shapeSource,
+      this.onShareVisitedCountries,
+      this.onViewAllBadges})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +80,14 @@ class ProfilePage extends StatelessWidget {
                       onViewPlans: onViewPlans,
                       onViewSpots: onViewSpots,
                       onViewCountries: onOpenMap,
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: spacingFactor(2.5)),
+                    child: Achievements(
+                      badges: badges,
+                      onViewAll: onViewAllBadges,
                     ),
                   ),
                   Padding(

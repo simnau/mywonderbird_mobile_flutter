@@ -11,6 +11,7 @@ import 'package:mywonderbird/routes/details/pages/user-location-details.dart';
 import 'package:mywonderbird/routes/profile/components/spot-list-item.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/user-location.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -215,7 +216,9 @@ class _SpotScreenState extends State<SpotScreen> {
         _groupedSpots = groupedSpots;
         _isLoading = false;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final errorSnackbar = createErrorSnackbar(
         text: "There was an error loading the spots. Please try again",
       );
@@ -298,7 +301,9 @@ class _SpotScreenState extends State<SpotScreen> {
         text: 'The spot has been deleted',
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

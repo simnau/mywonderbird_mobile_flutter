@@ -8,6 +8,7 @@ import 'package:mywonderbird/exceptions/authentication-exception.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
 import 'package:mywonderbird/types/sign-in-arguments.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 import 'components/screen-layout.dart';
 import 'sign-in.dart';
@@ -201,6 +202,8 @@ class _ResetPasswordState extends State<ResetPassword> {
             break;
         }
       });
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
     }
   }
 

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mywonderbird/locator.dart';
+import 'package:mywonderbird/models/badge.dart';
 import 'package:mywonderbird/models/trip-stats.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 import 'package:mywonderbird/models/user-stats.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/routes/profile/components/profile-page.dart';
+import 'package:mywonderbird/routes/profile/current-user/my-badges.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-current-trips.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-planned-trips.dart';
 import 'package:mywonderbird/routes/profile/current-user/my-spots.dart';
@@ -16,9 +18,11 @@ import 'package:mywonderbird/routes/settings/main.dart';
 import 'package:mywonderbird/routes/social-sharing/visited-countries/main.dart';
 import 'package:mywonderbird/routes/trip-overview/saved-trip.dart';
 import 'package:mywonderbird/routes/trip-overview/shared-trip.dart';
+import 'package:mywonderbird/services/badge.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/profile.dart';
 import 'package:mywonderbird/services/stats.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 
@@ -36,6 +40,7 @@ class _ProfileState extends State<Profile> with RouteAware {
   MapShapeSource _shapeSource;
   UserStats _userStats;
   UserProfile _profile;
+  List<Badge> _badges;
 
   @override
   void initState() {
@@ -76,8 +81,10 @@ class _ProfileState extends State<Profile> with RouteAware {
       final profileProvider = locator<ProfileProvider>();
       final statsService = locator<StatsService>();
       final profileService = locator<ProfileService>();
+      final badgeService = locator<BadgeService>();
       final profile = await profileService.getUserProfile();
       final userStats = await statsService.fetchCurrentUserStats();
+      final badges = await badgeService.fetchBadges();
 
       final data = userStats.visitedCountryCodes
           .map(
@@ -100,9 +107,12 @@ class _ProfileState extends State<Profile> with RouteAware {
         );
         _userStats = userStats;
         _profile = profile;
+        _badges = badges;
         _isLoading = false;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       final errorSnackbar = createErrorSnackbar(
         text: "There was an error loading the user profile. Please try again",
       );
@@ -146,8 +156,10 @@ class _ProfileState extends State<Profile> with RouteAware {
       onViewTrip: _onViewTrip,
       userStats: _userStats,
       profile: _profile,
+      badges: _badges,
       shapeSource: _shapeSource,
       onShareVisitedCountries: _onShareVisitedCountries,
+      onViewAllBadges: _onViewAllBadges,
     );
   }
 
@@ -224,6 +236,16 @@ class _ProfileState extends State<Profile> with RouteAware {
     navigationService.push(
       MaterialPageRoute(
         builder: (_) => VisitedCountriesSharing(),
+      ),
+    );
+  }
+
+  _onViewAllBadges() {
+    final navigationService = locator<NavigationService>();
+
+    navigationService.push(
+      MaterialPageRoute(
+        builder: (_) => MyBadges(badges: _badges),
       ),
     );
   }

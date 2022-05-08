@@ -7,6 +7,7 @@ import 'package:mywonderbird/models/bookmark-group.dart';
 import 'package:mywonderbird/routes/bookmarked-locations/main.dart';
 import 'package:mywonderbird/services/bookmark-group.dart';
 import 'package:mywonderbird/services/navigation.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class Bookmarks extends StatefulWidget {
@@ -130,7 +131,8 @@ class _BookmarksState extends State<Bookmarks> {
         _isLoading = false;
         _items = bookmarkGroups;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       setState(() {
         _isLoading = false;
       });

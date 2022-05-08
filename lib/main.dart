@@ -8,6 +8,7 @@ import 'package:mywonderbird/exceptions/unauthorized-exception.dart';
 import 'package:mywonderbird/models/user.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/popup-provider.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
@@ -38,6 +39,7 @@ Future main({String env = 'dev'}) async {
     await dotenv.load(fileName: "env/.env-$env");
     setupLocator(env: env);
     await _askNotificationPermissions();
+    await _initNotifications();
     await _initOAuthUrl();
     await _initTags();
     await initMarkers();
@@ -109,6 +111,9 @@ Widget _app(initialRoute) {
       ),
       ChangeNotifierProvider<UserNotificationProvider>(
         create: (context) => locator<UserNotificationProvider>(),
+      ),
+      ChangeNotifierProvider<PopupProvider>(
+        create: (context) => locator<PopupProvider>(),
       )
     ],
     child: App(initialRoute: initialRoute),
@@ -138,4 +143,14 @@ _askNotificationPermissions() async {
     provisional: false,
     sound: false,
   );
+}
+
+_initNotifications() async {
+  final popupProvider = locator<PopupProvider>();
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.data['type'] == 'badge-received') {
+      popupProvider.popup = message.data;
+    }
+  });
 }

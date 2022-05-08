@@ -3,6 +3,7 @@ import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/location.dart';
 import 'package:mywonderbird/routes/details/components/location-details.dart';
 import 'package:mywonderbird/services/system-location.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 class SystemLocationDetails extends StatefulWidget {
@@ -44,7 +45,8 @@ class _SystemLocationDetailsState extends State<SystemLocationDetails> {
         isLoading = false;
         this.location = location;
       });
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

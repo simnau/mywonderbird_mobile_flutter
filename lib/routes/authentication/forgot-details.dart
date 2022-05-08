@@ -4,6 +4,7 @@ import 'package:mywonderbird/components/auth-text-field.dart';
 import 'package:mywonderbird/components/typography/body-text1.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/services/authentication.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 
 import 'components/screen-layout.dart';
@@ -128,7 +129,8 @@ class _ForgotDetailsState extends State<ForgotDetails> {
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       final snackBar = createErrorSnackbar(
         text: 'An unexpected error has occurred. Please try again later.',
       );

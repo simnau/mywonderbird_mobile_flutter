@@ -20,6 +20,7 @@ import 'package:mywonderbird/services/saved-trip.dart';
 import 'package:mywonderbird/util/geo.dart';
 import 'package:mywonderbird/util/location.dart';
 import 'package:mywonderbird/util/map-markers.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -158,8 +159,9 @@ class _SavedTripState extends State<SavedTripOverview> {
 
         _animateToLocation(_currentLocationIndex);
       }
-    } catch (e) {
-      print(e);
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
+
       setState(() {
         _isLoading = false;
       });

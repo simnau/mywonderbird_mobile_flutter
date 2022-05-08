@@ -14,6 +14,7 @@ import 'package:mywonderbird/services/journeys.dart';
 import 'package:mywonderbird/services/navigation.dart';
 import 'package:mywonderbird/services/sharing.dart';
 import 'package:mywonderbird/types/picture-data.dart';
+import 'package:mywonderbird/util/sentry.dart';
 import 'package:mywonderbird/util/snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -178,7 +179,9 @@ class _SharePicturesTripInnerState extends State<_SharePicturesTripInner> {
         formProvider.lastTrip = lastTrip;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await reportError(e, stackTrace);
+
       final snackBar = createErrorSnackbar(text: e.message);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
@@ -323,7 +326,9 @@ class _SharePicturesTripInnerState extends State<_SharePicturesTripInner> {
 
       navigationService.popUntil((route) => route.isFirst);
       navigationService.pushReplacementNamed(HomePage.PATH);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await reportError(e, stackTrace);
+
       final snackBar = createErrorSnackbar(text: e.toString());
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } finally {

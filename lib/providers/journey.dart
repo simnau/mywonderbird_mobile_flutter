@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/locator.dart';
 import 'package:mywonderbird/models/full-journey.dart';
 import 'package:mywonderbird/services/suggestion.dart';
+import 'package:mywonderbird/util/sentry.dart';
 
 class JourneyProvider with ChangeNotifier {
   FullJourney _journey;
@@ -24,7 +25,8 @@ class JourneyProvider with ChangeNotifier {
       notifyListeners();
 
       return journey;
-    } catch (e) {
+    } catch (error, stackTrace) {
+      await reportError(error, stackTrace);
       _loading = false;
       notifyListeners();
       return null;
