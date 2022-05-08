@@ -46,9 +46,13 @@ class DeepLinks {
   }
 
   _handleDeepLink(route, code) async {
-    if (route == "notifications") {
-      final sharingIntentProvider = locator<SharingIntentProvider>();
-      return sharingIntentProvider.deepLink = "notifications";
+    switch (route) {
+      case "notifications":
+        final sharingIntentProvider = locator<SharingIntentProvider>();
+        return sharingIntentProvider.deepLink = "notifications";
+      case "achievements":
+        final sharingIntentProvider = locator<SharingIntentProvider>();
+        return sharingIntentProvider.deepLink = "achievements";
     }
 
     try {

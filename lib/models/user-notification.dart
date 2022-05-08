@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mywonderbird/models/user-profile.dart';
 
 const NOTIFICATION_TYPE_LIKE = 10;
+const NOTIFICATION_TYPE_BADGE_RECEIVED = 20;
 
 // This needs to be in sync with the back-end types
 // Should never really change though
@@ -20,6 +21,7 @@ class UserNotification {
   bool read;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Map<String, dynamic> extraData;
 
   UserNotification({
     @required this.id,
@@ -32,6 +34,7 @@ class UserNotification {
     @required this.read,
     @required this.createdAt,
     @required this.updatedAt,
+    this.extraData,
   });
 
   factory UserNotification.fromJson(Map<String, dynamic> json) {
@@ -53,6 +56,7 @@ class UserNotification {
       read: json['read'],
       createdAt: createdAt != null ? DateTime.parse(createdAt) : null,
       updatedAt: updatedAt != null ? DateTime.parse(updatedAt) : null,
+      extraData: json['extraData'],
     );
   }
 }

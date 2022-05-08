@@ -71,8 +71,10 @@ BadgeIconConfig createConfigFromType(String type) {
   );
 }
 
+const BADGE_TYPE_CONTENT_CREATOR = 'content-creator';
+
 final badgeIconConfigsByTypes = {
-  'content-creator': createConfigFromType("content-creator"),
+  BADGE_TYPE_CONTENT_CREATOR: createConfigFromType(BADGE_TYPE_CONTENT_CREATOR),
 };
 
 BadgeConfig getBadgeConfig(Badge badge) {

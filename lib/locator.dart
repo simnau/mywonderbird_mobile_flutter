@@ -6,6 +6,7 @@ import 'package:mywonderbird/http/retry-policy.dart';
 import 'package:mywonderbird/providers/journey.dart';
 import 'package:mywonderbird/providers/journeys.dart';
 import 'package:mywonderbird/providers/oauth.dart';
+import 'package:mywonderbird/providers/popup-provider.dart';
 import 'package:mywonderbird/providers/profile.dart';
 import 'package:mywonderbird/providers/questionnaire.dart';
 import 'package:mywonderbird/providers/saved-trips.dart';
@@ -146,6 +147,7 @@ setupLocator({String env}) {
   locator.registerLazySingleton(() => SharingIntentProvider());
   locator.registerLazySingleton(() => ProfileProvider());
   locator.registerLazySingleton(() => UserNotificationProvider());
+  locator.registerLazySingleton(() => PopupProvider());
 
   // Other
   locator.registerLazySingleton(() => DeepLinks());

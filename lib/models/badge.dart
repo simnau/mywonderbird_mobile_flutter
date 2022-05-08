@@ -12,11 +12,11 @@ class Badge {
   const Badge({
     @required this.name,
     @required this.type,
-    @required this.description,
     @required this.level,
-    @required this.countToNextLevel,
-    @required this.currentCount,
     @required this.badgeLevels,
+    this.description,
+    this.countToNextLevel,
+    this.currentCount,
   });
 
   factory Badge.fromJson(Map<String, dynamic> json) {

@@ -31,4 +31,8 @@ class NavigationService {
   void pop<T extends Object>([T result]) {
     return navigatorKey.currentState.pop(result);
   }
+
+  BuildContext get currentContext {
+    return navigatorKey.currentContext;
+  }
 }
